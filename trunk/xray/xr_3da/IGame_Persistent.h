@@ -110,6 +110,7 @@ public:
 	{}
 #endif
 	virtual	void					LoadTitle			(LPCSTR str){}
+	virtual	void					LoadLs			    ()      {}
 	virtual bool					CanBePaused			()		{ return true;}
 };
 

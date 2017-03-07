@@ -72,6 +72,7 @@ public:
 	virtual void		OnRenderPPUI_main		();
 	virtual void		OnRenderPPUI_PP			();
 	virtual	void		LoadTitle				(LPCSTR str);
+	virtual	void		LoadLs				    ();
 
 	virtual bool		CanBePaused				();
 	

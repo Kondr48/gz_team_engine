@@ -155,10 +155,7 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 	strconcat					(sizeof(temp),temp,CStringTable().translate("st_loading_saved_game").c_str()," \"",save_name,SAVE_EXTENSION,"\"");
 	g_pGamePersistent->LoadTitle(temp);
 
-	s32 num_tip = Random.randI(1,60);
-	string128					tip;
-	sprintf(tip, "ls_tip_%d", num_tip);
-	pApp->LoadTitleLs(*CStringTable().translate(tip));
+	g_pGamePersistent->LoadLs   (); // Kondr48: советы при загрузке игры
 
 	unload						();
 	reload						(m_section);

@@ -531,6 +531,14 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 	pApp->LoadTitleInt	(buff);
 }
 
+void CGamePersistent::LoadLs()
+{
+	s32        num_tip = Random.randI(1,60);
+	string2048 tip;
+	sprintf(tip, "ls_tip_%d", num_tip);
+	pApp->LoadTitleLs(CStringTable().translate(tip).c_str());
+}
+
 bool CGamePersistent::CanBePaused()
 {
 	return IsGameTypeSingle	();

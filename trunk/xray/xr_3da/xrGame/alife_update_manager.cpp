@@ -234,10 +234,7 @@ void CALifeUpdateManager::new_game			(LPCSTR save_name)
 	g_pGamePersistent->LoadTitle		("st_creating_new_game");
 	Msg									("* Creating new game...");
 
-	s32 num_tip = Random.randI(1,60);
-	string128					tip;
-	sprintf(tip, "ls_tip_%d", num_tip);
-	pApp->LoadTitleLs(*CStringTable().translate(tip));
+	g_pGamePersistent->LoadLs           (); // Kondr48: советы при загрузке игры
 
 	unload								();
 	reload								(m_section);
