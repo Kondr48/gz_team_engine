@@ -119,10 +119,8 @@ CEnvDescriptor::CEnvDescriptor()
 	hemi_color.set		(1,1,1,1);
 	sun_color.set		(1,1,1);
 	sun_dir.set			(0,-1,0);
-	
-	m_fSunShaftsIntensity = 0;
-	m_fWaterIntensity = 1;	
-	//m_fColorGrading.set			(0,0,0);
+	m_fSunShaftsIntensity 	= 0;
+	m_fWaterIntensity 	= 1;
 
     lens_flare_id		= -1;
 	tb_id				= -1;
@@ -149,8 +147,12 @@ void CEnvDescriptor::load	(LPCSTR exec_tm, LPCSTR S, CEnvironment* parent)
 	sscanf					(cldclr,"%f,%f,%f,%f,%f",&clouds_color.x,&clouds_color.y,&clouds_color.z,&clouds_color.w,&multiplier);
 	save=clouds_color.w;	clouds_color.mul		(.5f*multiplier);		clouds_color.w	= save; 
 	sky_color				= pSettings->r_fvector3	(S,"sky_color");		sky_color.mul(.5f);
-	if (pSettings->line_exist(S,"sky_rotation"))	sky_rotation	= deg2rad(pSettings->r_float(S,"sky_rotation"));
-	else											sky_rotation	= 0;
+	
+	if (pSettings->line_exist(S,"sky_rotation"))	
+		sky_rotation	= deg2rad(pSettings->r_float(S,"sky_rotation"));
+	else											
+		sky_rotation	= 0;
+
 	far_plane				= pSettings->r_float	(S,"far_plane");
 	fog_color				= pSettings->r_fvector3	(S,"fog_color");
 	fog_density				= pSettings->r_float	(S,"fog_density");
@@ -159,30 +161,28 @@ void CEnvDescriptor::load	(LPCSTR exec_tm, LPCSTR S, CEnvironment* parent)
 	rain_color				= pSettings->r_fvector3	(S,"rain_color");            
 	wind_velocity			= pSettings->r_float	(S,"wind_velocity");
 	wind_direction			= deg2rad(pSettings->r_float(S,"wind_direction"));
-	ambient					= pSettings->r_fvector3	(S,"ambient");
+	ambient					= pSettings->r_fvector3	(S,"ambient_color");
 	hemi_color				= pSettings->r_fvector4	(S,"hemisphere_color");
 	sun_color				= pSettings->r_fvector3	(S,"sun_color");
-	sun_dir.setHP(
-        deg2rad(pSettings->r_float	(S,"sun_altitude")),
-        deg2rad(pSettings->r_float	(S,"sun_longitude"))
-        );
-    R_ASSERT(_valid(sun_dir));
-    VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while loading");
+	
+	sun_dir.setHP			(
+			deg2rad(pSettings->r_float(S, "sun_altitude")),
+			deg2rad(pSettings->r_float(S, "sun_longitude"))
+		);
+	R_ASSERT				( _valid(sun_dir) );
+	VERIFY2					(sun_dir.y < 0, "Invalid sun direction settings while loading");
+	
+	if (pSettings->line_exist(S, "water_intensity"))
+		m_fWaterIntensity 	= pSettings->r_float 	(S, "water_intensity");
+	
+	if (pSettings->line_exist(S, "sun_shafts_intensity"))
+		m_fSunShaftsIntensity= pSettings->r_float 	(S, "sun_shafts_intensity");
 
 	lens_flare_id			= parent->eff_LensFlare->AppendDef(pSettings,pSettings->r_string(S,"sun"));
 	tb_id					= parent->eff_Thunderbolt->AppendDef(pSettings,pSettings->r_string(S,"thunderbolt_collection"));
 	bolt_period				= (tb_id>=0)?pSettings->r_float	(S,"thunderbolt_period"):0.f;
 	bolt_duration			= (tb_id>=0)?pSettings->r_float	(S,"thunderbolt_duration"):0.f;
-	env_ambient				= pSettings->line_exist(S,"env_ambient")?parent->AppendEnvAmb	(pSettings->r_string(S,"env_ambient")):0;
-	
-	if (pSettings->line_exist(S,"sun_shafts_intensity"))
-		m_fSunShaftsIntensity = pSettings->r_float	(S,"sun_shafts_intensity");
-
-	if (pSettings->line_exist(S,"water_intensity"))
-		m_fWaterIntensity = pSettings->r_float	(S,"water_intensity");	
-	
-	/*if (pSettings->line_exist(S,"color_grading"))
-		m_fColorGrading = pSettings->r_fvector3	(S,"color_grading");*/		
+	env_ambient				= pSettings->line_exist(S,"ambient")?parent->AppendEnvAmb	(pSettings->r_string(S,"ambient")):0;
 
 	C_CHECK					(clouds_color);
 	C_CHECK					(sky_color	);
@@ -277,11 +277,9 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	// wind
 	wind_velocity			=	fi*A.wind_velocity + f*B.wind_velocity;
 	wind_direction			=	fi*A.wind_direction + f*B.wind_direction;
-	
-	m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
-	m_fWaterIntensity		=	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;	
-	
-	//m_fColorGrading.lerp			(A.m_fColorGrading,B.m_fColorGrading,f);
+	// extensions
+	m_fWaterIntensity 		= 	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
+	m_fSunShaftsIntensity 	= 	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
 
 	// colors
 	sky_color.lerp			(A.sky_color,B.sky_color,f).add(M.sky_color).mul(_power);
