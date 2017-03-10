@@ -1251,6 +1251,7 @@ void CWeapon::OnZoomOut()
 	m_fZoomFactor = g_fov;
 
 	StartHudInertion(false);
+	GamePersistent().RestoreEffectorDOF	();
 }
 
 CUIStaticItem* CWeapon::ZoomTexture()
