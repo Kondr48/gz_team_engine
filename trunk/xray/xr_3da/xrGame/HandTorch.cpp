@@ -154,6 +154,11 @@ void CHandTorch::UpdateCL() // Kondr48, механизм абсолютно не катит для худового
 	inherited::UpdateCL();
 
 	CKinematics* pVisual				= smart_cast<CKinematics*>(m_pHUD->Visual());
+	
+	Fvector                 light_bone_pos;
+	light_bone_pos = pVisual->LL_GetBonePosition(pVisual, light_trace_bone.c_str());
+	Msg("позиция кости x = %f, y = %f, z = %f", light_bone_pos.x, light_bone_pos.y, light_bone_pos.z);
+
 	u16 bi								= pVisual->LL_BoneID(light_trace_bone);
 	CBoneInstance			&BI = smart_cast<CKinematics*>(m_pHUD->Visual())->LL_GetBoneInstance(bi);
 	Fmatrix					M;

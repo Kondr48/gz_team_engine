@@ -60,6 +60,8 @@ namespace std {
 }
 #endif // #ifdef NDEBUG*/
 
+void draw_multiline_text(CGameFont* F, float fTargetWidth, LPCSTR pszText);
+
 void compute_build_id	()
 {
 	build_date			= __DATE__;
@@ -1294,12 +1296,16 @@ void CApplication::load_draw_internal()
 		CHK_DX			(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_ARGB(0,0,0,0),1,0));
 		return;
 	}
+
 		// Draw logo
 		u32	Offset;
 		u32	C						= 0xffffffff;
 		u32	_w						= Device.dwWidth;
 		u32	_h						= Device.dwHeight;
 		FVF::TL* pv					= NULL;
+
+        bool b_ws = (_w / _h) > 1.34f;
+        bool b_16x9 = b_ws && ((_w / _h) > 1.77f);
 
 //progress
 		float bw					= 1024.0f;
@@ -1363,16 +1369,6 @@ void CApplication::load_draw_internal()
 		RCache.set_Geometry			(ll_hGeom2);
 		RCache.Render				(D3DPT_TRIANGLESTRIP, Offset, 2*v_cnt);*/
 
-
-		// Советы, при загрузке игры.
-		VERIFY						(pFontSystem);
-		pFontSystem->Clear			();
-		pFontSystem->SetColor		(color_rgba(35,71,74,255));
-		pFontSystem->SetAligment	(CGameFont::alCenter);
-		pFontSystem->OutI			(0.f,0.625f,ls_title);
-		//pFontSystem->SetTextComplexMode(true);
-		pFontSystem->OnRender		();
-
 		// Draw title
 		VERIFY						(pFontSystem);
 		pFontSystem->Clear			();
@@ -1380,6 +1376,16 @@ void CApplication::load_draw_internal()
 		pFontSystem->SetAligment	(CGameFont::alCenter);
 		pFontSystem->OutI			(0.f,0.524f,app_title);
 		pFontSystem->OnRender		();
+
+		// Kondr48: Советы, при загрузке игры.
+		VERIFY						    (pFontSystem);
+		pFontSystem->Clear		        ();
+		pFontSystem->SetColor		    (color_rgba(35,71,74,255));
+		pFontSystem->SetAligment	    (CGameFont::alCenter);
+		pFontSystem->OutI			    (0.f,0.625f,ls_title);
+		/*float fTargetWidth              = 600.0f * k.x * (b_ws ? 0.8f : 1.0f);
+		draw_multiline_text             (pFontSystem, fTargetWidth, ls_title);*/
+		pFontSystem->OnRender		    ();
 
         //draw level-specific screenshot
 		if(hLevelLogo){
@@ -1414,4 +1420,54 @@ u32 calc_progress_color(u32 idx, u32 total, int stage, int max_stage)
 	float f				= 1/(exp((float(idx)-kk)*0.5f)+1.0f);
 
 	return color_argb_f		(f,1.0f,1.0f,1.0f);
+}
+
+#define IsSpace(ch)                                                                                                    \
+    ((ch) == ' ' || (ch) == '\t' || (ch) == '\r' || (ch) == '\n' || (ch) == ',' || (ch) == '.' || (ch) == ':' ||       \
+        (ch) == '!')
+
+void parse_word(LPCSTR str, CGameFont* font, float& length, LPCSTR& next_word)
+{
+    length = 0.0f;
+    while (*str && !IsSpace(*str))
+    {
+        //		length  += font->GetCharTC(*str).z;
+        length += font->SizeOf_(*str);
+        ++str;
+    }
+    next_word = (*str) ? str + 1 : str;
+}
+
+void draw_multiline_text(CGameFont* F, float fTargetWidth, LPCSTR pszText)
+{
+    if (!pszText || xr_strlen(pszText) == 0) return;
+
+    LPCSTR ch = pszText;
+    float curr_word_len = 0.0f;
+    LPCSTR next_word = NULL;
+
+    float curr_len = 0.0f;
+    string512 buff;
+    buff[0] = 0;
+    while (*ch)
+    {
+        parse_word(ch, F, curr_word_len, next_word);
+        if (curr_len + curr_word_len > fTargetWidth) {
+            F->OutNext(buff);
+            curr_len = 0.0f;
+            buff[0] = 0;
+        }
+        else
+        {
+            curr_len += curr_word_len;
+            strncpy_s(buff + xr_strlen(buff), sizeof(buff) - xr_strlen(buff), ch, next_word - ch);
+            ch = next_word;
+        }
+        if (0 == *next_word)  // end of text
+        {
+            strncpy_s(buff + xr_strlen(buff), sizeof(buff) - xr_strlen(buff), ch, next_word - ch);
+            F->OutNext(buff);
+            break;
+        }
+    }
 }

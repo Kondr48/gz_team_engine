@@ -254,7 +254,7 @@ public:
 	u16							LL_GetBoneRoot		()					{	return iRoot;													}
 	void						LL_SetBoneRoot		(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	iRoot=bone_id;					}
 	
-	Fvector                     LL_GetBonePosition	(CKinematics *K, const Fvector &pos, LPCSTR bone_name);
+	Fvector                     LL_GetBonePosition	(CKinematics *K, LPCSTR bone_name);
 
     BOOL						LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(u64(1)<<bone_id);	}
 	void						LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);

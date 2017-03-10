@@ -773,9 +773,12 @@ CSkeletonWallmark::~CSkeletonWallmark()
 }
 #endif
 
-Fvector  CKinematics::LL_GetBonePosition(CKinematics *K, const Fvector &pos, LPCSTR bone_name)
+Fvector  CKinematics::LL_GetBonePosition(CKinematics *K, LPCSTR bone_name)
 {
 	u16					bone_id;
+	Fvector             pos;
+	pos.set(0,0,0);
+
 	if (xr_strlen(bone_name))
 		bone_id			= K->LL_BoneID(bone_name);
 	else
