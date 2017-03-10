@@ -42,14 +42,14 @@ xr_token							qsun_quality_token							[ ]={
 
 
 //Kondr48: для настроек погоды
-u32			ps_r_moon_cycle		=	0;			//	=	0;
+u32	ps_r_moon_cycle		=	0;
 xr_token							qmoon_cycle_token							[ ]={
 	{ "qt_moon_c_8",				0												},
 	{ "qt_moon_c_28",				1												},
 	{ 0,							0												}
 };
 
-u32			ps_r_night_brightness		=	0;			//	=	0;
+u32	ps_r_night_brightness		=	3;
 xr_token							qnight_brightness_token						[ ]={
 	{ "qt_nb_dark",				    0												},
 	{ "qt_nb_slight",				1												},
@@ -58,7 +58,7 @@ xr_token							qnight_brightness_token						[ ]={
 	{ 0,							0												}
 };
 
-u32			ps_r_weather_preset		=	0;			//	=	0;
+u32 ps_r_weather_preset		=	0;			//	=	0;
 xr_token							qweather_preset_token						[ ]={
 	{ "qt_wp_default",				    0												},
 	{ "qt_wp_clear",				    1												},
@@ -68,6 +68,17 @@ xr_token							qweather_preset_token						[ ]={
 	{ "qt_wp_rainy",				    5												},
 	{ "qt_wp_stormy",				    6												},	
 	{ 0,							    0												}
+};
+
+//Kondr48: выбор размера карты теней в опциях.
+u32 ps_r_smapsize = 2048; // значение по умолчанию
+xr_token 							qsmapsize_token 						        [ ]={
+	{ "smap_low", 					1536 										        },
+	{ "smap_medium", 			    2048 										        },
+	{ "smap_high", 			        2560 										        },
+	{ "smap_extreme", 	            3072 										        },
+	{ "smap_ultra",                 4096 										        },
+	{ 0, 		                    0 											        }
 };
 
 // Common
@@ -669,9 +680,11 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
 	
-
 	//Kondr48: для настроек геймплея
 	CMD3(CCC_Mask,		"auto_loss",			&ps_r2_ls_flags,			    AUTO_LOSS_FLAG	);
+
+	//Kondr48: карта теней в опциях
+	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
 
 	/*CMD3(CCC_Mask,			"r2_color_fringe",		&ps_r2_ls_flags,			R2FLAG_COLOR_FRINGE		);*/
 	CMD3(CCC_Mask,			"r2_color_grading",		&ps_r2_ls_flags,			R2FLAG_COLOR_GRADING		);

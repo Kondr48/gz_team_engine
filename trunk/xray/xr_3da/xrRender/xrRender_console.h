@@ -17,6 +17,10 @@ extern ECORE_API	xr_token	qnight_brightness_token[];
 extern ECORE_API	xr_token	qmoon_cycle_token[];
 extern ECORE_API	xr_token	qweather_preset_token[];
 
+//Kondr48: карта теней в опциях
+extern ECORE_API 	u32 		ps_r_smapsize;
+extern ECORE_API 	xr_token 	qsmapsize_token[];
+
 
 extern ENGINE_API	int			ps_r__Supersample;
 extern ECORE_API	int			ps_r__LightSleepFrames;
