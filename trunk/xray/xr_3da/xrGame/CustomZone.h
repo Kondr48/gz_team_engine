@@ -58,8 +58,7 @@ public:
 	virtual		void	UpdateCL						();
 	virtual		void	UpdateWorkload					(u32	dt	);				// related to fast-mode optimizations
 	virtual		void	shedule_Update					(u32	dt	);
-	//virtual		void	enter_Zone						(SZoneObjectInfo& io)		{}
-	virtual		void	enter_Zone						(SZoneObjectInfo& io);
+	virtual		void	enter_Zone						(SZoneObjectInfo& io)		{}
 	virtual		void	exit_Zone						(SZoneObjectInfo& io);
 	virtual		void	feel_touch_new					(CObject* O	);
 	virtual		void	feel_touch_delete				(CObject* O	);
@@ -104,10 +103,8 @@ protected:
 		eIdleLight				=(1<<6),
 		eSpawnBlowoutArtefacts	=(1<<7),
 		eUseOnOffTime			=(1<<8),
-		eIdleLightVolumetric	=(1<<9),
-		eIdleLightShadow		=(1<<10),
-		eIdleLightR1			=(1<<11),
-		eAffectPickDOF			=(1<<12),
+		eBlowoutLightVolumetric =(1<<9),
+		eIdleLightVolumetric 	=(1<<10),
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;

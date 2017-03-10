@@ -159,10 +159,8 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_c				("m_texgen_J",		m_Texgen_J	);
 		draw_volume					(L);
 	}
-	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
-	
+	dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
-	increment_light_marker();
 
 	u_DBT_disable				();
 }

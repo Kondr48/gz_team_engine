@@ -121,6 +121,7 @@ CEnvDescriptor::CEnvDescriptor()
 	sun_dir.set			(0,-1,0);
 	m_fSunShaftsIntensity 	= 0;
 	m_fWaterIntensity 	= 1;
+    m_vDefog.set 		(0,0,0);
 
     lens_flare_id		= -1;
 	tb_id				= -1;
@@ -177,6 +178,9 @@ void CEnvDescriptor::load	(LPCSTR exec_tm, LPCSTR S, CEnvironment* parent)
 	
 	if (pSettings->line_exist(S, "sun_shafts_intensity"))
 		m_fSunShaftsIntensity= pSettings->r_float 	(S, "sun_shafts_intensity");
+    
+    if (pSettings->line_exist(S, "tnmp_defog"))
+		m_vDefog 			= pSettings->r_fvector3 (S, "tnmp_defog");
 
 	lens_flare_id			= parent->eff_LensFlare->AppendDef(pSettings,pSettings->r_string(S,"sun"));
 	tb_id					= parent->eff_Thunderbolt->AppendDef(pSettings,pSettings->r_string(S,"thunderbolt_collection"));
@@ -280,6 +284,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* , CEnvDescriptor& A, CEnvDescripto
 	// extensions
 	m_fWaterIntensity 		= 	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
 	m_fSunShaftsIntensity 	= 	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
+    m_vDefog.lerp 			(A.m_vDefog,B.m_vDefog,f);
 
 	// colors
 	sky_color.lerp			(A.sky_color,B.sky_color,f).add(M.sky_color).mul(_power);

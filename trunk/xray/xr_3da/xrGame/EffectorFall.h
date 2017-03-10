@@ -19,5 +19,5 @@ class CEffectorDOF : public CEffectorCam
 	float			m_fPhase;
 public:
 					CEffectorDOF	(const Fvector4& dof);
-	virtual BOOL	Process		(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL	Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
 };

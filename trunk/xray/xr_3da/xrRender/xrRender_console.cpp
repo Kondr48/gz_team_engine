@@ -672,9 +672,13 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
-	CMD3(CCC_Mask,		"r2_ssao_blur",                 &ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_BLUR);//Need restart
-	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
+	CMD3(CCC_Mask,		"r2_ssao_blur",                 &ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_BLUR);
 	
+	//Need restart
+	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
+	CMD3(CCC_Mask, 		"r2_lens_flares",		        &ps_r2_ls_flags, 			R2FLAG_LENSFLARES);
+	CMD3(CCC_Mask, 		"r2_film_grain",		        &ps_r2_ls_flags, 			R2FLAG_FILMGRAIN);
+
     //Kondr48: для настроек погоды
 	CMD3(CCC_Token,		"r2_moon_cycle",				&ps_r_moon_cycle,			qmoon_cycle_token);
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
@@ -685,9 +689,6 @@ void		xrRender_initconsole	()
 
 	//Kondr48: карта теней в опциях
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
-
-	/*CMD3(CCC_Mask,			"r2_color_fringe",		&ps_r2_ls_flags,			R2FLAG_COLOR_FRINGE		);*/
-	CMD3(CCC_Mask,			"r2_color_grading",		&ps_r2_ls_flags,			R2FLAG_COLOR_GRADING		);
 }
 
 void	xrRender_apply_tf		()

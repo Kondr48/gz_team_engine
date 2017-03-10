@@ -199,6 +199,13 @@ class cl_screen_params	: public R_constant_setup {
 		RCache.set_c	(C,result);
 	}
 };	static cl_screen_params		binder_screen_params;
+static class cl_screen_res : public R_constant_setup		
+{	
+	virtual void setup	(R_constant* C)
+	{
+		RCache.set_c	(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f/(float)Device.dwWidth, 1.0f/(float)Device.dwHeight);
+	}
+}	binder_screen_resolution; //binder_screen_res;
 
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
@@ -233,7 +240,9 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("L_ambient",		&binder_amb_color);
 
 	//KD
-	r_Constant				("c_screen",		&binder_screen_params);	
+	//r_Constant				("c_screen",		&binder_screen_params);
+	r_Constant 				("screen_resolution", 	&binder_screen_resolution);
+	r_Constant 				("screen_resolution_params", 	&binder_screen_params);
 
 	// detail
 	if (bDetail	&& detail_scaler)

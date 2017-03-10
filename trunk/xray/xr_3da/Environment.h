@@ -119,7 +119,7 @@ public:
 	Fvector3			sun_dir		;
 	float				m_fSunShaftsIntensity;
 	float				m_fWaterIntensity;	
-	//Fvector3			m_fColorGrading		;
+	Fvector3 			m_vDefog	;
 
     int					lens_flare_id;
 	int					tb_id;

@@ -8,17 +8,16 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	flags.bStatic	= false;
 	flags.bActive	= false;
 	flags.bShadow	= false;
-	flags.bVolumetric = false;
+	flags.bVolumetric= false;
 	position.set	(0,-1000,0);
 	direction.set	(0,-1,0);
 	right.set		(0,0,0);
 	range			= 8.f;
 	cone			= deg2rad(60.f);
 	color.set		(1,1,1,1);
-	
-	m_volumetric_quality	= 1;
-	m_volumetric_intensity	= 1;
-	m_volumetric_distance	= 1;
+	m_volumetric_quality= 1;
+	m_volumetric_intensity= 1;
+	m_volumetric_distance= 1;
 
 	frame_render	= 0;
 
@@ -63,8 +62,10 @@ void light::set_texture		(LPCSTR name)
 
 #pragma todo				("Only shadowed spot implements projective texture")
 	string256				temp;
-	s_spot.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
-	s_point.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name); // why not s_point ?
+	strconcat(sizeof(temp),temp,"r2\\accum_spot_",name);
+	//s_spot.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name);
+	s_spot.create			(RImplementation.Target->b_accum_spot,temp,name);
+	//s_point.create			(RImplementation.Target->b_accum_spot,strconcat(sizeof(temp),temp,"r2\\accum_spot_",name),name); // why not s_point ?
 	s_volumetric.create		("accum_volumetric", name);
 }
 #endif
@@ -285,11 +286,10 @@ void	light::export		(light_Package& package)
 						L->spatial.sector	= spatial.sector;	//. dangerous?
 						L->s_spot			= s_spot	;
 						L->s_point			= s_point	;
-						
-						L->set_volumetric(flags.bVolumetric);
+						L->set_volumetric	(flags.bVolumetric);
 						L->set_volumetric_quality(m_volumetric_quality);
 						L->set_volumetric_intensity(m_volumetric_intensity);
-						L->set_volumetric_distance(m_volumetric_distance);						
+						L->set_volumetric_distance(m_volumetric_distance);
 						package.v_shadowed.push_back	(L);
 					}
 				}

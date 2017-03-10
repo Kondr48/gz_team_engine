@@ -51,6 +51,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cl_intersect.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Kernel</Filter>
     </ClInclude>
@@ -77,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\r__pixel_calculator.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="doug_lea_memory_allocator.h">
+      <Filter>Core\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\DetailManager.h">
       <Filter>Details</Filter>
@@ -237,7 +243,7 @@
     <ClInclude Include="..\xrRender\light.h">
       <Filter>Lights</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Games\S.T.A.L.K.E.R\SOURCES\GZ-Team\trunk\xray\xr_3da\xrRender_R2\blender_ssao.h" />
+    <ClInclude Include="blender_ssao.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

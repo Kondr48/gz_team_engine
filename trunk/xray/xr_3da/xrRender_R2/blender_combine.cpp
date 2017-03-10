@@ -45,7 +45,17 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_Sampler_clf		("s_image",			r2_RT_generic0);
 		C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
 		C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
-		C.r_Sampler_clf		("s_dirt",			r2_RT_dirt);
+		//C.r_Sampler_clf 	("s_dirt", 			r2_RT_dirt);
+		// advancing blooming
+		C.r_Sampler_clf 	("SamplerDirt", 	r2_RT_SamplerDirt);
+		C.r_Sampler_clf 	("SamplerSprite", 	r2_RT_SamplerSprite);
+		//C.r_Sampler_clf 	("SamplerBloom1", 	r2_RT_SamplerBloom1);
+		//C.r_Sampler_clf 	("SamplerBloom2", 	r2_RT_SamplerBloom2);
+		//C.r_Sampler_clf 	("SamplerBloom3", 	r2_RT_SamplerBloom3);
+		//C.r_Sampler_clf 	("SamplerBloom4", 	r2_RT_SamplerBloom4);
+		//C.r_Sampler_clf 	("SamplerBloom5", 	r2_RT_SamplerBloom5);
+		//C.r_Sampler_clf 	("SamplerLensFlare1",r2_RT_SamplerLensFlare1);
+		//C.r_Sampler_clf 	("SamplerLensFlare2",r2_RT_SamplerLensFlare2);
 		C.r_End				();
 		break;
 	case 3:	// aa-edge-detection + AA :) + DISTORTION
@@ -64,6 +74,17 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_Sampler_clf		("s_image",			r2_RT_generic0);
 		C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
 		C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
+		//C.r_Sampler_clf 	("s_dirt", 			r2_RT_dirt);
+		// advancing blooming
+		C.r_Sampler_clf 	("SamplerDirt", 	r2_RT_SamplerDirt);
+		C.r_Sampler_clf 	("SamplerSprite", 	r2_RT_SamplerSprite);
+		//C.r_Sampler_clf 	("SamplerBloom1", 	r2_RT_SamplerBloom1);
+		//C.r_Sampler_clf 	("SamplerBloom2", 	r2_RT_SamplerBloom2);
+		//C.r_Sampler_clf 	("SamplerBloom3", 	r2_RT_SamplerBloom3);
+		//C.r_Sampler_clf 	("SamplerBloom4", 	r2_RT_SamplerBloom4);
+		//C.r_Sampler_clf 	("SamplerBloom5", 	r2_RT_SamplerBloom5);
+		//C.r_Sampler_clf 	("SamplerLensFlare1",r2_RT_SamplerLensFlare1);
+		//C.r_Sampler_clf 	("SamplerLensFlare2",r2_RT_SamplerLensFlare2);		
 		C.r_End				();
 		break;
 	case 5:	// post-processing

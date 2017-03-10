@@ -31,8 +31,7 @@ void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 		else							RCache.set_CullMode			( CULL_CCW	);	// far, front-faces
 	}
 	*/
-	//	Cull always CCW. If you want to revert to previouse solution, please, revert bias setup/
-	RCache.set_CullMode			( CULL_CCW	);	// near	
+	RCache.set_CullMode			( CULL_CCW	);	// near
 	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	( FALSE		);
 	else								RCache.set_ColorWriteEnable	( );
 }

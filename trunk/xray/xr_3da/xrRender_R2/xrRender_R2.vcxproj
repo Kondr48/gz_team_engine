@@ -143,7 +143,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|Win32'">X:\3rd party\stlport\stlport;X:\xray\xrLua\src;X:\3rd party\FreeImage\FreeImage\Source;X:\xray\xrCore;X:\3rd party\MagicSoftware\FreeMagic\Include;X:\3rd party\OpenAL\Include;X:\3rd party\luabind_old\luabind;X:\3rd party\loki;X:\3rd party\eax\Include;X:\3rd party\boost;$(WindowsSdkDir)include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">X:\trunk\xray\xrLua\src;X:\trunk\3rd party\FreeImage\FreeImage\Source;X:\trunk\xray\xrCore;X:\trunk\3rd party\MagicSoftware\FreeMagic\Include;X:\trunk\3rd party\OpenAL\Include;X:\trunk\3rd party\luabind_old\luabind;X:\trunk\3rd party\loki;X:\trunk\3rd party\eax\Include;X:\trunk\3rd party\boost;$(WindowsSdkDir)include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|x64'">X:\xray\xrLua\src;X:\3rd party\FreeImage;X:\xray\xrCore;X:\3rd party\MagicSoftware\FreeMagic\Include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;X:\3rd party\luabind_old\luabind;X:\3rd party\loki;X:\3rd party\eax\Include;X:\3rd party\Xiph\Include;X:\3rd party\boost;$(WindowsSdkDir)include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)\Lib\x86;X:\trunk\3rd party\OpenAL\libs\Win32;X:\trunk\3rd party\eax;X:\libraries;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;X:\trunk\3rd party\OpenAL\libs\Win32;X:\trunk\3rd party\eax;X:\libraries;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|Win32'">X:\3rd party\stlport\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;X:\3rd party\OpenAL\libs\Win32;X:\3rd party\eax;X:\libraries;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;X:\3rd party\OpenAL\libs\Win64;X:\3rd party\eax;X:\libraries\x64\;$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|x64'">X:\3rd party\MagicSoftware\FreeMagic\Library\ReleaseDLL;X:\3rd party\FreeImage;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;X:\3rd party\Xiph\Libs;C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win32;X:\3rd party\eax;X:\libraries;$(LibraryPath)</LibraryPath>
@@ -471,7 +471,8 @@
   <ItemGroup>
     <ClInclude Include="..\xrRender\DetailFormat.h" />
     <ClInclude Include="..\xrRender\light.h" />
-    <ClInclude Include="D:\Games\S.T.A.L.K.E.R\SOURCES\GZ-Team\trunk\xray\xr_3da\xrRender_R2\blender_ssao.h" />
+    <ClInclude Include="blender_ssao.h" />
+    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
     <ClInclude Include="..\xrRender\PSLibrary.h" />
@@ -481,6 +482,7 @@
     <ClInclude Include="..\xrRender\r__dsgraph_types.h" />
     <ClInclude Include="..\xrRender\r__occlusion.h" />
     <ClInclude Include="..\xrRender\r__pixel_calculator.h" />
+    <ClInclude Include="doug_lea_memory_allocator.h" />
     <ClInclude Include="..\xrRender\DetailManager.h" />
     <ClInclude Include="..\xrRender\DetailModel.h" />
     <ClInclude Include="..\xrRender\NvTriStrip.h" />

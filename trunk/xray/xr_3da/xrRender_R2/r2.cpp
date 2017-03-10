@@ -713,13 +713,6 @@ HRESULT	CRender::shader_compile			(
 		def_it						++	;
 	}	*/
 	
-	if (ps_r2_ls_flags.test(R2FLAG_COLOR_GRADING))		{
-		defines[def_it].Name		=	"USE_COLOR_GRADING";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}	
-
-
 	// finish
 	defines[def_it].Name			=	0;
 	defines[def_it].Definition		=	0;

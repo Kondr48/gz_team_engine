@@ -17,7 +17,7 @@ public:
 		u32			bStatic	:	1;
 		u32			bActive	:	1;
 		u32			bShadow	:	1;
-		u32			bVolumetric:1;
+		u32 		bVolumetric :1;
 	}				flags;
 	Fvector			position	;
 	Fvector			direction	;
@@ -28,10 +28,9 @@ public:
 
 	vis_data		hom			;
 	u32				frame_render;
-	
 	float			m_volumetric_quality;
 	float			m_volumetric_intensity;
-	float			m_volumetric_distance;	
+	float			m_volumetric_distance;
 
 #if RENDER==R_R2
 	float			virtual_size;
@@ -43,7 +42,7 @@ public:
 
 	ref_shader		s_spot;
 	ref_shader		s_point;
-	ref_shader		s_volumetric;
+	ref_shader 		s_volumetric;
 
 	u32				m_xform_frame;
 	Fmatrix			m_xform;
@@ -104,14 +103,13 @@ public:
 	{ 
 		flags.bShadow=b;			
 	}
-	virtual void	set_volumetric			(bool b)						
-	{ 
-		flags.bVolumetric=b;			
+	virtual void 	set_volumetric 			(bool b)
+	{
+		flags.bVolumetric=b;
 	}
-	virtual void	set_volumetric_quality(float fValue) {m_volumetric_quality = fValue;}
-	virtual void	set_volumetric_intensity(float fValue) {m_volumetric_intensity = fValue;}
-	virtual void	set_volumetric_distance(float fValue) {m_volumetric_distance = fValue;}
-	
+	virtual void	set_volumetric_quality 	(float fValue)  				{ m_volumetric_quality = fValue; 	}
+	virtual void	set_volumetric_intensity(float fValue) 					{ m_volumetric_intensity = fValue; 	}
+	virtual void	set_volumetric_distance (float fValue)  				{ m_volumetric_distance = fValue; 	}
 	virtual void	set_position			(const Fvector& P);
 	virtual void	set_rotation			(const Fvector& D, const Fvector& R);
 	virtual void	set_cone				(float angle);

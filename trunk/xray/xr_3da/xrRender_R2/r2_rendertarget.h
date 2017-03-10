@@ -6,7 +6,8 @@ class light;
 #define DU_SPHERE_NUMFACES	180
 #define DU_CONE_NUMVERTEX	18
 #define DU_CONE_NUMFACES	32
-#define	VOLUMETRIC_SLICES	100
+// VOLUMETRIC
+#define VOLUMETRIC_SLICES 	100
 
 class CRenderTarget		: public IRender_Target
 {
@@ -48,9 +49,21 @@ public:
 	ref_rt						rt_Accumulator_temp;// only for HW which doesn't feature fp16 blend
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt 						rt_Generic_2; 		// 32bit 		(r,g,b,a) 				// post-process, intermidiate results, etc.
+	//ref_rt 						rt_AdvBloom1; 		// 
+	//ref_rt 						rt_AdvBloom2; 		// 
+	//ref_rt 						rt_AdvBloom3; 		// 
+	//ref_rt 						rt_AdvBloom4; 		// 
+	//ref_rt 						rt_AdvBloom5; 		// 	
+	//ref_rt 						rt_LFX1; 			// 	
+	//ref_rt 						rt_LFX2; 			// 	
 	ref_rt						rt_Bloom_1;			// 32bit, dim/4	(r,g,b,?)
 	ref_rt						rt_Bloom_2;			// 32bit, dim/4	(r,g,b,?)
+//	ref_rt 						rt_AdvBloom1; 		// 
+//	ref_rt 						rt_AdvBloom2; 		// 
+//	ref_rt 						rt_AdvBloom3; 		// 
+//	ref_rt 						rt_AdvBloom4; 		// 
+//	ref_rt 						rt_AdvBloom5; 		// 
 	ref_rt						rt_LUM_64;			// 64bit, 64x64,	log-average in all components
 	ref_rt						rt_LUM_8;			// 64bit, 8x8,		log-average in all components
 
@@ -80,16 +93,16 @@ private:
 	// Accum
 	ref_shader					s_accum_mask	;
 	ref_shader					s_accum_direct	;
-	ref_shader					s_accum_direct_volumetric;
+	ref_shader 					s_accum_direct_volumetric;
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;
-	ref_shader					s_accum_volume;
+	ref_shader 					s_accum_volume 	;
 
 	ref_geom					g_accum_point	;
 	ref_geom					g_accum_spot	;
 	ref_geom					g_accum_omnipart;
-	ref_geom					g_accum_volumetric;
+	ref_geom 					g_accum_volumetric;
 
 	IDirect3DVertexBuffer9*		g_accum_point_vb;
 	IDirect3DIndexBuffer9*		g_accum_point_ib;
@@ -100,12 +113,12 @@ private:
 	IDirect3DVertexBuffer9*		g_accum_spot_vb	;
 	IDirect3DIndexBuffer9*		g_accum_spot_ib	;
 	
-	IDirect3DVertexBuffer9*		g_accum_volumetric_vb;
-	IDirect3DIndexBuffer9*		g_accum_volumetric_ib;	
+	IDirect3DVertexBuffer9* 	g_accum_volumetric_vb;
+	IDirect3DIndexBuffer9* 		g_accum_volumetric_ib;
 	
 	// SSAO
 	ref_shader					s_ssao;
-	ref_rt						rt_ssao_temp;	
+	ref_rt						rt_ssao_temp;
 
 	// Bloom
 	ref_geom					g_bloom_build;
@@ -129,7 +142,7 @@ private:
 	ref_shader					s_combine_dbg_1;
 	ref_shader					s_combine_dbg_Accumulator;
 	ref_shader					s_combine;
-	ref_shader					s_combine_volumetric;
+	ref_shader 					s_combine_volumetric;
 public:
 	ref_shader					s_postprocess;
 	ref_geom					g_postprocess;
@@ -151,7 +164,8 @@ private:
 	u32							param_color_gray;
 	u32							param_color_add;
 	
-	bool						m_bHasActiveVolumetric;
+	// VOLUMETRIC
+	bool 						m_bHasActiveVolumetric;
 public:
 								CRenderTarget			();
 								~CRenderTarget			();
@@ -161,8 +175,8 @@ public:
 	void						accum_omnip_geom_destroy();
 	void						accum_spot_geom_create	();
 	void						accum_spot_geom_destroy	();
-	void						accum_volumetric_geom_create();
-	void						accum_volumetric_geom_destroy();	
+	void 						accum_volumetric_geom_create();
+	void 						accum_volumetric_geom_destroy();
 
 	void						u_stencil_optimize		(BOOL		common_stencil=TRUE);
 	void						u_compute_texgen_screen	(Fmatrix&	dest);
@@ -187,7 +201,7 @@ public:
 	void						phase_smap_spot			(light* L);
 	void						phase_smap_spot_tsh		(light* L);
 	void						phase_accumulator		();
-	void						phase_vol_accumulator	();
+	void 						phase_vol_accumulator 	();
 	void						shadow_direct			(light* L, u32 dls_phase);
 	
 	BOOL						enable_scissor			(light* L);		// true if intersects near plane
@@ -200,15 +214,15 @@ public:
 	void						accum_direct_f			(u32	sub_phase);
 	void						accum_direct_lum		();
 	void						accum_direct_blend		();
-	void						accum_direct_volumetric	(u32	sub_phase, const u32 Offset, const Fmatrix &mShadow);
+	void 						accum_direct_volumetric (u32 	sub_phase, 	const u32 Offset, 	const Fmatrix &mShadow);
 	void						accum_point				(light* L);
 	void						accum_spot				(light* L);
 	void						accum_reflected			(light* L);
-	void						accum_volumetric		(light* L);
+	void 						accum_volumetric 		(light* L);
 	void						phase_bloom				();
 	void						phase_luminance			();
 	void						phase_combine			();
-	void						phase_combine_volumetric();
+	void 						phase_combine_volumetric();
 	void						phase_pp				();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
@@ -225,7 +239,7 @@ public:
 	virtual u32					get_width				()				{ return dwWidth;					}
 	virtual u32					get_height				()				{ return dwHeight;					}
 
-	//	Need to reset stencil only when marker overflows.
+    //	Need to reset stencil only when marker overflows.
 	//	Don't clear when render for the first time
 	void						reset_light_marker( bool bResetStencil = false);
 	void						increment_light_marker();

@@ -17,7 +17,6 @@
 #include "zone_effector.h"
 #include "breakableobject.h"
 #include "../../build_config_defines.h"
-#include "GamePersistent.h"
 
 //////////////////////////////////////////////////////////////////////////
 #define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
@@ -249,6 +248,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fLightTimeLeft		= 0;
 
 		m_fLightHeight		= pSettings->r_float(section,"light_height");
+		m_zone_flags.set(eBlowoutLightVolumetric,pSettings->r_bool (section, "light_volumetric") );
 	}
 
 	//загрузить параметры idle подсветки
@@ -261,8 +261,8 @@ void CCustomZone::Load(LPCSTR section)
 		m_pIdleLAnim	 = LALib.FindItem(light_anim);
 		m_fIdleLightHeight = pSettings->r_float(section,"idle_light_height");
 		m_zone_flags.set(eIdleLightVolumetric,pSettings->r_bool (section, "idle_light_volumetric") );
-		m_zone_flags.set(eIdleLightShadow,pSettings->r_bool (section, "idle_light_shadow") );
-		m_zone_flags.set(eIdleLightR1,pSettings->r_bool (section, "idle_light_r1") );		
+		//m_zone_flags.set(eIdleLightShadow,pSettings->r_bool (section, "idle_light_shadow") );
+		//m_zone_flags.set(eIdleLightR1,pSettings->r_bool (section, "idle_light_r1") );
 	}
 
 
@@ -314,8 +314,6 @@ void CCustomZone::Load(LPCSTR section)
 
 	m_ef_anomaly_type			= pSettings->r_u32(section,"ef_anomaly_type");
 	m_ef_weapon_type			= pSettings->r_u32(section,"ef_weapon_type");
-	
-	m_zone_flags.set			(eAffectPickDOF, pSettings->r_bool (section, "pick_dof_effector"));
 }
 
 BOOL CCustomZone::net_Spawn(CSE_Abstract* DC) 
@@ -346,18 +344,12 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
 	//добавить источники света
-	bool br1 = (0==psDeviceFlags.test(rsR2));
-	bool render_ver_allowed = !br1 || (br1&&m_zone_flags.test(eIdleLightR1)) ;
-	
-	if ( m_zone_flags.test(eIdleLight) && render_ver_allowed)
+	if ( m_zone_flags.test(eIdleLight) )
 	{
 		m_pIdleLight = ::Render->light_create();
-		m_pIdleLight->set_shadow(!!m_zone_flags.test(eIdleLightShadow));
-
-		if(m_zone_flags.test(eIdleLightVolumetric))
-		{
-			m_pIdleLight->set_volumetric		(true);
-		}
+		m_pIdleLight->set_shadow(true);
+		if (m_zone_flags.test(eIdleLightVolumetric))
+			m_pIdleLight->set_volumetric(true);
 	}
 	else
 		m_pIdleLight = NULL;
@@ -366,6 +358,8 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	{
 		m_pLight = ::Render->light_create();
 		m_pLight->set_shadow(true);
+		if (m_zone_flags.test(eBlowoutLightVolumetric))
+			m_pLight->set_volumetric(true);
 	}else
 		m_pLight = NULL;
 
@@ -1383,28 +1377,9 @@ void CCustomZone::net_Relcase(CObject* O)
 	inherited::net_Relcase(O);
 }
 
-void CCustomZone::enter_Zone(SZoneObjectInfo& io)
-{
-	if(m_zone_flags.test(eAffectPickDOF) && Level().CurrentEntity())
-	{
-		if(io.object->ID()==Level().CurrentEntity()->ID())
-			GamePersistent().SetPickableEffectorDOF(true);
-	}
-}
-
-/*void CCustomZone::exit_Zone	(SZoneObjectInfo& io)
-{
-	StopObjectIdleParticles(io.object);
-}*/
 void CCustomZone::exit_Zone	(SZoneObjectInfo& io)
 {
 	StopObjectIdleParticles(io.object);
-
-	if(m_zone_flags.test(eAffectPickDOF) && Level().CurrentEntity())
-	{
-		if(io.object->ID()==Level().CurrentEntity()->ID())
-			GamePersistent().SetPickableEffectorDOF(false);
-	}
 }
 
 void CCustomZone::PlayAccumParticles()

@@ -18,13 +18,21 @@
 
 #define		r2_RT_generic0		"$user$generic0"		// ---
 #define		r2_RT_generic1		"$user$generic1"		// ---
-#define		r2_RT_generic2		"$user$generic2"		// ---
-#define		r2_RT_dirt			"fx\\fx_dirt"			// ---
-
-#define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
+#define 	r2_RT_generic2 		"$user$generic2" 		// ---
+#define 	r2_RT_ssao_temp 	"$user$ssao_temp" 		// ---
 
 #define		r2_RT_bloom1		"$user$bloom1"			// ---
 #define		r2_RT_bloom2		"$user$bloom2"			// ---
+//#define 	r2_RT_dirt 			"shaders\\shaders_dirty"// ---
+#define 	r2_RT_SamplerDirt 	"shaders\\LensDB" 		// ---
+#define 	r2_RT_SamplerSprite "shaders\\LensSprite" 	// ---
+//#define 	r2_RT_SamplerBloom1 "$user$advbloom1" 		// ---
+//#define 	r2_RT_SamplerBloom2 "$user$advbloom2" 		// ---
+//#define 	r2_RT_SamplerBloom3 "$user$advbloom3" 		// ---
+//#define 	r2_RT_SamplerBloom4 "$user$advbloom4" 		// ---
+//#define 	r2_RT_SamplerBloom5 "$user$advbloom5" 		// ---
+//#define 	r2_RT_SamplerLensFlare1 "$user$lfx1" 		// ---
+//#define 	r2_RT_SamplerLensFlare2 "$user$lfx2" 		// ---
 
 #define		r2_RT_luminance_t64	"$user$lum_t64"			// --- temp
 #define		r2_RT_luminance_t8	"$user$lum_t8"			// --- temp

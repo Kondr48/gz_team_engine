@@ -75,7 +75,6 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 		float			fTexelOffs			= (.5f / float(RImplementation.o.smapsize));
 		float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
 		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	Use this when triangle culling is not inverted.
 		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
 		Fmatrix			m_TexelAdjust		= 
 		{
@@ -192,8 +191,8 @@ void CRenderTarget::accum_direct		(u32 sub_phase)
 		// disable depth bounds
 		u_DBT_disable	();
 		
-		if ( RImplementation.o.advancedpp&&(ps_r_sun_shafts>0))
-			accum_direct_volumetric	(sub_phase, Offset, m_shadow);		
+		if (ps_r_sun_shafts > 0)
+			accum_direct_volumetric 	(sub_phase, Offset, m_shadow);
 	}
 }
 
@@ -225,8 +224,7 @@ void CRenderTarget::accum_direct_blend	()
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2	);
 	}
-	//dwLightMarkerID				+= 2;
-	increment_light_marker();
+	dwLightMarkerID				+= 2;
 }
 
 void CRenderTarget::accum_direct_f		(u32 sub_phase)
@@ -444,11 +442,13 @@ void CRenderTarget::accum_direct_lum	()
 
 void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, const Fmatrix &mShadow)
 {
-	if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	//if ( ! (RImplementation.o.advancedpp && ps_r_sun_shafts) )
+	if ( !ps_r_sun_shafts )	
 		return;
 
 	{
-		CEnvDescriptor&	E = g_pGamePersistent->Environment().CurrentEnv;
+		//CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor& 	E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
 		//	TODO: add multiplication by sun color here
 		if (fValue<0.0001) return;

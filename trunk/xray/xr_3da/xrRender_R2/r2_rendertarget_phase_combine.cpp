@@ -20,12 +20,11 @@ void	CRenderTarget::phase_combine	()
 	}
 
 	RCache.set_CullMode	( CULL_NONE );
-	
 	if (RImplementation.o.ssao_blur_on)
-		phase_ssao();	
-
+		phase_ssao 	();
 	// low/hi RTs
-	u_setrt				( rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );	
+	u_setrt				( rt_Generic_0,rt_Generic_1,0,HW.pBaseZB );
+	//RCache.set_CullMode	( CULL_NONE );
 	RCache.set_Stencil	( FALSE		);
 
 	BOOL	split_the_scene_to_minimize_wait			= FALSE;
@@ -37,7 +36,6 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_ColorWriteEnable					();
 		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
 		g_pGamePersistent->Environment().RenderSky	();
-		//g_pGamePersistent->Environment().RenderClouds	();		
 		CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
 	}
 
@@ -74,10 +72,7 @@ void	CRenderTarget::phase_combine	()
 		const float minamb			= 0.001f;
 		Fvector4	ambclr			= { _max(envdesc.ambient.x*2,minamb),	_max(envdesc.ambient.y*2,minamb),			_max(envdesc.ambient.z*2,minamb),	0	};
 					ambclr.mul		(ps_r2_sun_lumscale_amb);
-		
-		//Fvector4	envclr			= { envdesc.sky_color.x*2+EPS,	envdesc.sky_color.y*2+EPS,	envdesc.sky_color.z*2+EPS,	envdesc.weight					};
 		Fvector4	envclr			= { envdesc.hemi_color.x*2+EPS,	envdesc.hemi_color.y*2+EPS,	envdesc.hemi_color.z*2+EPS,	envdesc.weight					};
-
 		Fvector4	fogclr			= { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0	};
 					envclr.x		*= 2*ps_r2_sun_lumscale_hemi; 
 					envclr.y		*= 2*ps_r2_sun_lumscale_hemi; 
@@ -87,10 +82,9 @@ void	CRenderTarget::phase_combine	()
 		float		fSSAONoise = 2.0f;
 		fSSAONoise *= tan(deg2rad(67.5f));
 		fSSAONoise /= tan(deg2rad(Device.fFOV));
-
 		float		fSSAOKernelSize = 150.0f;
 		fSSAOKernelSize *= tan(deg2rad(67.5f));
-		fSSAOKernelSize /= tan(deg2rad(Device.fFOV));		
+		fSSAOKernelSize /= tan(deg2rad(Device.fFOV));
 
 		// sun-params
 		{
@@ -112,9 +106,14 @@ void	CRenderTarget::phase_combine	()
 		p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
 
 		// Fill vertex buffer
-		float	scale_X				= float(Device.dwWidth)	/ float(TEX_jitter);
-		float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
-
+		//Fvector4* pv				= (Fvector4*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
+		//pv->set						(hclip(EPS,		_w),	hclip(_h+EPS,	_h),	p0.x, p1.y);	pv++;
+		//pv->set						(hclip(EPS,		_w),	hclip(EPS,		_h),	p0.x, p0.y);	pv++;
+		//pv->set						(hclip(_w+EPS,	_w),	hclip(_h+EPS,	_h),	p1.x, p1.y);	pv++;
+		//pv->set						(hclip(_w+EPS,	_w),	hclip(EPS,		_h),	p1.x, p0.y);	pv++;
+		//RCache.Vertex.Unlock		(4,g_combine_VP->vb_stride);
+		float 	scale_X 			= float(Device.dwWidth)/float(TEX_jitter);
+		float 	scale_Y 			= float(Device.dwHeight)/float(TEX_jitter);
 		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine_VP->vb_stride,Offset);
 		pv->set						(hclip(EPS,		_w),	hclip(_h+EPS,	_h),	p0.x, p1.y, 0, 0,			scale_Y	);	pv++;
 		pv->set						(hclip(EPS,		_w),	hclip(EPS,		_h),	p0.x, p0.y, 0, 0,			0		);	pv++;
@@ -156,7 +155,7 @@ void	CRenderTarget::phase_combine	()
 	}
 	
 	if (m_bHasActiveVolumetric)
-		phase_combine_volumetric();	
+		phase_combine_volumetric 	();
 
 	// Perform blooming filter and distortion if needed
 	RCache.set_Stencil	(FALSE);
@@ -215,27 +214,28 @@ void	CRenderTarget::phase_combine	()
 		pv->p.set(float(_w+EPS),float(_h+EPS),	EPS,1.f); pv->uv0.set(p1.x, p1.y);pv->uv1.set(p1.x-ddw,p1.y-ddh);pv->uv2.set(p1.x+ddw,p1.y+ddh);pv->uv3.set(p1.x+ddw,p1.y-ddh);pv->uv4.set(p1.x-ddw,p1.y+ddh);pv->uv5.set(p1.x-ddw,p1.y,p1.y,p1.x+ddw);pv->uv6.set(p1.x,p1.y-ddh,p1.y+ddh,p1.x);pv++;
 		pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x, p0.y);pv->uv1.set(p1.x-ddw,p0.y-ddh);pv->uv2.set(p1.x+ddw,p0.y+ddh);pv->uv3.set(p1.x+ddw,p0.y-ddh);pv->uv4.set(p1.x-ddw,p0.y+ddh);pv->uv5.set(p1.x-ddw,p0.y,p0.y,p1.x+ddw);pv->uv6.set(p1.x,p0.y-ddh,p0.y+ddh,p1.x);pv++;
 		RCache.Vertex.Unlock		(4,g_aa_AA->vb_stride);
-		
-		//	Set up variable
 		Fvector2	vDofKernel;
 		vDofKernel.set(0.5f/Device.dwWidth, 0.5f/Device.dwHeight);
-		vDofKernel.mul(ps_r2_dof_kernel_size);		
+		vDofKernel.mul(ps_r2_dof_kernel_size);
+		// extensions tonemapping
+		CEnvDescriptorMixer& envdesc_ext= g_pGamePersistent->Environment().CurrentEnv		;
+		Fvector4 defog_clr = { envdesc_ext.m_vDefog.x, envdesc_ext.m_vDefog.y, envdesc_ext.m_vDefog.z, 0 };
 
 		// Draw COLOR
-		if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
-		else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
-		RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
-		RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
-		RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
-		RCache.set_c				("m_current",	m_current);
-		RCache.set_c				("m_previous",	m_previous);
-		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);
+		//if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
+		//else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
+		//RCache.set_c				("e_barrier",	ps_r2_aa_barier.x,	ps_r2_aa_barier.y,	ps_r2_aa_barier.z,	0);
+		//RCache.set_c				("e_weights",	ps_r2_aa_weight.x,	ps_r2_aa_weight.y,	ps_r2_aa_weight.z,	0);
+		//RCache.set_c				("e_kernel",	ps_r2_aa_kernel,	ps_r2_aa_kernel,	ps_r2_aa_kernel,	0);
+		RCache.set_Element 			(s_combine->E[bDistort?4:2]);
 		Fvector3					dof;
 		g_pGamePersistent->GetCurrentDof(dof);
 		RCache.set_c				("dof_params",	dof.x, dof.y, dof.z, ps_r2_dof_sky);
-//.		RCache.set_c				("dof_params",	ps_r2_dof.x, ps_r2_dof.y, ps_r2_dof.z, ps_r2_dof_sky);
-		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);	
-		
+		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+		RCache.set_c				("m_current",	m_current);
+		RCache.set_c				("m_previous",	m_previous);
+		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);
+		RCache.set_c 				("c_tnmp_defog",defog_clr);
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
@@ -388,14 +388,13 @@ void CRenderTarget::phase_combine_volumetric()
 	{
 		// Compute params
 		Fmatrix		m_v2w;			m_v2w.invert				(Device.mView		);
+		//CEnvDescriptorMixer& envdesc= *g_pGamePersistent->Environment().CurrentEnv		;
 		CEnvDescriptorMixer& envdesc= g_pGamePersistent->Environment().CurrentEnv		;
 		const float minamb			= 0.001f;
 		Fvector4	ambclr			= { _max(envdesc.ambient.x*2,minamb),	_max(envdesc.ambient.y*2,minamb),			_max(envdesc.ambient.z*2,minamb),	0	};
 		ambclr.mul		(ps_r2_sun_lumscale_amb);
 
-//.		Fvector4	envclr			= { envdesc.sky_color.x*2+EPS,	envdesc.sky_color.y*2+EPS,	envdesc.sky_color.z*2+EPS,	envdesc.weight					};
-		Fvector4	envclr			= { envdesc.hemi_color.x*2+EPS,	envdesc.hemi_color.y*2+EPS,	envdesc.hemi_color.z*2+EPS,	envdesc.weight					};
-
+		Fvector4 	envclr 			= { envdesc.hemi_color.x*2+EPS, 	envdesc.hemi_color.y*2+EPS, 	envdesc.hemi_color.z*2+EPS, 	envdesc.weight 					};
 
 		Fvector4	fogclr			= { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0	};
 		envclr.x		*= 2*ps_r2_sun_lumscale_hemi; 

@@ -79,6 +79,7 @@ void CLight_Compute_XFORM_and_VIS::compute_xf_spot	(light* L)
 	else
 		tan_shift		= deg2rad(3.5f);
 	/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
-	L->X.S.project.build_projection		(L->cone + tan_shift, 1.f,/*SMAP_near_plane*/L->virtual_size,L->range+EPS_S);
+	//L->X.S.project.build_projection		(L->cone + tan_shift, 1.f,/*SMAP_near_plane*/L->virtual_size,L->range+EPS_S);
+	L->X.S.project.build_projection		(L->cone + /*deg2rad(3.5f)*/tan_shift, 1.f,SMAP_near_plane,L->range+EPS_S);
 	L->X.S.combine.mul					(L->X.S.project,L->X.S.view);
 }

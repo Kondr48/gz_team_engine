@@ -241,8 +241,14 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create			(r2_RT_generic0,w,h,D3DFMT_A8R8G8B8		);
 		rt_Generic_1.create			(r2_RT_generic1,w,h,D3DFMT_A8R8G8B8		);
-		if (RImplementation.o.advancedpp)
-			rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A16B16G16R16F);
+		rt_Generic_2.create 		(r2_RT_generic2,w,h,D3DFMT_A16B16G16R16F);
+		//rt_AdvBloom1.create 		(r2_RT_SamplerBloom1,w,h,D3DFMT_A16B16G16R16F);
+		//rt_AdvBloom2.create 		(r2_RT_SamplerBloom2,w,h,D3DFMT_A16B16G16R16F);
+		//rt_AdvBloom3.create 		(r2_RT_SamplerBloom3,(u32)(w/2),(u32)(h/2),D3DFMT_A16B16G16R16F);
+		//rt_AdvBloom4.create 		(r2_RT_SamplerBloom4,(u32)(w/4),(u32)(h/4),D3DFMT_A16B16G16R16F);
+		//rt_AdvBloom5.create 		(r2_RT_SamplerBloom5,(u32)(w/8),(u32)(h/8),D3DFMT_A16B16G16R16F);		
+		//rt_LFX1.create 				(r2_RT_SamplerLensFlare1,(u32)(w/2),(u32)(h/2),D3DFMT_A16B16G16R16F);
+		//rt_LFX2.create 				(r2_RT_SamplerLensFlare2,(u32)(w/2),(u32)(h/2),D3DFMT_A16B16G16R16F);
 	}
 
 	// OCCLUSION
@@ -262,8 +268,7 @@ CRenderTarget::CRenderTarget		()
 		rt_smap_ZB					= NULL;
 		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
-		if (RImplementation.o.advancedpp)
-			s_accum_direct_volumetric.create("accum_volumetric_sun");
+		s_accum_direct_volumetric.create("accum_volumetric_sun");
 	}
 	else
 	{
@@ -273,8 +278,7 @@ CRenderTarget::CRenderTarget		()
 		R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
 		s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
 		s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
-		if (RImplementation.o.advancedpp)
-			s_accum_direct_volumetric.create("accum_volumetric_sun");
+		s_accum_direct_volumetric.create("accum_volumetric_sun");
 	}
 
 	// POINT
@@ -295,10 +299,10 @@ CRenderTarget::CRenderTarget		()
 	
 	// VOLUMETRIC
 	{
-		s_accum_volume.create("accum_volumetric", "lights\\lights_spot01");
+		s_accum_volume.create 		("accum_volumetric", 		"lights\\lights_spot01");
 		accum_volumetric_geom_create();
-		g_accum_volumetric.create( D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
-	}	
+		g_accum_volumetric.create 	(D3DFVF_XYZ, 				g_accum_volumetric_vb, g_accum_volumetric_ib);
+	}
 
 	// REFLECTED
 	{
@@ -322,12 +326,11 @@ CRenderTarget::CRenderTarget		()
 	}
 	
 	// SSAO
-	if (RImplementation.o.ssao_blur_on)
-	{
+	if (RImplementation.o.ssao_blur_on) 	{
 		u32		w = Device.dwWidth, h = Device.dwHeight;
 		rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F);
 		s_ssao.create				(b_ssao, "r2\\ssao");
-	}	
+	}
 
 	// TONEMAP
 	{
@@ -352,15 +355,21 @@ CRenderTarget::CRenderTarget		()
 
 	// COMBINE
 	{
+		u32		w = Device.dwWidth, h = Device.dwHeight;
 		static D3DVERTEXELEMENT9 dwDecl[] =
 		{
 			{ 0, 0,  D3DDECLTYPE_FLOAT4,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,	0 },	// pos+uv
-			{ 0, 16, D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_COLOR,		0 },
-			{ 0, 20, D3DDECLTYPE_FLOAT2,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,	0 },			
+				{ 0, 16, 	D3DDECLTYPE_D3DCOLOR, 	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_COLOR, 	0 },
+					{ 0, 20, 	D3DDECLTYPE_FLOAT2, 	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD, 	0 },
 			D3DDECL_END()
 		};
 		s_combine.create					(b_combine,					"r2\\combine");
-		s_combine_volumetric.create			("combine_volumetric");
+//		rt_AdvBloom1.create 				(r2_RT_SamplerBloom1, 		w,h,D3DFMT_A16B16G16R16F);
+//		rt_AdvBloom2.create 				(r2_RT_SamplerBloom2, 		w,h,D3DFMT_A16B16G16R16F);
+//		rt_AdvBloom3.create 				(r2_RT_SamplerBloom3, 		(u32)(w/2),(u32)(h/2),D3DFMT_A16B16G16R16F);
+//		rt_AdvBloom4.create 				(r2_RT_SamplerBloom4, 		(u32)(w/4),(u32)(h/4),D3DFMT_A16B16G16R16F);
+//		rt_AdvBloom5.create 				(r2_RT_SamplerBloom5, 		(u32)(w/8),(u32)(h/8),D3DFMT_A16B16G16R16F);
+		s_combine_volumetric.create 		("combine_volumetric");
 		s_combine_dbg_0.create				("effects\\screen_set",		r2_RT_smap_surf		);	
 		s_combine_dbg_1.create				("effects\\screen_set",		r2_RT_luminance_t8	);
 		s_combine_dbg_Accumulator.create	("effects\\screen_set",		r2_RT_accum			);

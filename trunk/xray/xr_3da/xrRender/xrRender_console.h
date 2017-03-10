@@ -3,12 +3,12 @@
 #pragma once
 
 // Common
+extern ENGINE_API	int			ps_r__Supersample;
+extern ECORE_API	int			ps_r__LightSleepFrames;
 extern ECORE_API	u32			ps_r_sun_shafts;	//=	0;
 extern ECORE_API	xr_token	qsun_shafts_token[];
-
 extern ECORE_API	u32			ps_r_ssao;			//	=	0;
 extern ECORE_API	xr_token	qssao_token[];
-
 extern ECORE_API	u32			ps_r_sun_quality;	//	=	0;
 extern ECORE_API	xr_token	qsun_quality_token[];
 
@@ -20,10 +20,6 @@ extern ECORE_API	xr_token	qweather_preset_token[];
 //Kondr48: карта теней в опциях
 extern ECORE_API 	u32 		ps_r_smapsize;
 extern ECORE_API 	xr_token 	qsmapsize_token[];
-
-
-extern ENGINE_API	int			ps_r__Supersample;
-extern ECORE_API	int			ps_r__LightSleepFrames;
 
 extern ECORE_API	float		ps_r__Detail_l_ambient;
 extern ECORE_API	float		ps_r__Detail_l_aniso;
@@ -153,10 +149,10 @@ enum
 	R2FLAG_SOFT_PARTICLES		= (1<<20),
 	
 	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<21),
-	/*R2FLAG_COLOR_FRINGE	= (1<<22),*/
-	R2FLAG_COLOR_GRADING	= (1<<22),
-	R2FLAG_DOF					= (1<<23),
-	AUTO_LOSS_FLAG				= (1<<24),
+	R2FLAG_DOF	                = (1<<22),
+	R2FLAG_LENSFLARES			= (1<<23),
+	R2FLAG_FILMGRAIN			= (1<<24),
+	AUTO_LOSS_FLAG              = (1<<25),
 };
 
 enum
