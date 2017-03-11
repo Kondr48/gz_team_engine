@@ -6,6 +6,7 @@
 #include "thunderbolt.h"
 #include "rain.h"
 #include "resourcemanager.h"
+#include "..\..\build_config_defines.h"
 
 //-----------------------------------------------------------------------------
 // Environment modifier
@@ -162,17 +163,8 @@ void CEnvDescriptor::load	(LPCSTR exec_tm, LPCSTR S, CEnvironment* parent)
 	rain_color				= pSettings->r_fvector3	(S,"rain_color");            
 	wind_velocity			= pSettings->r_float	(S,"wind_velocity");
 	wind_direction			= deg2rad(pSettings->r_float(S,"wind_direction"));
-	ambient					= pSettings->r_fvector3	(S,"ambient_color");
-	hemi_color				= pSettings->r_fvector4	(S,"hemisphere_color");
 	sun_color				= pSettings->r_fvector3	(S,"sun_color");
-	
-	sun_dir.setHP			(
-			deg2rad(pSettings->r_float(S, "sun_altitude")),
-			deg2rad(pSettings->r_float(S, "sun_longitude"))
-		);
-	R_ASSERT				( _valid(sun_dir) );
-	VERIFY2					(sun_dir.y < 0, "Invalid sun direction settings while loading");
-	
+		
 	if (pSettings->line_exist(S, "water_intensity"))
 		m_fWaterIntensity 	= pSettings->r_float 	(S, "water_intensity");
 	
@@ -182,11 +174,33 @@ void CEnvDescriptor::load	(LPCSTR exec_tm, LPCSTR S, CEnvironment* parent)
     if (pSettings->line_exist(S, "tnmp_defog"))
 		m_vDefog 			= pSettings->r_fvector3 (S, "tnmp_defog");
 
+#ifdef COP_WEATHER_MANAGER
+	sun_dir.setHP			(
+			deg2rad(pSettings->r_float(S, "sun_altitude")),
+			deg2rad(pSettings->r_float(S, "sun_longitude"))
+		);
+	R_ASSERT				( _valid(sun_dir) );
+	VERIFY2					(sun_dir.y < 0, "Invalid sun direction settings while loading");
+	
 	lens_flare_id			= parent->eff_LensFlare->AppendDef(pSettings,pSettings->r_string(S,"sun"));
 	tb_id					= parent->eff_Thunderbolt->AppendDef(pSettings,pSettings->r_string(S,"thunderbolt_collection"));
 	bolt_period				= (tb_id>=0)?pSettings->r_float	(S,"thunderbolt_period"):0.f;
 	bolt_duration			= (tb_id>=0)?pSettings->r_float	(S,"thunderbolt_duration"):0.f;
 	env_ambient				= pSettings->line_exist(S,"ambient")?parent->AppendEnvAmb	(pSettings->r_string(S,"ambient")):0;
+	ambient					= pSettings->r_fvector3	(S,"ambient_color");
+	hemi_color				= pSettings->r_fvector4	(S,"hemisphere_color");
+#else
+	Fvector2 sund			= pSettings->r_fvector2	(S,"sun_dir");	sun_dir.setHP	(deg2rad(sund.y),deg2rad(sund.x));
+	VERIFY2					(sun_dir.y<0,"Invalid sun direction settings while loading");
+	
+	lens_flare_id			= parent->eff_LensFlare->AppendDef(pSettings,pSettings->r_string(S,"flares"));
+	tb_id					= parent->eff_Thunderbolt->AppendDef(pSettings,pSettings->r_string(S,"thunderbolt"));
+	bolt_period				= (tb_id>=0)?pSettings->r_float	(S,"bolt_period"):0.f;
+	bolt_duration			= (tb_id>=0)?pSettings->r_float	(S,"bolt_duration"):0.f;
+	env_ambient				= pSettings->line_exist(S,"env_ambient")?parent->AppendEnvAmb	(pSettings->r_string(S,"env_ambient")):0;
+	ambient					= pSettings->r_fvector3	(S,"ambient");
+	hemi_color				= pSettings->r_fvector4	(S,"hemi_color");
+#endif
 
 	C_CHECK					(clouds_color);
 	C_CHECK					(sky_color	);
