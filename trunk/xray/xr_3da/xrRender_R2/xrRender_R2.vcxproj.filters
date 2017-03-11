@@ -243,6 +243,9 @@
     <ClInclude Include="..\xrRender\light.h">
       <Filter>Lights</Filter>
     </ClInclude>
+    <ClInclude Include="blender_light_direct_cascade.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
     <ClInclude Include="blender_ssao.h" />
   </ItemGroup>
   <ItemGroup>
@@ -539,6 +542,9 @@
     </ClCompile>
     <ClCompile Include="r2_rendertarget_phase_smap_S.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="blender_light_direct_cascade.cpp">
+      <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="blender_ssao.cpp" />
     <ClCompile Include="r2_rendertarget_phase_ssao.cpp" />

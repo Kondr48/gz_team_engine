@@ -17,6 +17,7 @@
 #include "..\xrRender\light_db.h"
 #include "light_render_direct.h"
 #include "..\xrRender\LightTrack.h"
+#include "..\xrRender\r_sun_cascades.h"
 
 #include "../irenderable.h"
 #include "../fmesh.h"
@@ -34,8 +35,6 @@ public:
 public:
 	struct		_options	{
 //		u32		bug					: 1;
-
-		u32		ssao_blur_on		: 1;
 
 		u32		smapsize			: 16;
 		u32		depth16				: 1;
@@ -58,6 +57,7 @@ public:
 		u32		distortion			: 1;
 		u32		distortion_enabled	: 1;
 		u32		mblur				: 1;
+		u32 	ssao_blur_on 		: 1;
 
 		u32		sunfilter			: 1;
 		u32		sunstatic			: 1;
@@ -65,7 +65,6 @@ public:
 		u32		noshadows			: 1;
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;
-		u32		advancedpp			: 1;	//	advanced post process (DOF, SSAO, volumetrics, etc.)
 
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
@@ -98,7 +97,7 @@ public:
 	xr_vector<IDirect3DVertexBuffer9*>							nVB,xVB;
 	xr_vector<IDirect3DIndexBuffer9*>							nIB,xIB;
 	xr_vector<IRender_Visual*>									Visuals;
-	CPSLibrary													PSLibrary;	
+	CPSLibrary													PSLibrary;
 
 	CDetailManager*												Details;
 	CModelPool*													Models;
@@ -121,6 +120,9 @@ public:
 	float														o_sun			;
 	IDirect3DQuery9*											q_sync_point[2]	;
 	u32															q_sync_count	;
+	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
+	
+	xr_vector<sun::cascade>										m_sun_cascades;
 private:
 	// Loading / Unloading
 	void							LoadBuffers					(CStreamReader	*fs,	BOOL	_alternative);
@@ -146,6 +148,9 @@ public:
 	void							render_sun_near				();
 	void							render_sun_filtered			();
 	void							render_menu					();
+	void							render_sun_cascade			(u32 cascade_ind);
+	void							init_cacades				();
+	void							render_sun_cascades			();
 public:
 	ShaderElement*					rimp_select_sh_static		(IRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(IRender_Visual	*pVisual, float cdist_sq);

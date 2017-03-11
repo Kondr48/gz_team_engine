@@ -53,39 +53,28 @@ static class cl_parallax		: public R_constant_setup		{	virtual void setup	(R_con
 	float			h			=	ps_r2_df_parallax_h;
 	RCache.set_c	(C,h,-h/2.f,1.f/r_dtex_range,1.f/r_dtex_range);
 }}	binder_parallax;
-
 static class cl_water_intensity : public R_constant_setup		
 {	
 	virtual void setup	(R_constant* C)
 	{
-		CEnvDescriptor&	E = g_pGamePersistent->Environment().CurrentEnv;
+		//CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor& 	E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fWaterIntensity;
 		RCache.set_c	(C, fValue, fValue, fValue, 0);
 	}
 }	binder_water_intensity;
-
 static class cl_sun_shafts_intensity : public R_constant_setup		
 {	
 	virtual void setup	(R_constant* C)
 	{
-		CEnvDescriptor&	E = g_pGamePersistent->Environment().CurrentEnv;
+		//CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptor& 	E = g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
 		RCache.set_c	(C, fValue, fValue, fValue, 0);
 	}
 }	binder_sun_shafts_intensity;
 
-/*static class cl_color_grading : public R_constant_setup		
-{	
-	virtual void setup	(R_constant* C)
-	{
-		CEnvDescriptor&	E = g_pGamePersistent->Environment().CurrentEnv;
-		Fvector3 fValue = E.m_fColorGrading;
-		RCache.set_c	(C, fValue.x, fValue.y, fValue.z, 0);
-	}
-}	binder_color_grading;*/
-
 extern ENGINE_API BOOL r2_sun_static;
-extern ENGINE_API BOOL r2_advanced_pp;	//	advanced post process and effects
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void					CRender::create					()
@@ -95,6 +84,7 @@ void					CRender::create					()
 	m_skinning			= -1;
 
 	// hardware
+	//o.smapsize			= 2048;
 	o.smapsize 			= ps_r_smapsize;
 	o.mrt				= (HW.Caps.raster.dwMRT_count >= 3);
 	o.mrtmixdepth		= (HW.Caps.raster.b_MRT_mixdepth);
@@ -233,24 +223,21 @@ void					CRender::create					()
 	o.sunfilter			= (strstr(Core.Params,"-sunfilter"))?	TRUE	:FALSE	;
 //.	o.sunstatic			= (strstr(Core.Params,"-sunstatic"))?	TRUE	:FALSE	;
 	o.sunstatic			= r2_sun_static;
-	o.advancedpp		= r2_advanced_pp;
 	o.sjitter			= (strstr(Core.Params,"-sjitter"))?		TRUE	:FALSE	;
 	o.depth16			= (strstr(Core.Params,"-depth16"))?		TRUE	:FALSE	;
 	o.noshadows			= (strstr(Core.Params,"-noshadows"))?	TRUE	:FALSE	;
 	o.Tshadows			= (strstr(Core.Params,"-tsh"))?			TRUE	:FALSE	;
 	o.mblur				= (strstr(Core.Params,"-mblur"))?		TRUE	:FALSE	;
+	o.ssao_blur_on		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && ps_r_ssao != 0;
 	o.distortion_enabled= (strstr(Core.Params,"-nodistort"))?	FALSE	:TRUE	;
 	o.distortion		= o.distortion_enabled;
 	o.disasm			= (strstr(Core.Params,"-disasm"))?		TRUE	:FALSE	;
 	o.forceskinw		= (strstr(Core.Params,"-skinw"))?		TRUE	:FALSE	;
-	
-	o.ssao_blur_on		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && ps_r_ssao != 0;
 
 	// constants
 	::Device.Resources->RegisterConstantSetup	("parallax",	&binder_parallax);
-	::Device.Resources->RegisterConstantSetup	("water_intensity",	&binder_water_intensity);
-	::Device.Resources->RegisterConstantSetup	("sun_shafts_intensity",	&binder_sun_shafts_intensity);
-	//::Device.Resources->RegisterConstantSetup	("c_color_grading",	&binder_color_grading);
+	::Device.Resources->RegisterConstantSetup 	("sun_shafts_intensity", 	&binder_sun_shafts_intensity);
+	::Device.Resources->RegisterConstantSetup 	("water_intensity", 	&binder_water_intensity);
 
 	c_lmaterial					= "L_material";
 	c_sbase						= "s_base";
@@ -329,6 +316,10 @@ void CRender::reset_end()
 	}
 
 	xrRender_apply_tf			();
+	
+	// Set this flag true to skip the first render frame,
+	// that some data is not ready in the first frame (for example device camera position)
+	m_bFirstFrameAfterReset = true;	
 }
 /*
 void CRender::OnFrame()
@@ -481,8 +472,13 @@ void					CRender::rmNormal			()
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRender::CRender()
+/*CRender::CRender()
 {
+}*/
+CRender::CRender()
+:m_bFirstFrameAfterReset(false)
+{
+	init_cacades();
 }
 
 CRender::~CRender()
@@ -539,9 +535,9 @@ HRESULT	CRender::shader_compile			(
 	char							c_smapsize		[32];
 	char							c_parallax		[32];
 	char							c_gloss			[32];
-	char							c_sun_shafts	[32];
-	char							c_ssao			[32];
-	char							c_sun_quality	[32];
+	char 							c_sun_shafts 	[32];
+	char 							c_ssao 			[32];
+	char 							c_sun_quality 	[32];
 
 //	Msg("%s.%s", name, pTarget);
 
@@ -653,66 +649,66 @@ HRESULT	CRender::shader_compile			(
 		def_it						++;
 	}
 	
-	if (o.ssao_blur_on)
-	{
+	if (o.ssao_blur_on) 	{
 		defines[def_it].Name		=	"USE_SSAO_BLUR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
-	}	
+	}
 
 	// KD
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))		{
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))		{
 		defines[def_it].Name		=	"USE_SOFT_WATER";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))		{
+	if (ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))		{
 		defines[def_it].Name		=	"USE_SOFT_PARTICLES";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
-	if (RImplementation.o.advancedpp && ps_steep_parallax)		{
+	if (0 != ps_steep_parallax)		{
 		sprintf						(c_parallax,"%d",ps_steep_parallax);
 		defines[def_it].Name		=	"ALLOW_STEEP_PARALLAX";
 		defines[def_it].Definition	=	c_parallax;
 		def_it						++;
 	}
 	
-	if (RImplementation.o.advancedpp && ps_r_sun_shafts)		{
-		sprintf						(c_sun_shafts,"%d",ps_r_sun_shafts);
-		defines[def_it].Name		=	"SUN_SHAFTS_QUALITY";
-		defines[def_it].Definition	=	c_sun_shafts;
-		def_it						++;
-	}	
-	
-	if (RImplementation.o.advancedpp && ps_r_ssao)		{
-		sprintf						(c_ssao,"%d",ps_r_ssao);
+	// additions
+	if (/*0 != */ps_r_sun_shafts) 		{
+		sprintf 					(c_sun_shafts,"%d",ps_r_sun_shafts);
+		defines[def_it].Name 		= 	"SUN_SHAFTS_QUALITY";
+		defines[def_it].Definition 	= 	c_sun_shafts;
+		def_it 						++;
+	}
+	if (/*0 != */ps_r_ssao) 	{
+		sprintf_s					(c_ssao,"%d",ps_r_ssao);
 		defines[def_it].Name		=	"SSAO_QUALITY";
 		defines[def_it].Definition	=	c_ssao;
 		def_it						++;
-	}	
-	
-	if (RImplementation.o.advancedpp && ps_r_sun_quality)
-	{
+	}
+	if (ps_r2_ls_flags.test(R2FLAG_DOF)) 	{
+		defines[def_it].Name 		= 	"USE_DOF";
+		defines[def_it].Definition 	= 	"1";
+		def_it 						++;
+	}
+	if (ps_r_sun_quality) 		{
 		sprintf_s					(c_sun_quality,"%d",ps_r_sun_quality);
 		defines[def_it].Name		=	"SUN_QUALITY";
 		defines[def_it].Definition	=	c_sun_quality;
 		def_it						++;
-	}	
-	
-	if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
-	{
-		defines[def_it].Name		=	"USE_DOF";
-		defines[def_it].Definition	=	"1";
-		def_it						++;
-	}	
-	
-/*	if (ps_r2_ls_flags.test(R2FLAG_COLOR_FRINGE))		{
-		defines[def_it].Name		=	"USE_COLOR_FRINGE";
+	}
+	if (ps_r2_ls_flags.test(R2FLAG_LENSFLARES))		{
+		defines[def_it].Name		=	"USE_LENSFLARES";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
-	}	*/
-	
+	}
+	if (ps_r2_ls_flags.test(R2FLAG_FILMGRAIN))		{
+		defines[def_it].Name		=	"USE_FILMGRAIN";
+		defines[def_it].Definition	=	"1";
+		def_it						++	;
+	}	
+
+
 	// finish
 	defines[def_it].Name			=	0;
 	defines[def_it].Definition		=	0;

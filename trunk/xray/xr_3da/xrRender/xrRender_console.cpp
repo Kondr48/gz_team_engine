@@ -131,7 +131,16 @@ float		ps_r2_tf_Mipbias			= 0.0f	;
 Flags32		ps_r2_ls_flags_ext			= {0};
 
 // R2-specific
-Flags32		ps_r2_ls_flags				= { R2FLAG_SUN | R2FLAG_SUN_IGNORE_PORTALS | R2FLAG_EXP_DONT_TEST_UNSHADOWED | R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE | R2FLAG_EXP_MT_CALC};	// r2-only
+Flags32		ps_r2_ls_flags				= {
+	R2FLAG_SUN
+	| R2FLAG_SUN_IGNORE_PORTALS
+	| R2FLAG_EXP_DONT_TEST_UNSHADOWED
+	| R2FLAG_USE_NVSTENCIL
+	| R2FLAG_EXP_SPLIT_SCENE
+	| R2FLAG_EXP_MT_CALC
+	| R2FLAG_FILMGRAIN
+	| R2FLAG_LENSFLARES
+	};	// r2-only
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
 float		ps_r2_tonemap_middlegray	= 0.25f;			// r2-only
@@ -146,9 +155,9 @@ float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .3f;				// r2-only
-Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
-Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
-float		ps_r2_aa_kernel				= .5f;				// r2-only
+//Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
+//Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
+//float		ps_r2_aa_kernel				= .5f;				// r2-only
 float		ps_r2_mblur					= .5f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
 int			ps_r2_GI_photons			= 16;				// 8..64
@@ -159,12 +168,15 @@ float		ps_r2_ls_depth_bias			= -0.0001f;			// -0.0001f
 float		ps_r2_ls_squality			= 1.0f;				// 1.00f
 float		ps_r2_sun_tsm_projection	= 0.18f;			// 0.18f
 float		ps_r2_sun_tsm_bias			= -0.05f;			// 
-float		ps_r2_sun_near				= 12.f;				// 12.0f
-float		ps_r2_sun_near_border		= 1.0f;			    // 1.0f
+float 		ps_r2_sun_near 				= 20.f;
+float 		ps_r2_sun_near_border 		= 0.75f;
+
+extern float OLES_SUN_LIMIT_27_01_07;	//	actually sun_far
+
 float		ps_r2_sun_depth_far_scale	= 1.00000f;			// 1.00001f
-float		ps_r2_sun_depth_far_bias	= 0.00000f;			// -0.0000f
-float		ps_r2_sun_depth_near_scale  = 1.f;			    // 1.00001f
-float		ps_r2_sun_depth_near_bias   = 0.f;		        // -0.00005f
+float		ps_r2_sun_depth_far_bias	= -0.00002f;			// -0.0000f
+float		ps_r2_sun_depth_near_scale	= 1.0000f;			// 1.00001f
+float		ps_r2_sun_depth_near_bias	= 0.00001f;		// -0.00005f
 float		ps_r2_sun_lumscale			= 1.0f;				// 1.0f
 float		ps_r2_sun_lumscale_hemi		= 1.0f;				// 1.0f
 float		ps_r2_sun_lumscale_amb		= 1.0f;
@@ -179,9 +191,9 @@ float		ps_r2_lt_smooth				= 1.f;				// 1.f
 float		ps_r2_slight_fade			= 1.f;				// 1.f
 
 //	x - min (0), y - focus (1.4), z - max (100)
-Fvector3	ps_r2_dof					= Fvector3().set(-1.4f, 0.0f, 250.f);
+Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
-float		ps_r2_dof_kernel_size		= 7.0f;						//	7.0f
+float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
 
 // KD start
 Flags32		ps_common_flags				= { 0 };		// r1-only
@@ -602,11 +614,12 @@ void		xrRender_initconsole	()
 //	CMD3(CCC_Mask,		"r2_sun_static",		&ps_r2_ls_flags,			R2FLAG_SUN_STATIC);
 //	CMD3(CCC_Mask,		"r2_exp_splitscene",	&ps_r2_ls_flags,			R2FLAG_EXP_SPLIT_SCENE);
 //	CMD3(CCC_Mask,		"r2_exp_donttest_uns",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_UNSHADOWED);
-	
+
 	CMD3(CCC_Mask,		"r2_sun_tsm",			&ps_r2_ls_flags,			R2FLAG_SUN_TSM	);
 	CMD4(CCC_Float,		"r2_sun_tsm_proj",		&ps_r2_sun_tsm_projection,	.001f,	0.8f	);
 	CMD4(CCC_Float,		"r2_sun_tsm_bias",		&ps_r2_sun_tsm_bias,		-0.5,	+0.5	);
 	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	/*50.f*/150.f	);	// KD: extended from 50 to 150
+	CMD4(CCC_Float,		"r2_sun_far",			&OLES_SUN_LIMIT_27_01_07,	51.f,	180.f	);
 	CMD4(CCC_Float,		"r2_sun_near_border",	&ps_r2_sun_near_border,		.5f,	1.0f	);
 	CMD4(CCC_Float,		"r2_sun_depth_far_scale",&ps_r2_sun_depth_far_scale,0.5,	1.5		);
 	CMD4(CCC_Float,		"r2_sun_depth_far_bias",&ps_r2_sun_depth_far_bias,	-0.5,	+0.5	);
@@ -616,8 +629,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_sun_lumscale_hemi",	&ps_r2_sun_lumscale_hemi,	0.0,	+3.0	);
 	CMD4(CCC_Float,		"r2_sun_lumscale_amb",	&ps_r2_sun_lumscale_amb,	0.0,	+3.0	);
 
-	CMD3(CCC_Mask,		"r2_aa",				&ps_r2_ls_flags,			R2FLAG_AA);
-	CMD4(CCC_Float,		"r2_aa_kernel",			&ps_r2_aa_kernel,			0.3f,	0.7f	);
+	//CMD3(CCC_Mask,		"r2_aa",				&ps_r2_ls_flags,			R2FLAG_AA);
+	//CMD4(CCC_Float,		"r2_aa_kernel",			&ps_r2_aa_kernel,			0.3f,	0.7f	);
 	CMD4(CCC_Float,		"r2_mblur",				&ps_r2_mblur,				0.0f,	1.0f	);
 
 	CMD3(CCC_Mask,		"r2_gi",				&ps_r2_ls_flags,			R2FLAG_GI);
@@ -627,6 +640,9 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_gi_refl",			&ps_r2_GI_refl,				EPS_L,	0.99f	);
 
 	CMD4(CCC_Integer,	"r2_wait_sleep",		&ps_r2_wait_sleep,			0,		1		);
+	
+	CMD3(CCC_Mask,		"r2_shadow_cascede_zcul",&ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_ZCULLING);
+	CMD3(CCC_Mask,		"r2_shadow_cascede_old", &ps_r2_ls_flags_ext,		R2FLAGEXT_SUN_OLD);	
 
 #ifdef DEBUG
 	CMD4(CCC_Integer,	"r2_dhemi_count",		&ps_r2_dhemi_count,			4,		25		);
@@ -642,11 +658,11 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.02f,	2.f		);
 
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
+	/*tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
 	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);
 
 	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_weight",			&ps_r2_aa_weight,			tw_min, tw_max	);
+	CMD4(CCC_Vector3,	"r2_aa_weight",			&ps_r2_aa_weight,			tw_min, tw_max	);*/
 	
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
 	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
@@ -685,7 +701,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
 	
 	//Kondr48: для настроек геймплея
-	CMD3(CCC_Mask,		"auto_loss",			&ps_r2_ls_flags,			    AUTO_LOSS_FLAG	);
+	CMD3(CCC_Mask,		"auto_loss",			        &ps_r2_ls_flags,			AUTO_LOSS_FLAG	);
 
 	//Kondr48: карта теней в опциях
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
