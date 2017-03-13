@@ -38,3 +38,4 @@
 #define CLEANING_CONFIGS                // Kondr48: Небольшая чистка папки config
 #define ARTEFACT_COUNT_IN_OUTFIT        // Kondr48: Размер пояса для артефактов зависит от брони
 #define COP_WEATHER_MANAGER             // Kondr48: Погодный менеджер адаптирован под конфиги ЗП (ЧН)
+//#define COP_WEATHER_MANAGER_NEW         // Врмененный дефайн, потом замениться на тот что выше.

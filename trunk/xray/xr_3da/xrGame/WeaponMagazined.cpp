@@ -181,7 +181,7 @@ void CWeaponMagazined::Load(LPCSTR section)
 			animGet(mhud.mhud_idle_aim_empty, pSettings->r_string(*hud_sect, "anim_idle_aim"))	;		
 		};
 
-	if(pSettings->line_exist(section, "chamber_status")) //Kondr48: для выстрела дуплетом на кнопку ПГ
+	if(pSettings->line_exist(section, "chamber_status")) //Kondr48: для поддержки патронника
 		m_bChamberStatus = !!pSettings->r_bool(section, "chamber_status");
 	else
 		m_bChamberStatus = false;
@@ -895,15 +895,15 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	if (!ParentIsActor() || !(g_actor->get_state() & mcSprint) )
 #endif
 		if (flags&CMD_START)
-			if (IsMisfire() && iAmmoElapsed >= 1)  //anim_rouge, Kondr48: расклин.	
+			if (IsMisfire() && iAmmoElapsed > 0)  //anim_rouge, Kondr48: расклин.	
 			{
 				ReloadMf();
 			}
 			else
 			{
-				if ((iAmmoElapsed < iMagazineSize) || (m_chamber == false && iAmmoElapsed == iMagazineSize)) //Kondr48: магазин заряжен, но мы можем
-					Reload();                                                                                // воткнуть другой, если нет патрона
-			}                                                                                                // в патроннике, это даст нам на 1 патрон больше.
+				if ((iAmmoElapsed < iMagazineSize) || (m_bChamberStatus && !m_chamber && iAmmoElapsed == iMagazineSize)) //Kondr48: магазин заряжен, но мы можем
+					Reload();                                                                                            // воткнуть другой, если нет патрона
+			}                                                                                                            // в патроннике, это даст нам на 1 патрон больше.
 	}
 		return true;
 	case kWPN_FIREMODE_PREV:
