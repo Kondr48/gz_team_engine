@@ -138,8 +138,6 @@ Flags32		ps_r2_ls_flags				= {
 	| R2FLAG_USE_NVSTENCIL
 	| R2FLAG_EXP_SPLIT_SCENE
 	| R2FLAG_EXP_MT_CALC
-	| R2FLAG_FILMGRAIN
-	| R2FLAG_LENSFLARES
 	};	// r2-only
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 75.f;
@@ -695,15 +693,13 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, 		"r2_lens_flares",		        &ps_r2_ls_flags, 			R2FLAG_LENSFLARES);
 	CMD3(CCC_Mask, 		"r2_film_grain",		        &ps_r2_ls_flags, 			R2FLAG_FILMGRAIN);
 
-    //Kondr48: для настроек погоды
+    //Kondr48
 	CMD3(CCC_Token,		"r2_moon_cycle",				&ps_r_moon_cycle,			qmoon_cycle_token);
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
 	
-	//Kondr48: для настроек геймплея
-	CMD3(CCC_Mask,		"auto_loss",			        &ps_r2_ls_flags,			AUTO_LOSS_FLAG	);
+	CMD3(CCC_Mask, 		"r2_nightvision",		        &ps_r2_ls_flags, 			R2FLAG_NIGHTVISION);
 
-	//Kondr48: карта теней в опциях
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
 }
 

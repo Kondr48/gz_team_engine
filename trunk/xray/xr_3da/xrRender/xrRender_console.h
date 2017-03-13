@@ -153,6 +153,7 @@ enum
 	R2FLAG_LENSFLARES			= (1<<23),
 	R2FLAG_FILMGRAIN			= (1<<24),
 	AUTO_LOSS_FLAG              = (1<<25),
+	R2FLAG_NIGHTVISION          = (1<<26),
 };
 
 enum
