@@ -1,3 +1,5 @@
+#include "../../build_config_defines.h"
+
 #ifndef EnvironmentH
 #define EnvironmentH
 
@@ -260,6 +262,15 @@ public:
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();
 
+protected:
+
+#ifdef COP_WEATHER_MANAGER_NEW
+	CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);
+#endif
+	
+	void load_weathers();
+    void load_weather_effects();
+	
 	// editor-related
 #ifdef _EDITOR
 public:

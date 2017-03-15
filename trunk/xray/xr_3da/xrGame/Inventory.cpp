@@ -1152,7 +1152,9 @@ u32  CInventory::BeltWidth() const
 		CCustomOutfit* outfit = pActor->GetOutfit();
 		if ( outfit )
 		{
-			return outfit->get_artefact_count();
+			u32 af_count = outfit->get_artefact_count();
+			VERIFY(0 <= af_count && af_count <= 10);
+			return af_count;
 		}
 	}
 	return 0;

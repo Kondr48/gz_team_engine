@@ -359,69 +359,129 @@ void CEnvironment::load		()
 	if (!eff_Rain)    		eff_Rain 		= xr_new<CEffect_Rain>();
 	if (!eff_LensFlare)		eff_LensFlare 	= xr_new<CLensFlare>();
 	if (!eff_Thunderbolt)	eff_Thunderbolt	= xr_new<CEffect_Thunderbolt>();
+	
+	load_weathers();
+    load_weather_effects();
+	
+}
+
+void CEnvironment::load_weathers()
+{
+	if (!WeatherCycles.empty()) return;
 	// load weathers
-	if (WeatherCycles.empty()){
-		LPCSTR first_weather=0;
-		int weather_count	= pSettings->line_count("weathers");
-		for (int w_idx=0; w_idx<weather_count; w_idx++){
-			LPCSTR weather, sect_w;
-			if (pSettings->r_line("weathers",w_idx,&weather,&sect_w)){
-				if (0==first_weather) first_weather=weather;
-				int env_count	= pSettings->line_count(sect_w);
-				LPCSTR exec_tm, sect_e;
-				for (int env_idx=0; env_idx<env_count; env_idx++){
-					if (pSettings->r_line(sect_w,env_idx,&exec_tm,&sect_e)){
-						CEnvDescriptor*		D=xr_new<CEnvDescriptor>();
-						D->load				(exec_tm,sect_e,this);
-						WeatherCycles[weather].push_back	(D);
+#ifdef COP_WEATHER_MANAGER_NEW
+	typedef xr_vector<LPSTR> file_list_type;
+    file_list_type* file_list = FS.file_list_open("$game_weathers$", "");
+    VERIFY(file_list);
+    xr_string id;
+    file_list_type::const_iterator i = file_list->begin();
+    file_list_type::const_iterator e = file_list->end();
+    for (; i != e; ++i)
+    {
+        u32 length = xr_strlen(*i);
+        VERIFY(length >= 4);
+        VERIFY((*i)[length - 4] == '.');
+        VERIFY((*i)[length - 3] == 'l');
+        VERIFY((*i)[length - 2] == 't');
+        VERIFY((*i)[length - 1] == 'x');
+        id.assign(*i, length - 4);
+        EnvVec& env = WeatherCycles[id.c_str()];
+
+        string_path file_name;
+        FS.update_path(file_name, "$game_weathers$", id.c_str());
+        strcat(file_name, ".ltx");
+        CInifile* config = CInifile::Create(file_name);
+
+        typedef CInifile::Root sections_type;
+        sections_type& sections = config->sections();
+
+        env.reserve(sections.size());
+
+        sections_type::const_iterator i = sections.begin();
+        sections_type::const_iterator e = sections.end();
+        for (; i != e; ++i)
+        {
+            CEnvDescriptor* object = create_descriptor((*i)->Name, config);
+            env.push_back(object);
+        }
+
+        CInifile::Destroy(config);
+    }
+
+    FS.file_list_close(file_list);
+#else
+	LPCSTR first_weather=0;
+	int weather_count	= pSettings->line_count("weathers");
+	for (int w_idx=0; w_idx<weather_count; w_idx++){
+		LPCSTR weather, sect_w;
+		if (pSettings->r_line("weathers",w_idx,&weather,&sect_w)){
+			if (0==first_weather) first_weather=weather;
+			int env_count	= pSettings->line_count(sect_w);
+			LPCSTR exec_tm, sect_e;
+			for (int env_idx=0; env_idx<env_count; env_idx++){
+				if (pSettings->r_line(sect_w,env_idx,&exec_tm,&sect_e)){
+					CEnvDescriptor*		D=xr_new<CEnvDescriptor>();
+					D->load				(exec_tm,sect_e,this);
+					WeatherCycles[weather].push_back	(D);
 #ifdef DEBUG
-						D->sect_name		= sect_e;
+					D->sect_name		= sect_e;
 #endif
-					}
 				}
 			}
 		}
-		// sorting weather envs
-		EnvsMapIt _I=WeatherCycles.begin();
-		EnvsMapIt _E=WeatherCycles.end();
-		for (; _I!=_E; _I++){
-			R_ASSERT3	(_I->second.size()>1,"Environment in weather must >=2",*_I->first);
-			std::sort(_I->second.begin(),_I->second.end(),sort_env_etl_pred);
-		}
-		R_ASSERT2	(!WeatherCycles.empty(),"Empty weathers.");
-		SetWeather	(first_weather);
 	}
-	// load weather effects
-	if (WeatherFXs.empty()){
-		int line_count	= pSettings->line_count("weather_effects");
-		for (int w_idx=0; w_idx<line_count; w_idx++){
-			LPCSTR weather, sect_w;
-			if (pSettings->r_line("weather_effects",w_idx,&weather,&sect_w)){
-				EnvVec& env		= WeatherFXs[weather];
-				env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = 0;
-				env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = 0;
-				int env_count	= pSettings->line_count(sect_w);
-				LPCSTR exec_tm, sect_e;
-				for (int env_idx=0; env_idx<env_count; env_idx++){
-					if (pSettings->r_line(sect_w,env_idx,&exec_tm,&sect_e)){
-						CEnvDescriptor*	D=xr_new<CEnvDescriptor>();
-						D->load			(exec_tm,sect_e,this);
-						env.push_back	(D);
-#ifdef DEBUG
-						D->sect_name		= sect_e;
 #endif
-					}
+    // sorting weather envs
+    EnvsMapIt _I = WeatherCycles.begin();
+    EnvsMapIt _E = WeatherCycles.end();
+    for (; _I != _E; _I++)
+    {
+        R_ASSERT3(_I->second.size() > 1, "Environment in weather must >=2", *_I->first);
+        std::sort(_I->second.begin(), _I->second.end(), sort_env_etl_pred);
+    }
+    R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
+
+#ifdef COP_WEATHER_MANAGER_NEW
+	SetWeather((*WeatherCycles.begin()).first.c_str());
+#else
+	SetWeather	(first_weather);
+#endif
+
+}
+
+void CEnvironment::load_weather_effects()
+{
+   if (!WeatherFXs.empty()) return;
+	
+	// load weather effects
+	int line_count	= pSettings->line_count("weather_effects");
+	for (int w_idx=0; w_idx<line_count; w_idx++){
+		LPCSTR weather, sect_w;
+		if (pSettings->r_line("weather_effects",w_idx,&weather,&sect_w)){
+			EnvVec& env		= WeatherFXs[weather];
+			env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = 0;
+			env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = 0;
+			int env_count	= pSettings->line_count(sect_w);
+			LPCSTR exec_tm, sect_e;
+			for (int env_idx=0; env_idx<env_count; env_idx++){
+				if (pSettings->r_line(sect_w,env_idx,&exec_tm,&sect_e)){
+					CEnvDescriptor*	D=xr_new<CEnvDescriptor>();
+					D->load			(exec_tm,sect_e,this);
+					env.push_back	(D);
+#ifdef DEBUG
+					D->sect_name		= sect_e;
+#endif
 				}
-				env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = DAY_LENGTH;
 			}
+			env.push_back	(xr_new<CEnvDescriptor>()); env.back()->exec_time_loaded = DAY_LENGTH;
 		}
-		// sorting weather envs
-		EnvsMapIt _I=WeatherFXs.begin();
-		EnvsMapIt _E=WeatherFXs.end();
-		for (; _I!=_E; _I++){
-			R_ASSERT3	(_I->second.size()>1,"Environment in weather must >=2",*_I->first);
-			std::sort(_I->second.begin(),_I->second.end(),sort_env_etl_pred);
-		}
+	}
+	// sorting weather envs
+	EnvsMapIt _I=WeatherFXs.begin();
+	EnvsMapIt _E=WeatherFXs.end();
+	for (; _I!=_E; _I++){
+		R_ASSERT3	(_I->second.size()>1,"Environment in weather must >=2",*_I->first);
+		std::sort(_I->second.begin(),_I->second.end(),sort_env_etl_pred);
 	}
 }
 

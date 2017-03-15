@@ -667,12 +667,9 @@ void CUIInventoryWnd::highlight_item_slot(CUICellItem* cell_item)
 	{
 	    CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 		u32 af_count   = pActor->inventory().BeltWidth();
-        VERIFY(0 <= af_count && af_count <= 10);
 		
 		for (u8 i = 0; i < af_count; ++i)
-             {
-                 m_belt_highlight[i]->SetVisible(true);
-             }
+          m_belt_highlight[i]->SetVisible(true);
 	}
 
 	u32 slots_count = item->GetSlotsCount();
@@ -735,7 +732,6 @@ void CUIInventoryWnd::UpdateOutfit()
     }
 
     u32 af_count = pActor->inventory().BeltWidth();
-    VERIFY(0 <= af_count && af_count <= 10);
 
     VERIFY(m_pUIBeltList);
 

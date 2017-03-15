@@ -1382,9 +1382,9 @@ void CApplication::load_draw_internal()
 		pFontSystem->Clear		        ();
 		pFontSystem->SetColor		    (color_rgba(35,71,74,255));
 		pFontSystem->SetAligment	    (CGameFont::alCenter);
+		float fTargetWidth              = 600.0f * k.x * (b_ws ? 0.8f : 1.0f);
+		//draw_multiline_text             (pFontSystem, fTargetWidth, ls_title);
 		pFontSystem->OutI			    (0.f,0.625f,ls_title);
-		/*float fTargetWidth              = 600.0f * k.x * (b_ws ? 0.8f : 1.0f);
-		draw_multiline_text             (pFontSystem, fTargetWidth, ls_title);*/
 		pFontSystem->OnRender		    ();
 
         //draw level-specific screenshot
