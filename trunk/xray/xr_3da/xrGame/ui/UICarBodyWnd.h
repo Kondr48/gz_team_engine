@@ -74,7 +74,7 @@ protected:
 
 	void					ActivatePropertiesBox		();
 	void					EatItem						();
-
+	void                    MoveAllfromCell             ();
 	bool					ToOurBag					();
 	bool					ToOthersBag					();
 	

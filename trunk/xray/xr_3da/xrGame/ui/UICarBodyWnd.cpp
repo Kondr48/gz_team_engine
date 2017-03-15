@@ -281,6 +281,9 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			case INVENTORY_EAT_ACTION:	//съесть объект
 				EatItem();
 				break;
+			case INVENTORY_TAKE_ALL:
+                MoveAllfromCell();
+                break;
 			case INVENTORY_UNLOAD_MAGAZINE:
 				{
 				CUICellItem * itm = CurrentItem();
@@ -421,6 +424,26 @@ void CUICarBodyWnd::ActivatePropertiesBox()
     bool					b_show			= false;
 	
 	LPCSTR _action				= NULL;
+
+	/* Массовое перемещение предметов */
+	bool b_added = false;
+
+	CUICellItem* itm = CurrentItem();
+	for (u32 i = 0; i < itm->ChildsCount(); ++i)
+	{
+		b_added = true;
+		break;
+	}
+
+	if (b_added)
+	{
+		_action = "st_move_all";
+		b_show = true;
+	m_pUIPropertiesBox->AddItem(_action, NULL, INVENTORY_TAKE_ALL);
+	}
+
+	/* Массовое перемещение предметов */
+
 	if(pMedkit || pAntirad)
 	{
 		_action						= "st_use";
@@ -615,4 +638,61 @@ void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemSelected);
 	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUICarBodyWnd::OnItemRButtonClick);
+}
+
+void CUICarBodyWnd::MoveAllfromCell()
+{
+     u16 tmp_id = 0;
+
+     CUIDragDropListEx* owner_list = CurrentItem()->OwnerList();
+     if (owner_list != m_pUIOthersBagList)
+     { // перемещаем в актерский инв.
+          CUICellItem* ci = CurrentItem();
+          for (u32 j = 0; j<ci->ChildsCount(); ++j)
+          {
+               PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+               if (m_pOthersObject)
+                    TransferItem(_itm, m_pOurObject, m_pOthersObject, false);
+               else
+               {
+                    move_item(tmp_id, m_pInventoryBox->ID(), _itm->object().ID());
+                    // ЭТО ПОХОЖЕ заткнута выдача кэллбэка на взятие предмета из инв. ящика
+                    //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+               }
+          }
+          PIItem itm = (PIItem)(ci->m_pData);
+          if (m_pOthersObject)
+               TransferItem(itm, m_pOurObject, m_pOthersObject, false);
+          else
+          {
+               move_item(tmp_id, m_pInventoryBox->ID(), itm->object().ID());
+               // ЭТО ПОХОЖЕ заткнута выдача кэллбэка на взятие предмета из инв. ящика
+               //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+           }
+       }
+       else
+       { // перемещаем из актерского в другой инв.
+           CUICellItem* ci = CurrentItem();
+           for (u32 j = 0; j<ci->ChildsCount(); ++j)
+           {
+                PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
+                if (m_pOthersObject)
+                     TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
+                else
+                {
+                     move_item(m_pInventoryBox->ID(), tmp_id, _itm->object().ID());
+                     // ЭТО ПОХОЖЕ заткнута выдача кэллбэка на взятие предмета из инв. ящика
+                     //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                 }
+            }
+            PIItem itm = (PIItem)(ci->m_pData);
+            if (m_pOthersObject)
+                 TransferItem(itm, m_pOthersObject, m_pOurObject, false);
+            else
+            {
+                 move_item(m_pInventoryBox->ID(), tmp_id, itm->object().ID());
+                 // ЭТО ПОХОЖЕ заткнута выдача кэллбэка на взятие предмета из инв. ящика
+                 //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            }
+       }
 }
