@@ -136,7 +136,7 @@ protected:
     };
 
     CUIStatic* m_belt_list_over[e_af_count];
-	//CUIStatic* m_belt_highlight[e_af_count];
+	CUIStatic* m_belt_highlight[e_af_count];
 
 	bool m_highlight_clear;
 

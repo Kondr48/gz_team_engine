@@ -149,7 +149,8 @@ void CUIInventoryWnd::Init()
     m_NightvisionOver->Show(false);
 
 	m_belt_list_over[0] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
-	
+	m_belt_highlight[0] = UIHelper::CreateStatic(uiXml, "highlight_belt_list", this);
+	m_belt_highlight[0]->SetVisible(false);
 	Fvector2 pos;
 	
 	pos        = m_belt_list_over[0]->GetWndPos();
@@ -168,8 +169,13 @@ void CUIInventoryWnd::Init()
 		} 
 
 		  pos.x += w + sp_x;
-		  m_belt_list_over[j] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
+		 
+		  m_belt_list_over[j] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);      // Ѕлокировка €чеек
 		  m_belt_list_over[j]->SetWndPos(pos);
+		 
+		  m_belt_highlight[j] = UIHelper::CreateStatic(uiXml, "highlight_belt_list", this); // ѕодсветка €чеек
+		  m_belt_highlight[j]->SetWndPos(pos);
+		  m_belt_highlight[j]->SetVisible(false);
     }
 
 	UIPersonalWnd.AttachChild			(&UIStaticPersonal);
@@ -693,9 +699,17 @@ void CUIInventoryWnd::highlight_item_slot(CUICellItem* cell_item)
 
     if (CUIDragDropListEx::m_drag_item) return;
 
-	bool belt = item->Belt();
-
-	if(belt) Msg("на по€с можно ставить это гавно");
+	if (item->Belt()) 
+	{
+	    CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		u32 af_count   = pActor->inventory().BeltWidth();
+        VERIFY(0 <= af_count && af_count <= 10);
+		
+		for (u8 i = 0; i < e_af_count; ++i)
+             {
+                 m_belt_list_over[i]->SetVisible(true);
+             }
+	}
 
 	u32 slots_count = item->GetSlotsCount();
 	if (slots_count < 1) return;
@@ -737,6 +751,11 @@ void CUIInventoryWnd::clear_highlight_lists()
 	m_InvSlot15Highlight->Show(false);
 	m_InvSlot16Highlight->Show(false);
 	m_InvSlot17Highlight->Show(false);
+
+	for (u8 i = 0; i < e_af_count; ++i)
+    {
+        m_belt_highlight[i]->SetVisible(false);
+    }
     
     m_highlight_clear = true;
 }
@@ -771,12 +790,6 @@ void CUIInventoryWnd::UpdateOutfit()
         MoveArtefactsToBag();
         return;
     }
-
-	Ivector2 afc;
-    afc.x = af_count;  // 1;
-    afc.y = 1;         // af_count;
-
-    m_pUIBeltList->SetCellsCapacity(afc);
 
     for (u8 i = 0; i < af_count; ++i)
     {

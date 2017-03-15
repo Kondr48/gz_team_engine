@@ -1143,8 +1143,6 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 	return	true;
 }
 
-
-#ifdef ARTEFACT_COUNT_IN_OUTFIT
 #include "CustomOutfit.h"
 u32  CInventory::BeltWidth() const
 {
@@ -1158,9 +1156,6 @@ u32  CInventory::BeltWidth() const
 		}
 	}
 	return 0;
-#else
-	m_iMaxBelt;
-#endif
 }
 
 void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_trade) const
