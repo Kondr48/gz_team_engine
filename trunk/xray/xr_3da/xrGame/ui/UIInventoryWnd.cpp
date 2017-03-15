@@ -64,9 +64,6 @@ void CUIInventoryWnd::Init()
 
 	xml_init.InitWindow					(uiXml, "main", 0, this);
 
-	AttachChild							(&UIBeltSlots);
-	xml_init.InitStatic					(uiXml, "belt_slots", 0, &UIBeltSlots);
-
 	AttachChild							(&UIBack);
 	xml_init.InitStatic					(uiXml, "back", 0, &UIBack);
 
@@ -91,16 +88,6 @@ void CUIInventoryWnd::Init()
 
 	AttachChild							(&UIProgressBack);
 	xml_init.InitStatic					(uiXml, "progress_background", 0, &UIProgressBack);
-
-	if (GameID() != GAME_SINGLE){
-		AttachChild						(&UIProgressBack_rank);
-		xml_init.InitStatic				(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
-
-		UIProgressBack_rank.AttachChild	(&UIProgressBarRank);
-		xml_init.InitProgressBar		(uiXml, "progress_bar_rank", 0, &UIProgressBarRank);
-		UIProgressBarRank.SetProgressPos(100);
-
-	}
 	
 	UIProgressBack.AttachChild (&UIProgressBarHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_health", 0, &UIProgressBarHealth);
@@ -114,17 +101,11 @@ void CUIInventoryWnd::Init()
 	UIProgressBack.AttachChild	(&UIProgressBarBleeding);
 	xml_init.InitProgressBar (uiXml, "progress_bar_bleeding", 0, &UIProgressBarBleeding);
 
-    UIProgressBack.AttachChild	(&UIProgressBarPower);
-	xml_init.InitProgressBar (uiXml, "progress_bar_power", 0, &UIProgressBarPower);
-
 	UIProgressBack.AttachChild	(&UIProgressBarSatiety);
 	xml_init.InitProgressBar (uiXml, "progress_bar_satiety", 0, &UIProgressBarSatiety);
 
 	UIProgressBack.AttachChild	(&UIProgressBarThirst);
 	xml_init.InitProgressBar (uiXml, "progress_bar_thirst", 0, &UIProgressBarThirst);
-
-	UIProgressBack.AttachChild	(&UIProgressBarAlcohol);
-	xml_init.InitProgressBar (uiXml, "progress_bar_alcohol", 0, &UIProgressBarAlcohol);
 	
 	m_WeaponSlot1_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon1", this);
 	m_WeaponSlot2_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon2", this);
@@ -161,6 +142,35 @@ void CUIInventoryWnd::Init()
     m_InvSlot16Highlight->Show(false);
 	m_InvSlot17Highlight    = UIHelper::CreateStatic(uiXml, "highlight_slot_detector_2", this);
     m_InvSlot17Highlight->Show(false);
+
+	m_HelmetOver = UIHelper::CreateStatic(uiXml, "helmet_over", this);
+    m_HelmetOver->Show(false);
+	m_NightvisionOver = UIHelper::CreateStatic(uiXml, "nightvision_over", this);
+    m_NightvisionOver->Show(false);
+
+	m_belt_list_over[0] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
+	
+	Fvector2 pos;
+	
+	pos        = m_belt_list_over[0]->GetWndPos();
+    float    w = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_width",  10.0f);
+    float    h = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_height", 10.0f);
+	float sp_x = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_sp_x",   10.0f);
+	float sp_y = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_sp_y",   10.0f);
+
+	for (u8 j = 1; j < e_af_count; ++j)
+    {		 
+        if (j == 5) //Перемещаемся на нижний ряд иконок
+		{ 
+		  pos.y += h + sp_y;
+	      pos.x = m_belt_list_over[0]->GetWndPos().x; 
+		  pos.x -= w + sp_x; 
+		} 
+
+		  pos.x += w + sp_x;
+		  m_belt_list_over[j] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
+		  m_belt_list_over[j]->SetWndPos(pos);
+    }
 
 	UIPersonalWnd.AttachChild			(&UIStaticPersonal);
 	xml_init.InitStatic					(uiXml, "static_personal",0, &UIStaticPersonal);
@@ -214,9 +224,9 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_weapon_3", 0, m_pUIBinocularList);
 	BindDragDropListEnents				(m_pUIBinocularList);
 		
-	m_pUIDetectorList					= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIDetectorList); m_pUIDetectorList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_detector_1", 0, m_pUIDetectorList);
-	BindDragDropListEnents				(m_pUIDetectorList);
+	m_pUIDetectorOneList				= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIDetectorOneList); m_pUIDetectorOneList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_detector_1", 0, m_pUIDetectorOneList);
+	BindDragDropListEnents				(m_pUIDetectorOneList);
 
 	m_pUITorchList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUITorchList); m_pUITorchList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_torch", 0, m_pUITorchList);
@@ -246,17 +256,13 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_quick_access_3", 0, m_pUISlotQuickAccessList_3);
 	BindDragDropListEnents				(m_pUISlotQuickAccessList_3);
 		
-	m_pUIPnvList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIPnvList); m_pUIPnvList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_nightvision", 0, m_pUIPnvList);
-	BindDragDropListEnents				(m_pUIPnvList);
+	m_pUINightvisionList				= xr_new<CUIDragDropListEx>(); AttachChild(m_pUINightvisionList); m_pUINightvisionList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_nightvision", 0, m_pUINightvisionList);
+	BindDragDropListEnents				(m_pUINightvisionList);
 
-	m_pUIDetAdvList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIDetAdvList); m_pUIDetAdvList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_detector_2", 0, m_pUIDetAdvList);
-	BindDragDropListEnents				(m_pUIDetAdvList);
-
-	m_pUIItemsList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIItemsList); m_pUIItemsList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_items", 0, m_pUIItemsList);
-	BindDragDropListEnents				(m_pUIItemsList);
+	m_pUIDetectorTwoList				= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIDetectorTwoList); m_pUIDetectorTwoList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_detector_2", 0, m_pUIDetectorTwoList);
+	BindDragDropListEnents				(m_pUIDetectorTwoList);
 
 	m_slots_array[KNIFE_SLOT]				= m_pUIKnifeList;
 	m_slots_array[PISTOL_SLOT]				= m_pUIPistolList;
@@ -267,15 +273,15 @@ void CUIInventoryWnd::Init()
 	m_slots_array[OUTFIT_SLOT]				= m_pUIOutfitList;
 	m_slots_array[APPARATUS_SLOT]			= m_pUIBinocularList;
 	m_slots_array[PDA_SLOT]					= m_pUIPDAList;
-	m_slots_array[DETECTOR_SLOT]			= m_pUIDetectorList;
+	m_slots_array[DETECTOR_ONE_SLOT]		= m_pUIDetectorOneList;
 	m_slots_array[TORCH_SLOT]				= m_pUITorchList;
 	m_slots_array[HELMET_SLOT]				= m_pUIHelmetList;
 	m_slots_array[SLOT_QUICK_ACCESS_0]		= m_pUISlotQuickAccessList_0;
 	m_slots_array[SLOT_QUICK_ACCESS_1]		= m_pUISlotQuickAccessList_1;
 	m_slots_array[SLOT_QUICK_ACCESS_2]		= m_pUISlotQuickAccessList_2;
 	m_slots_array[SLOT_QUICK_ACCESS_3]		= m_pUISlotQuickAccessList_3;
-	m_slots_array[PNV_SLOT]			        = m_pUIPnvList;
-	m_slots_array[DET_ADV_SLOT] 	        = m_pUIDetAdvList;
+	m_slots_array[NIGHTVISION_SLOT]			= m_pUINightvisionList;
+	m_slots_array[DETECTOR_TWO_SLOT] 	    = m_pUIDetectorTwoList;
 	m_slots_array[ITEMS_SLOT]				= NULL;
 	
 	//pop-up menu
@@ -383,9 +389,6 @@ void CUIInventoryWnd::Update()
 		v = pEntityAlive->conditions().GetRadiation()*100.0f;
 		UIProgressBarRadiation.SetProgressPos	(v);
 
-		v = pEntityAlive->conditions().GetPower()*100.0f;
-		UIProgressBarPower.SetProgressPos	(v);
-
 		v = pEntityAlive->conditions().BleedingSpeed()*100.0f;
 		UIProgressBarBleeding.SetProgressPos	(v);
 		
@@ -397,22 +400,9 @@ void CUIInventoryWnd::Update()
 		v = (m_pActor->conditions().GetThirst())*100.0f;
 		UIProgressBarThirst.SetProgressPos	(v);
 
-		v = (m_pActor->conditions().GetAlcohol())*100.0f;
-		UIProgressBarAlcohol.SetProgressPos	(v);
-
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
 		u32 _money						= 0;
-
-		if (GameID() != GAME_SINGLE){
-			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps){
-				UIProgressBarRank.SetProgressPos(ps->experience_D*100);
-				_money							= ps->money_for_round;
-			}
-		}else
-		{
-			_money							= pOurInvOwner->get_money();
-		}
+		_money							= pOurInvOwner->get_money();
 		// update money
 		string64						sMoney;
 		//red_virus
@@ -427,6 +417,8 @@ void CUIInventoryWnd::Update()
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
 
 	UpdateConditionProgressBars();
+
+	UpdateOutfit();
 
 	CUIWindow::Update					();
 }
@@ -700,7 +692,11 @@ void CUIInventoryWnd::highlight_item_slot(CUICellItem* cell_item)
     if (!item) return;
 
     if (CUIDragDropListEx::m_drag_item) return;
-	
+
+	bool belt = item->Belt();
+
+	if(belt) Msg("на пояс можно ставить это гавно");
+
 	u32 slots_count = item->GetSlotsCount();
 	if (slots_count < 1) return;
 	for (u32 i = 1; i <= slots_count; i++)
@@ -743,4 +739,58 @@ void CUIInventoryWnd::clear_highlight_lists()
 	m_InvSlot17Highlight->Show(false);
     
     m_highlight_clear = true;
+}
+
+void CUIInventoryWnd::UpdateOutfit() 
+{
+    CActor* pActor			= smart_cast<CActor*>(Level().CurrentEntity());
+	if(!pActor)				return;
+
+    for (u8 i = 0; i < e_af_count; ++i)
+    {
+        m_belt_list_over[i]->SetVisible(true);
+    }
+
+    u32 af_count = pActor->inventory().BeltWidth();
+    VERIFY(0 <= af_count && af_count <= 10);
+
+    VERIFY(m_pUIBeltList);
+
+	CCustomOutfit* outfit = pActor->GetOutfit();
+	if (outfit && !outfit->bIsHelmetAvaliable)
+        m_HelmetOver->Show(true);
+    else
+        m_HelmetOver->Show(false);
+	
+	if (outfit && !outfit->bIsNightvisionAvaliable)
+        m_NightvisionOver->Show(true);
+    else
+        m_NightvisionOver->Show(false);
+    
+	if (!outfit) {
+        MoveArtefactsToBag();
+        return;
+    }
+
+	Ivector2 afc;
+    afc.x = af_count;  // 1;
+    afc.y = 1;         // af_count;
+
+    m_pUIBeltList->SetCellsCapacity(afc);
+
+    for (u8 i = 0; i < af_count; ++i)
+    {
+        m_belt_list_over[i]->SetVisible(false);
+    }
+}
+
+void CUIInventoryWnd::MoveArtefactsToBag()
+{
+    while (m_pUIBeltList->ItemsCount())
+    {
+        CUICellItem* ci = m_pUIBeltList->GetItemIdx(0);
+        VERIFY(ci && ci->m_pData);
+        ToBag(ci, false);
+    }  // for i
+	m_pUIBeltList->ClearAll					(true);
 }

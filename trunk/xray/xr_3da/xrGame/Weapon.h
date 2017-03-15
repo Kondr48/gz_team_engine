@@ -292,7 +292,7 @@ public:
 	Fvector					vLoadedFirePoint;
 	Fvector					vLoadedFirePoint2;
 
-private:
+public:
 	//текущее положение и напрвление для партиклов
 	struct					_firedeps
 	{

@@ -82,12 +82,22 @@ public:
     DRAG_DROP_EVENT         m_f_item_focus_lost;
     DRAG_DROP_EVENT         m_f_item_focused_update;
 
-	const	Ivector2&		CellsCapacity		();
-			void			SetCellsCapacity	(const Ivector2 c);
-			void			SetStartCellsCapacity(const Ivector2 c){m_orig_cell_capacity=c;SetCellsCapacity(c);};
-			void			ResetCellsCapacity	(){VERIFY(ItemsCount()==0);SetCellsCapacity(m_orig_cell_capacity);};
-	 const	Ivector2&		CellSize			();
+    const Ivector2& CellsCapacity();
+    void SetCellsCapacity(const Ivector2 c);
+    void SetStartCellsCapacity(const Ivector2 c)
+    {
+        m_orig_cell_capacity = c;
+        SetCellsCapacity(c);
+    };
+    void ResetCellsCapacity()
+    {
+        VERIFY(ItemsCount() == 0);
+        SetCellsCapacity(m_orig_cell_capacity);
+    };
+	const   Ivector2&       CellSize            ();
 			void			SetCellSize			(const Ivector2 new_sz);
+	const   Ivector2&       CellsSpacing        ();
+            void            SetCellsSpacing(const Ivector2& new_sz);
 			int				ScrollPos			();
 			void			SetScrollPos		(int iPos); // alpet: используется для нейтрализации бага с сбросом позиции скролла
 			void			ReinitScroll		();
@@ -167,12 +177,16 @@ public:
 protected:
 	virtual		void			Draw				();
 
-	IC const	Ivector2&		CellsCapacity		()								{return m_cellsCapacity;};	
-				void			SetCellsCapacity	(const Ivector2& c);
-	IC const	Ivector2&		CellSize			()								{return m_cellSize;};	
+    IC const    Ivector2&       CellsCapacity       ()                              {return m_cellsCapacity;};
+                void            SetCellsCapacity    (const Ivector2& c);
+
+	IC const	Ivector2&		CellSize			()								{return m_cellSize;};
+
 				void			SetCellSize			(const Ivector2& new_sz);
 	IC const    Ivector2&       CellsSpacing        ()                              {return m_cellSpacing;};
+
                 void            SetCellsSpacing     (const Ivector2& new_sz);
+				
 				Ivector2		TopVisibleCell		();
 				CUICell&		GetCellAt			(const Ivector2& pos);
 				Ivector2		PickCell			(const Fvector2& abs_pos);

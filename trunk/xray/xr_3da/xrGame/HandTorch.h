@@ -18,21 +18,7 @@ private:
 
 protected:
 	shared_str		light_trace_bone;
-	shared_str		light_texture;
-	shared_str		glow_texture;
-	shared_str		color_animator;
-	Fcolor          clr;
-	Fcolor          clr_o;
-	float           virtual_size;
-	float           range;
-	float           glow_radius;
-	float           range_o;
-	float           angle;
-	bool            shadow;
-	bool            volumetric_light;
-	float           volumetric_light_quality;
-	float           volumetric_light_intensity;
-	float           volumetric_light_distance;
+
 public:
 									CHandTorch						();
 	virtual							~CHandTorch						();

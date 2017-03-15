@@ -90,7 +90,7 @@ CInventory::CInventory()
 {
 	m_fTakeDist									= pSettings->r_float	("inventory","take_dist");
 	m_fMaxWeight								= pSettings->r_float	("inventory","max_weight");
-	m_iMaxBelt									= pSettings->r_s32		("inventory","max_belt");
+	m_iMaxBelt									= 10;
 #ifdef LUAICP_COMPAT
 	static u32 saved = 0;
 	if (!saved++)
@@ -118,7 +118,7 @@ CInventory::CInventory()
 
 	m_slots[PDA_SLOT].m_bVisible				= true;
 	m_slots[OUTFIT_SLOT].m_bVisible				= false;
-	m_slots[DETECTOR_SLOT].m_bVisible			= true;
+	m_slots[DETECTOR_ONE_SLOT].m_bVisible		= true;
 	m_slots[TORCH_SLOT].m_bVisible				= true;
 
 	m_bSlotsUseful								= true;
@@ -1053,7 +1053,7 @@ bool CInventory::CanPutInSlot(PIItem pIItem) const
 
 	if( !GetOwner()->CanPutInSlot(pIItem, pIItem->GetSlot() ) ) return false;
 
-	if(pIItem->GetSlot()==HELMET_SLOT || pIItem->GetSlot()==PNV_SLOT)
+	if(pIItem->GetSlot()==HELMET_SLOT || pIItem->GetSlot()==NIGHTVISION_SLOT)
 	{
 		CCustomOutfit* pOutfit = m_pOwner->GetOutfit();
 		if(pOutfit && (!pOutfit->bIsHelmetAvaliable || !pOutfit->bIsNightvisionAvaliable))

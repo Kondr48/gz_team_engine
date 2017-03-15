@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "UIInventoryWnd.h"
-#include "UISleepWnd.h"
 #include "../level.h"
 #include "../actor.h"
 #include "../ActorCondition.h"
@@ -71,23 +70,96 @@ void CUIInventoryWnd::InitInventory()
 	m_pMouseCapturer			= NULL;
 	SetCurrentItem				(NULL);
 
-	InitCellForSlot(KNIFE_SLOT);
-	InitCellForSlot(PISTOL_SLOT);
-	InitCellForSlot(RIFLE_SLOT);
-	InitCellForSlot(GRENADE_SLOT);
-	InitCellForSlot(OUTFIT_SLOT);
-	InitCellForSlot(APPARATUS_SLOT);
-	InitCellForSlot(DETECTOR_SLOT);
-	InitCellForSlot(TORCH_SLOT);
-	InitCellForSlot(PDA_SLOT);
-	InitCellForSlot(HELMET_SLOT);
-	InitCellForSlot(SLOT_QUICK_ACCESS_0);
-	InitCellForSlot(SLOT_QUICK_ACCESS_1);
-	InitCellForSlot(SLOT_QUICK_ACCESS_2);
-	InitCellForSlot(SLOT_QUICK_ACCESS_3);
-	InitCellForSlot(PNV_SLOT);
-	InitCellForSlot(DET_ADV_SLOT);
-	InitCellForSlot(ITEMS_SLOT);
+	PIItem  _itm							= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIPistolList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[RIFLE_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIAutomaticList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIKnifeList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIBinocularList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[DETECTOR_ONE_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIDetectorOneList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[TORCH_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUITorchList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[PDA_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIPDAList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[HELMET_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIHelmetList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[SLOT_QUICK_ACCESS_0].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUISlotQuickAccessList_0->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[SLOT_QUICK_ACCESS_1].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUISlotQuickAccessList_1->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[SLOT_QUICK_ACCESS_2].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUISlotQuickAccessList_2->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[SLOT_QUICK_ACCESS_3].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUISlotQuickAccessList_3->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[NIGHTVISION_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUINightvisionList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[DETECTOR_TWO_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIDetectorTwoList->SetItem		(itm);
+	}
+	_itm								= m_pInv->m_slots[OUTFIT_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIOutfitList->SetItem		(itm);
+	}
 
     TIItemContainer::iterator itb = m_pInv->m_belt.begin();
     TIItemContainer::iterator ite = m_pInv->m_belt.end();
@@ -554,7 +626,7 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIAutomaticList->ClearAll			(true);
 	m_pUIKnifeList->ClearAll				(true);
 	m_pUIBinocularList->ClearAll			(true);
-	m_pUIDetectorList->ClearAll				(true);
+	m_pUIDetectorOneList->ClearAll			(true);
 	m_pUITorchList->ClearAll				(true);
 	m_pUIPDAList->ClearAll					(true);
 	m_pUIHelmetList->ClearAll				(true);
@@ -562,20 +634,6 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUISlotQuickAccessList_1->ClearAll	(true);
 	m_pUISlotQuickAccessList_2->ClearAll	(true);
 	m_pUISlotQuickAccessList_3->ClearAll	(true);
-	m_pUIPnvList->ClearAll			    	(true);
-	m_pUIDetAdvList->ClearAll				(true);
-	m_pUIItemsList->ClearAll				(true);
-}
-
-void CUIInventoryWnd::InitCellForSlot(u16 slot_idx)
-{
-    VERIFY(KNIFE_SLOT <= slot_idx && slot_idx < SLOTS_TOTAL);
-    	
-	PIItem item = m_pInv->m_slots[slot_idx].m_pIItem;
-    if (item) 
-	{
-      CUIDragDropListEx* curr_list = GetSlotList(slot_idx);
-      CUICellItem* cell_item = create_cell_item(item);
-      curr_list->SetItem(cell_item);
-	}
+	m_pUINightvisionList->ClearAll			(true);
+	m_pUIDetectorTwoList->ClearAll			(true);
 }

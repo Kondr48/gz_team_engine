@@ -128,7 +128,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			cast_helmet->NightVisionDevice()->SwitchNightVision();             // Вызываем переключение состояния ПНВ
 			break;                                                             // Дальше делать ничего не нужно, прерываем функцию
 		} 
-		PIItem nvd_portable = inventory().ItemFromSlot(PNV_SLOT);              // ПНВ в слоте, то бишь портативное
+		PIItem nvd_portable = inventory().ItemFromSlot(NIGHTVISION_SLOT);      // ПНВ в слоте, то бишь портативное
 		CNightVisionDevice* nvd = smart_cast<CNightVisionDevice*>(nvd_portable);
 		if (nvd_portable && nvd)                                               // Аналогично, в слоте ПНВ предмет, именно класса ПНВ
 			nvd->SwitchNightVision();                                          // Переключаем состоняие.
@@ -506,14 +506,14 @@ BOOL CActor::HUDview				( )const
 
 //Список слотов, которые активируются на колёсико мышки
 static	u32 SlotsToCheck [] = {
-		KNIFE_SLOT		,	
-		PISTOL_SLOT		,
-		RIFLE_SLOT		,
-		GRENADE_SLOT	,
-		APPARATUS_SLOT	,
-		BOLT_SLOT		,
-		DETECTOR_SLOT	, //Kondr48: добавил слоты детекторов в список, убрал не нужный слот артефактов
-		DET_ADV_SLOT    ,
+		KNIFE_SLOT		  ,	
+		PISTOL_SLOT		  ,
+		RIFLE_SLOT		  ,
+		GRENADE_SLOT	  ,
+		APPARATUS_SLOT	  ,
+		BOLT_SLOT		  ,
+		DETECTOR_ONE_SLOT , //Kondr48: добавил слоты детекторов в список, убрал не нужный слот артефактов
+		DETECTOR_TWO_SLOT ,
 };
 
 void	CActor::OnNextWeaponSlot()

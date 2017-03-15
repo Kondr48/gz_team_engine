@@ -281,7 +281,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 				CurrentIItem()->SetSlot(PDA_SLOT);
 				break;
 			case INVENTORY_TO_SLOT8_ACTION:
-				CurrentIItem()->SetSlot(DETECTOR_SLOT);
+				CurrentIItem()->SetSlot(DETECTOR_ONE_SLOT);
 				break;
 			case INVENTORY_TO_SLOT9_ACTION:
 				CurrentIItem()->SetSlot(TORCH_SLOT);
@@ -305,10 +305,10 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 				CurrentIItem()->SetSlot(SLOT_QUICK_ACCESS_3);
 				break;
 			case INVENTORY_TO_SLOT16_ACTION:
-				CurrentIItem()->SetSlot(PNV_SLOT);
+				CurrentIItem()->SetSlot(NIGHTVISION_SLOT);
 				break;
 			case INVENTORY_TO_SLOT17_ACTION:
-				CurrentIItem()->SetSlot(DET_ADV_SLOT);
+				CurrentIItem()->SetSlot(DETECTOR_TWO_SLOT);
 				break;
 			case INVENTORY_TO_SLOT18_ACTION:
 				CurrentIItem()->SetSlot(ITEMS_SLOT);

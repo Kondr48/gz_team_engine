@@ -119,6 +119,8 @@ public:
 	virtual void			SetWndPos(const Fvector2& pos)				{m_wndPos.set(pos.x,pos.y);}
 	virtual void			SetWndPos(float x, float y)					{m_wndPos.set(x,y);}
 	IC		Fvector2		GetWndPos()							const	{return m_wndPos;}
+	IC void                 SetVisible(bool vis)                        {m_bShowMe = vis;}
+    IC bool                 GetVisible()                        const   {return m_bShowMe;}
 	virtual void			SetWndSize(const Fvector2& size)			{m_wndSize = size;}
 	virtual void			SetWndSize(float w, float h)                { Fvector2 s; s.x = w; s.y = h; SetWndSize(s); }
 	IC		Fvector2		GetWndSize()						const	{return m_wndSize;}
@@ -126,8 +128,6 @@ public:
 	IC		float			GetHeight()							const	{return m_wndSize.y;}
 	virtual void			SetWidth(float width)						{m_wndSize.x = width;}
 	IC		float			GetWidth()							const	{return m_wndSize.x;}
-	IC		void			SetVisible(bool vis)						{m_bShowMe = vis;}
-	IC		bool			GetVisible()						const	{return m_bShowMe;}
 	IC		void			SetAlignment(EWindowAlignment al)			{m_alignment = al;};
 	virtual void			SetWndRect(float x, float y, float width, float height) {
 																						m_wndPos.set(x,y); 

@@ -51,7 +51,7 @@ void CHelmet::OnMoveToSlot()
 		CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());
 		if (pActor)
 		{
-			PIItem pNVD = pActor->inventory().ItemFromSlot(PNV_SLOT);
+			PIItem pNVD = pActor->inventory().ItemFromSlot(NIGHTVISION_SLOT);
 			if(pNVD && !bIsNightvisionAvaliable)
 				pActor->inventory().Ruck(pNVD);
 		}

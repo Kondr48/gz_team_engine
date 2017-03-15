@@ -132,7 +132,7 @@ void CNightVisionDevice::UpdateSwitchNightVision   ()
 
 CPortableNVD::CPortableNVD()
 {
-	SetSlot(PNV_SLOT);
+	SetSlot(NIGHTVISION_SLOT);
 	need_slot = true;
 }
 

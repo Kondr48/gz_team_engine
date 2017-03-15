@@ -12,8 +12,6 @@ class CInventory;
 #include "UIOutfitInfo.h"
 #include "UIItemInfo.h"
 
-#include "UISleepWnd.h"
-
 #include "../inventory_space.h"
 
 class CArtefact;
@@ -45,6 +43,8 @@ public:
 
 	virtual void			Update						();
 	void					UpdateConditionProgressBars	();
+	void                    UpdateOutfit();
+    void                    MoveArtefactsToBag();
 	virtual void			Draw						();
 
 	virtual void			Show						();
@@ -68,7 +68,6 @@ protected:
 	ref_sound					sounds					[eInvSndMax];
 	void						PlaySnd					(eInventorySndAction a);
 
-	CUIStatic					UIBeltSlots;
 	CUIStatic					UIBack;
 	CUIStatic*					UIRankFrame;
 	CUIStatic*					UIRank;
@@ -96,10 +95,10 @@ protected:
 	CUIProgressBar*				m_WeaponSlot2_progress;
 	CUIProgressBar*				m_Helmet_progress;
 	CUIProgressBar*				m_Outfit_progress;
-	CUISleepWnd					UISleepWnd;
 	CUIDragDropListEx*			m_pUIKnifeList;
 	CUIDragDropListEx*			m_pUIBinocularList;
-	CUIDragDropListEx*			m_pUIDetectorList;
+	CUIDragDropListEx*			m_pUIDetectorOneList;
+	CUIDragDropListEx*			m_pUIDetectorTwoList;
 	CUIDragDropListEx*			m_pUITorchList;
 	CUIDragDropListEx*			m_pUIPDAList;
 	CUIDragDropListEx*			m_pUIHelmetList;
@@ -107,12 +106,9 @@ protected:
 	CUIDragDropListEx*			m_pUISlotQuickAccessList_1;
 	CUIDragDropListEx*			m_pUISlotQuickAccessList_2;
 	CUIDragDropListEx*			m_pUISlotQuickAccessList_3;
-	CUIDragDropListEx*			m_pUIPnvList;
-	CUIDragDropListEx*			m_pUIDetAdvList;
-	CUIDragDropListEx*			m_pUIItemsList;
+	CUIDragDropListEx*			m_pUINightvisionList;
 	CUIProgressBar				UIProgressBarSatiety;
 	CUIProgressBar				UIProgressBarThirst;
-	CUIProgressBar				UIProgressBarAlcohol;
 	CUIDragDropListEx*			m_slots_array [SLOTS_TOTAL];  // alpet: для индексированного доступа
 
 	CUIStatic* m_InvSlot0Highlight;
@@ -131,6 +127,17 @@ protected:
 	CUIStatic* m_InvSlot16Highlight;
 	CUIStatic* m_InvSlot17Highlight;
 
+	CUIStatic* m_HelmetOver;
+	CUIStatic* m_NightvisionOver;
+
+	enum
+    {
+        e_af_count = 10
+    };
+
+    CUIStatic* m_belt_list_over[e_af_count];
+	//CUIStatic* m_belt_highlight[e_af_count];
+
 	bool m_highlight_clear;
 
 private:
@@ -148,8 +155,6 @@ public:
 	
 	void						ClearAllLists				();
 	void						BindDragDropListEnents		(CUIDragDropListEx* lst);
-	void                        InitCellForSlot             (u16 slot_idx);
-
 
 	EListType					GetType						(CUIDragDropListEx* l);
 	CUIDragDropListEx*			GetSlotList					(u32 slot_idx);
@@ -164,13 +169,10 @@ public:
     bool        xr_stdcall      OnItemFocusedUpdate         (CUICellItem* itm);
 
 	CUIStatic					UIProgressBack;
-	CUIStatic					UIProgressBack_rank;
 	CUIProgressBar				UIProgressBarHealth;	
 	CUIProgressBar				UIProgressBarPsyHealth;
 	CUIProgressBar				UIProgressBarRadiation;
 	CUIProgressBar				UIProgressBarBleeding;
-    CUIProgressBar				UIProgressBarPower;
-	CUIProgressBar				UIProgressBarRank;
 
 	CUIPropertiesBox			UIPropertiesBox;
 	

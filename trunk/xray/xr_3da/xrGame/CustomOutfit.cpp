@@ -168,7 +168,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 			if(pHelmet && !bIsHelmetAvaliable)
 				pActor->inventory().Ruck(pHelmet);
 			
-			PIItem pPNV = pActor->inventory().ItemFromSlot(PNV_SLOT);
+			PIItem pPNV = pActor->inventory().ItemFromSlot(NIGHTVISION_SLOT);
 			if(pPNV && !bIsNightvisionAvaliable)
 				pActor->inventory().Ruck(pPNV);
 

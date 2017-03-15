@@ -600,7 +600,7 @@ void CUIMainIngameWnd::Update()
 		}
 	}
 // Weapon broken icon
-	u16 slot = m_pActor->inventory().GetActiveSlot();
+	u32 slot = m_pActor->inventory().GetActiveSlot();
 	m_ind_weapon_broken->Show(false);
 	m_ind_weapon_broken->ResetClrAnimation();
 	if(slot == PISTOL_SLOT || slot == RIFLE_SLOT)

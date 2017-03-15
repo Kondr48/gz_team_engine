@@ -36,7 +36,7 @@ ITEM_INFO::~ITEM_INFO()
 CCustomDetector::CCustomDetector(void) 
 {
 	m_class_name				= get_class_name<CCustomDetector>(this);
-	SetSlot (DETECTOR_SLOT);
+	SetSlot (DETECTOR_ONE_SLOT);
 }
 
 

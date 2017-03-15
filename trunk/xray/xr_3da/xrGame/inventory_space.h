@@ -13,7 +13,7 @@
 #define BOLT_SLOT			5
 #define OUTFIT_SLOT			6
 #define PDA_SLOT			7
-#define DETECTOR_SLOT		8
+#define DETECTOR_ONE_SLOT	8
 #define TORCH_SLOT			9
 #define ARTEFACT_SLOT		10
 #define HELMET_SLOT			11
@@ -21,8 +21,8 @@
 #define SLOT_QUICK_ACCESS_1 13
 #define SLOT_QUICK_ACCESS_2 14
 #define SLOT_QUICK_ACCESS_3 15
-#define PNV_SLOT			16
-#define DET_ADV_SLOT    	17
+#define NIGHTVISION_SLOT    16
+#define DETECTOR_TWO_SLOT   17
 #define ITEMS_SLOT			18
 #define SLOTS_TOTAL			19
 

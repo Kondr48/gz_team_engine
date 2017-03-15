@@ -444,13 +444,18 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	pWnd->Init		(x,y, width,height);
 
-	Ivector2 w_cell_sz, w_cells;
+	Ivector2 w_cell_sz, w_cells, w_cell_sp;
 
 	w_cell_sz.x				= xml_doc.ReadAttribInt(path, index, "cell_width");
 	w_cell_sz.y				= xml_doc.ReadAttribInt(path, index, "cell_height");
 	w_cells.y				= xml_doc.ReadAttribInt(path, index, "rows_num");
 	w_cells.x				= xml_doc.ReadAttribInt(path, index, "cols_num");
-	pWnd->SetCellSize		(w_cell_sz);	
+
+	w_cell_sp.x             = xml_doc.ReadAttribInt(path, index, "cell_sp_x");
+    w_cell_sp.y             = xml_doc.ReadAttribInt(path, index, "cell_sp_y");
+
+	pWnd->SetCellSize		    (w_cell_sz);
+	pWnd->SetCellsSpacing       (w_cell_sp);
 	pWnd->SetStartCellsCapacity	(w_cells);	
 
 	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0);
