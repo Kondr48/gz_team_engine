@@ -45,7 +45,6 @@ CUIInventoryWnd*	g_pInvWnd = NULL;
 CUIInventoryWnd::CUIInventoryWnd()
 {
 	m_iCurrentActiveSlot				= NO_ACTIVE_SLOT;
-	UIRank								= NULL;
 	Init								();
 	SetCurrentItem						(NULL);
 
@@ -188,17 +187,6 @@ void CUIInventoryWnd::Init()
 
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
-
-
-	if (GameID() != GAME_SINGLE){
-		UIRankFrame = xr_new<CUIStatic> (); UIRankFrame->SetAutoDelete(true);
-		UIRank = xr_new<CUIStatic> (); UIRank->SetAutoDelete(true);
-
-		CUIXmlInit::InitStatic(uiXml, "rank", 0, UIRankFrame);
-		CUIXmlInit::InitStatic(uiXml, "rank:pic", 0, UIRank);
-		AttachChild(UIRankFrame);
-		UIRankFrame->AttachChild(UIRank);		
-	}
 
 	m_pUIBagList						= xr_new<CUIDragDropListEx>(); UIBagWnd.AttachChild(m_pUIBagList); m_pUIBagList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
@@ -434,30 +422,6 @@ void CUIInventoryWnd::Show()
 
 	InitInventory			();
 	inherited::Show			();
-
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor) return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
-
-		//rank icon		
-		int team = Game().local_player->team;
-		int rank = Game().local_player->rank;
-		string256 _path;		
-		if (GameID() != GAME_DEATHMATCH){
-			if (1==team)
-		        sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-			else
-				sprintf_s(_path, "ui_hud_status_blue_0%d", rank+1);
-		}
-		else
-		{
-			sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-		}
-		UIRank->InitTexture(_path);
-	}
 
 	SendInfoToActor						("ui_inventory");
 
@@ -705,7 +669,7 @@ void CUIInventoryWnd::highlight_item_slot(CUICellItem* cell_item)
 		u32 af_count   = pActor->inventory().BeltWidth();
         VERIFY(0 <= af_count && af_count <= 10);
 		
-		for (u8 i = 0; i < e_af_count; ++i)
+		for (u8 i = 0; i < af_count; ++i)
              {
                  m_belt_highlight[i]->SetVisible(true);
              }

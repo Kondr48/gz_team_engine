@@ -69,8 +69,6 @@ protected:
 	void						PlaySnd					(eInventorySndAction a);
 
 	CUIStatic					UIBack;
-	CUIStatic*					UIRankFrame;
-	CUIStatic*					UIRank;
 
 	CUIStatic					UIBagWnd;
 	CUIStatic					UIMoneyWnd;
