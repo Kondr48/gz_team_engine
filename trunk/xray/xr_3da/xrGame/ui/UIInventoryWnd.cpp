@@ -707,7 +707,7 @@ void CUIInventoryWnd::highlight_item_slot(CUICellItem* cell_item)
 		
 		for (u8 i = 0; i < e_af_count; ++i)
              {
-                 m_belt_list_over[i]->SetVisible(true);
+                 m_belt_highlight[i]->SetVisible(true);
              }
 	}
 
