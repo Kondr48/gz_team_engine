@@ -32,6 +32,9 @@ protected:
  CUI3tButton*               m_hacked_start_button;
  CUI3tButton*               m_hacked_stop_button;
 
+ shared_str		            hacked_device_name;
+ shared_str		            hacked_encryption_level;
+
 public:					    CUIHackWnd			   ();
 	virtual				    ~CUIHackWnd			   ();
     virtual void		    Draw				   ();
@@ -40,17 +43,18 @@ public:					    CUIHackWnd			   ();
     CInventory*			    m_pRuck;
 	CUICellItem*            m_hacked_pda;
 	void					BindDragDropListEnents		(CUIDragDropListEx* lst);
-	void					ShowRightWindow     		(CUICellItem* itm);
+	void					ShowRightWindow     		(LPCSTR section);
+
 	virtual void		    SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
 	 
-
-	u32                        hack_time;
 	s32                        soft_ver;
 	string128                  text_name;
 	string128                  text_encryption_level;
 	string128                  text_hack_time;
 	string128                  text_soft_version;
-	LPCSTR                     item_section;
+    LPCSTR                     item_section;
+	LPCSTR                     hacked_device;
+	float                      hack_time;
 	
 	bool	xr_stdcall		OnItemDbClick			    (CUICellItem* itm);
 	bool	xr_stdcall		OnItemSelected			    (CUICellItem* itm);

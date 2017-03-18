@@ -10,6 +10,7 @@
 #include "../game_base_space.h"
 #include "UIHelper.h"
 #include "../Actor.h"
+#include "../ActorCondition.h"
 #include "UIInventoryUtilities.h"
 #include "../inventory.h"
 #include "UICellItem.h"
@@ -22,6 +23,7 @@
 
 CUIHackWnd::CUIHackWnd()
 {
+	hack_time = 0;
 }
 
 CUIHackWnd::~CUIHackWnd()
@@ -72,7 +74,9 @@ void CUIHackWnd::Init()
 void CUIHackWnd::Draw()
 {
 	CInventoryOwner *pInvOwner	= smart_cast<CInventoryOwner*>(Level().CurrentEntity());
-	if(!pInvOwner)				return;
+	CActor*	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
+
+	if(!pInvOwner || !m_pActor)				return;
 
 	m_pRuck						= &pInvOwner->inventory();
 	
@@ -91,24 +95,31 @@ void CUIHackWnd::Draw()
 		}
 	}
 
-	luabind::functor<u32> get_hack_time;
-	if (ai().script_engine().functor("gz_pda.get_hack_time", get_hack_time))
+	luabind::functor<float> get_hack_time;
+	if (ai().script_engine().functor("hack_module.get_hack_time", get_hack_time))
 	hack_time = get_hack_time();
 
-	if (hack_time>0)
-	{
+	if (hack_time > 0) // Какой-то девайс уже взламывается. Выводим инфу о взломе
+	{			
 		LPCSTR header_hack_time = *CStringTable().translate("hckd_time");
-		u16 hours = iCeil(hack_time/60);
-		u16 minutes = iCeil(hack_time)-(hours*60);
-		sprintf_s(text_hack_time, "%s: %02d:%02d", header_hack_time, hours, minutes);
+		int hours   = iFloor(hack_time/3600);
+		int minutes = iFloor(hack_time/60 - hours*60);
+		sprintf_s(text_hack_time, "%s: %02i:%02i", header_hack_time, hours, minutes);
 		m_device_hack_time->SetText(text_hack_time);
 		m_device_hack_time->Show(true);
 		m_hack_console->Show(true);
 		m_hacked_start_button->Enable(false);
 	    m_hacked_stop_button->Enable(true);
-		ShowRightWindow(m_hacked_pda);
+
+        luabind::functor<LPCSTR> get_hacked_device;
+		if (ai().script_engine().functor("hack_module.get_hacked_device", get_hacked_device))
+		{
+		   hacked_device = get_hacked_device();
+		   ShowRightWindow(hacked_device);
+		}
 	} 
-	else {
+	else 
+	{
 		m_hacked_start_button->Enable(true);
 	    m_hacked_stop_button->Enable(false);
 		m_device_hack_time->Show(false);
@@ -123,49 +134,58 @@ void CUIHackWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUIHackWnd::OnItemSelected);
 }
 
-void CUIHackWnd::ShowRightWindow(CUICellItem* itm)
+void CUIHackWnd::ShowRightWindow(LPCSTR section)
 {
-	m_hacked_pda = itm;
 	
-	PIItem	__item		= (PIItem)itm->m_pData;
-	item_section = __item->item_section.c_str();
-
+	// Название предмета
 	LPCSTR header_name = *CStringTable().translate("hckd_device_name");
-	sprintf_s(text_name, "%s: %s", header_name, __item->Name());
+	hacked_device_name = pSettings->r_string(section, "inv_name");
+	hacked_device_name = *CStringTable().translate(hacked_device_name);
+	sprintf_s(text_name, "%s: %s", header_name, hacked_device_name.c_str());
 	m_device_name->SetText(text_name);
 	m_device_name->Show(true);     
 
+	// Уровень шифрования
 	LPCSTR header_encryption_level = *CStringTable().translate("hckd_encryption_level");
-	sprintf_s(text_encryption_level, "%s: %s", header_encryption_level, __item->m_encryption_level.c_str());
+	hacked_encryption_level = pSettings->r_string(section, "encryption_level");
+	hacked_encryption_level = *CStringTable().translate(hacked_encryption_level);
+	sprintf_s(text_encryption_level, "%s: %s", header_encryption_level, hacked_encryption_level.c_str());
 	m_device_encryption_level->SetText(text_encryption_level);
 	m_device_encryption_level->Show(true);    
 	
+	// Версия прошивки
 	CActor*	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
 	PIItem pda = m_pActor->inventory().ItemFromSlot(PDA_SLOT);
-	if (pda) soft_ver = pda->m_soft_level; else {soft_ver = 0; Msg("Ошибка! В слоте отсутствует ПДА!"); }
+	soft_ver = pda->m_soft_level;
 	LPCSTR header_m_device_soft_version = *CStringTable().translate("hckd_soft_version");
 	sprintf_s(text_soft_version, "%s: 1.35.%02d", header_m_device_soft_version, soft_ver);
 	m_device_soft_version->SetText(text_soft_version);
 	m_device_soft_version->Show(true);
 
-	u16 x = __item->GetXPos();
-	u16 y = __item->GetYPos();
-	u16 w = __item->GetGridWidth();
-	u16 h = __item->GetGridHeight();
+	// Иконка взламываемого предмета
 	m_device_icon->InitTexture("ui\\ui_icon_equipment"); 
+	float x = pSettings->r_float(section, "inv_grid_x");
+	float y = pSettings->r_float(section, "inv_grid_y");
+	float w = pSettings->r_float(section, "inv_grid_width");
+	float h = pSettings->r_float(section, "inv_grid_height");
 	m_device_icon->SetOriginalRect(x*50, y*50, w*50, h*50);
 	m_device_icon->Show(true);
 
-	m_hacked_start_button->Show(true);
-	m_hacked_stop_button->Show(true);
+	// Кнопки
+	m_hacked_start_button->Show(true);  // Старт
+	m_hacked_stop_button->Show(true);   // Отмена
 }
 
 bool CUIHackWnd::OnItemSelected(CUICellItem* itm)
 {	
-	if (hack_time>0) return false;
+	if (hack_time > 0) return false;
 
-	ShowRightWindow(itm);
-	return				true;
+	PIItem	   item		     = (PIItem)itm->m_pData;
+	item_section = item->item_section.c_str();
+	
+	ShowRightWindow          (item_section);
+
+	return				      true;
 }
 
 void CUIHackWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -173,15 +193,17 @@ void CUIHackWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	if(pWnd == m_hacked_start_button && msg == BUTTON_CLICKED)
 	{
 	  luabind::functor<void>	StartHackDevice;
-      if (ai().script_engine().functor("gz_pda.StartHackDevice",StartHackDevice))
-      StartHackDevice(item_section);
+      if (ai().script_engine().functor("hack_module.StartHackDevice",StartHackDevice))
+		StartHackDevice(item_section);
 	}
 	else if(pWnd == m_hacked_stop_button && msg == BUTTON_CLICKED)
 	{
       luabind::functor<void>	StopHackDevice;
-      if (ai().script_engine().functor("gz_pda.StopHackDevice",StopHackDevice))
-	  StopHackDevice();
-      ClearRightWindow();
+      if (ai().script_engine().functor("hack_module.StopHackDevice",StopHackDevice))
+	  {
+		StopHackDevice();
+        ClearRightWindow();
+	  }
 	}
 
 	CUIWindow::SendMessage(pWnd, msg, pData);

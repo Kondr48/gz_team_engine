@@ -126,7 +126,8 @@ protected:
 	float m_fAccelK;
 	float m_fSprintK;
 public:
-	float	m_MaxWalkWeight;
+	float  m_MaxWalkWeight;
+
 protected:
 	mutable bool m_bLimping;
 	mutable bool m_bCantWalk;
