@@ -698,7 +698,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
 	
-	CMD3(CCC_Mask, 		"r2_nightvision",		        &ps_r2_ls_flags, 			R2FLAG_NIGHTVISION);
+	CMD3(CCC_Mask, 		"r2_nightvision",		        &ps_r2_ls_flags_ext, 		R2FLAG_NIGHTVISION);
 
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
 }

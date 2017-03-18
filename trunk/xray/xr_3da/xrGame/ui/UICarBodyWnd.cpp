@@ -411,9 +411,7 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 #include "../Antirad.h"
 
 void CUICarBodyWnd::ActivatePropertiesBox()
-{
-	if(m_pInventoryBox)	return;
-		
+{	
 	m_pUIPropertiesBox->RemoveAll();
 	
 //.	CWeaponMagazined*		pWeapon			= smart_cast<CWeaponMagazined*>(CurrentIItem());
@@ -439,10 +437,8 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	{
 		_action = "st_move_all";
 		b_show = true;
-	m_pUIPropertiesBox->AddItem(_action, NULL, INVENTORY_TAKE_ALL);
+	    m_pUIPropertiesBox->AddItem(_action, NULL, INVENTORY_TAKE_ALL);
 	}
-
-	/* Массовое перемещение предметов */
 
 	if(pMedkit || pAntirad)
 	{
@@ -462,6 +458,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 
 
 	if(b_show){
+		Msg("Очень, очень странно1");
 		m_pUIPropertiesBox->AutoUpdateSize	();
 		m_pUIPropertiesBox->BringAllToTop	();
 
@@ -472,6 +469,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		cursor_pos						= GetUICursor()->GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
 		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
+		Msg("Очень, очень странно2");
 	}
 }
 
