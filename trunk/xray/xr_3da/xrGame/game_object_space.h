@@ -105,7 +105,6 @@ namespace GameObject {
 		eBoxOpen,
 		eKnifeAttackOne,
 		eKnifeAttackTwo,
-		eOnActorWeaponReloadEmpty,
 		ePagePdaClick,
 
 		eStepSound,

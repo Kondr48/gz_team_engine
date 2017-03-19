@@ -359,7 +359,7 @@ void CObjectFactory::register_classes	()
 
 	// Devices
 	ADD(CTorch					,CSE_ALifeItemTorch				,CLSID_DEVICE_TORCH				,"device_torch");
-	ADD(CHandTorch				,CSE_ALifeItemHandTorch			,CLSID_DEVICE_HANDTORCH			,"device_hand_torch");
+	ADD(CHandTorch				,CSE_ALifeItem			        ,CLSID_DEVICE_HANDTORCH			,"device_hand_torch");
 	ADD(CPortableNVD			,CSE_ALifeItemNVD				,CLSID_DEVICE_NVD				,"device_night_vision");
 	ADD(CPda					,CSE_ALifeItemPDA				,CLSID_DEVICE_PDA				,"device_pda");
 
@@ -389,7 +389,6 @@ void CObjectFactory::register_classes	()
 
 	ADD(CElectricBall			,CSE_ALifeItemArtefact			,TEXT2CLSID("SCRPTART")			,"artefact_s");
 	ADD(CTorch					,CSE_ALifeItemTorch				,TEXT2CLSID("TORCH_S")			,"device_torch_s");
-	ADD(CHandTorch			    ,CSE_ALifeItemHandTorch		    ,TEXT2CLSID("HTORCH_S")			,"device_hand_torch_s");
 	ADD(CStalkerOutfit			,CSE_ALifeItemCustomOutfit		,TEXT2CLSID("E_STLK")			,"equ_stalker_s");
 	ADD(CHelmet                 ,CSE_ALifeItemHelmet		    ,TEXT2CLSID("HELMET_S")			,"equ_helmet_s");
 	ADD(CScope					,CSE_ALifeItem					,TEXT2CLSID("WP_SCOPE")			,"wpn_scope_s");

@@ -272,10 +272,6 @@
 #	undef cast_type_list
 #	define cast_type_list save_cast_list	(CSE_ALifeItemWeapon, CSE_Abstract)
 
-	DECLARE_SPECIALIZATION	(CSE_ALifeItemHandTorch, CSE_Abstract,			cast_hand_torch);
-#	undef cast_type_list
-#	define cast_type_list save_cast_list	(CSE_ALifeItemHandTorch, CSE_Abstract)
-
 	DECLARE_SPECIALIZATION	(CSE_ALifeItemHelmet, CSE_Abstract,			cast_helmet);
 #	undef cast_type_list
 #	define cast_type_list save_cast_list	(CSE_ALifeItemHelmet, CSE_Abstract)

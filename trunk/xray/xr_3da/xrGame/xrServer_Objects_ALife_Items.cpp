@@ -418,55 +418,6 @@ void CSE_ALifeItemNVD::FillProps			(LPCSTR pref, PropItemVec& values)
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// CSE_ALifeItemHandTorch
-////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemHandTorch::CSE_ALifeItemHandTorch	(LPCSTR caSection): CSE_ALifeItem(caSection)
-{
-	m_ef_equipment_type		= pSettings->r_u32(caSection,"ef_equipment_type");
-}
-
-CSE_ALifeItemHandTorch::~CSE_ALifeItemHandTorch	()
-{
-}
-
-u32	CSE_ALifeItemHandTorch::ef_equipment_type		() const
-{
-	return			(m_ef_equipment_type);
-}
-
-void CSE_ALifeItemHandTorch::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
-{
-	inherited::STATE_Read		(tNetPacket,size);
-}
-
-void CSE_ALifeItemHandTorch::STATE_Write		(NET_Packet	&tNetPacket)
-{
-	inherited::STATE_Write		(tNetPacket);
-}
-
-void CSE_ALifeItemHandTorch::UPDATE_Read		(NET_Packet	&tNetPacket)
-{
-	inherited::UPDATE_Read			(tNetPacket);
-	//tNetPacket.r_float_q8			(m_fCondition,0.0f,1.0f);
-}
-
-void CSE_ALifeItemHandTorch::UPDATE_Write		(NET_Packet	&tNetPacket)
-{
-	inherited::UPDATE_Write			(tNetPacket);
-	//tNetPacket.w_float_q8			(m_fCondition,0.0f,1.0f);
-}
-
-void CSE_ALifeItemHandTorch::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
-}
-
-BOOL CSE_ALifeItemHandTorch::Net_Relevant		()
-{
-	return							(true);
-}
-
-////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemHelmet
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemHelmet::CSE_ALifeItemHelmet	(LPCSTR caSection): CSE_ALifeItem(caSection)

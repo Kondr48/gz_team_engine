@@ -79,17 +79,6 @@ void CSE_ALifeItemCustomOutfit::script_register(lua_State *L)
 	];
 }
 
-void CSE_ALifeItemHandTorch::script_register(lua_State *L)
-{
-	module(L)[
-		luabind_class_item1(
-			CSE_ALifeItemHandTorch,
-			"cse_alife_item_hand_torch",
-			CSE_ALifeItem
-		)
-	];
-}
-
 void CSE_ALifeItemHelmet::script_register(lua_State *L)
 {
 	module(L)[

@@ -242,16 +242,6 @@ SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeItemDetector)
 #define script_type_list save_type_list(CSE_ALifeItemDetector)
 
-SERVER_ENTITY_DECLARE_BEGIN( CSE_ALifeItemHandTorch, CSE_ALifeItem)
-     u32 m_ef_equipment_type;
-     CSE_ALifeItemHandTorch(LPCSTR caSection);
-     virtual ~ CSE_ALifeItemHandTorch();
-     virtual u32 ef_equipment_type() const;
-     virtual BOOL Net_Relevant();
-SERVER_ENTITY_DECLARE_END
-add_to_type_list( CSE_ALifeItemHandTorch)
-#define script_type_list save_type_list( CSE_ALifeItemHandTorch)
-
 SERVER_ENTITY_DECLARE_BEGIN( CSE_ALifeItemHelmet, CSE_ALifeItem)
      u32 m_ef_equipment_type;
      CSE_ALifeItemHelmet(LPCSTR caSection);

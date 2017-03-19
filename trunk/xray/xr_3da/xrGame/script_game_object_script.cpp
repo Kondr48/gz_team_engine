@@ -147,7 +147,6 @@ void CScriptGameObject::script_register(lua_State *L)
 					value("knife_attack_one", int(GameObject::eKnifeAttackOne) ),
 					value("knife_attack_two", int(GameObject::eKnifeAttackTwo) ),
 					value("pda_page_click",   int(GameObject::ePagePdaClick) ),
-					value("on_actor_weapon_reload_empty", int(GameObject::eOnActorWeaponReloadEmpty)),
 					value("step_sound",       int(GameObject::eStepSound))
 				],
 
