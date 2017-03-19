@@ -118,27 +118,48 @@ void CWeaponMagazined::Load(LPCSTR section)
 	animGet(mhud.mhud_hide, pSettings->r_string(*hud_sect, "anim_holster"));
 	animGet(mhud.mhud_shots, pSettings->r_string(*hud_sect, "anim_shoot"));
 
-	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint"))
-		animGet(mhud.mhud_idle_sprint, pSettings->r_string(*hud_sect, "anim_idle_sprint"));
-
-	if (pSettings->line_exist(*hud_sect, "anim_idle_moving")) //Kondr48: раскачка оружия при ходьбе
-		{
-		animGet(mhud.mhud_idle_moving, pSettings->r_string(*hud_sect, "anim_idle_moving"));
-		if (pSettings->line_exist(*hud_sect, "anim_idle_aim_empty"))
-			animGet(mhud.mhud_idle_moving_empty, pSettings->r_string(*hud_sect, "anim_idle_moving_empty"));
-		else
-			animGet(mhud.mhud_idle_moving_empty, pSettings->r_string(*hud_sect, "anim_idle_moving"));			
-		};
-
-	if (pSettings->line_exist(*hud_sect, "anim_reload_empty")) //Kondr48: reload_empty
-		animGet(mhud.mhud_reload_empty, pSettings->r_string(*hud_sect, "anim_reload_empty"));
-	else
-		animGet(mhud.mhud_reload_empty, pSettings->r_string(*hud_sect, "anim_reload"));
-
 	if (pSettings->line_exist(*hud_sect, "anim_reload_missfire")) //anim_rouge, Kondr48: расклин. 
 		animGet(mhud.mhud_reload_missfire, pSettings->r_string(*hud_sect, "anim_reload_missfire"));
 
-	if (pSettings->line_exist(*hud_sect, "anim_watch_in")) //Kondr48: Часы. 
+	// Анимации движения
+	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint"))  // Бег
+		animGet(mhud.mhud_idle_sprint, pSettings->r_string(*hud_sect, "anim_idle_sprint"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_idle_moving")) // Ходьба
+		animGet(mhud.mhud_idle_moving, pSettings->r_string(*hud_sect, "anim_idle_moving"));	
+
+	if (IsZoomEnabled()) // Анимации прицеливания
+		{
+			animGet(mhud.mhud_idle_aim, pSettings->r_string(*hud_sect, "anim_idle_aim"));
+		      
+			if (pSettings->line_exist(*hud_sect, "anim_idle_aim_empty")) // Для затворной задержки, дополнительно к анимациям ниже
+			   animGet(mhud.mhud_idle_aim_empty, pSettings->r_string(*hud_sect, "anim_idle_aim_empty"));	
+		};
+	
+	//Kondr48, anim_rouge: затворная задержка
+	if (pSettings->line_exist(*hud_sect, "anim_reload_empty"))
+		animGet(mhud.mhud_reload_empty, pSettings->r_string(*hud_sect, "anim_reload_empty"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_shoot_last"))
+		animGet(mhud.mhud_shots_last, pSettings->r_string(*hud_sect, "anim_shoot_last"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_idle_empty"))
+		animGet(mhud.mhud_idle_empty, pSettings->r_string(*hud_sect, "anim_idle_empty"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_draw_empty"))
+		animGet(mhud.mhud_show_empty, pSettings->r_string(*hud_sect, "anim_draw_empty"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_holster_empty"))
+		animGet(mhud.mhud_hide_empty, pSettings->r_string(*hud_sect, "anim_holster_empty"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint_empty"))
+		animGet(mhud.mhud_idle_sprint_empty, pSettings->r_string(*hud_sect, "anim_idle_sprint_empty"));
+
+	if (pSettings->line_exist(*hud_sect, "anim_idle_moving_empty"))
+		animGet(mhud.mhud_idle_moving_empty, pSettings->r_string(*hud_sect, "anim_idle_moving_empty"));	
+	
+	//Kondr48: Часы. 
+	if (pSettings->line_exist(*hud_sect, "anim_watch_in")) 
 		animGet(mhud.mhud_watch_in, pSettings->r_string(*hud_sect, "anim_watch_in"));
 
 	if (pSettings->line_exist(*hud_sect, "anim_watch_idle"))
@@ -146,40 +167,6 @@ void CWeaponMagazined::Load(LPCSTR section)
 
 	if (pSettings->line_exist(*hud_sect, "anim_watch_out"))
 		animGet(mhud.mhud_watch_out, pSettings->r_string(*hud_sect, "anim_watch_out"));
-
-	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint_empty"))	//Anim_rouge: анимации для пустого оружия
-		animGet(mhud.mhud_idle_sprint_empty, pSettings->r_string(*hud_sect, "anim_idle_sprint_empty"));
-	else if (pSettings->line_exist(*hud_sect, "anim_idle_sprint"))
-		animGet(mhud.mhud_idle_sprint_empty, pSettings->r_string(*hud_sect, "anim_idle_sprint"));
-
-	if (pSettings->line_exist(*hud_sect, "anim_idle_empty"))
-		animGet(mhud.mhud_idle_empty, pSettings->r_string(*hud_sect, "anim_idle_empty"));	
-	else 
-		animGet(mhud.mhud_idle_empty, pSettings->r_string(*hud_sect, "anim_idle"));
-		
-	if (pSettings->line_exist(*hud_sect, "anim_draw_empty"))
-		animGet(mhud.mhud_show_empty, pSettings->r_string(*hud_sect, "anim_draw_empty"));	
-	else 
-		animGet(mhud.mhud_show_empty, pSettings->r_string(*hud_sect, "anim_draw"));
-		
-	if (pSettings->line_exist(*hud_sect, "anim_holster_empty"))
-		animGet(mhud.mhud_hide_empty, pSettings->r_string(*hud_sect, "anim_holster_empty"));	
-	else 
-		animGet(mhud.mhud_hide_empty, pSettings->r_string(*hud_sect, "anim_holster"));
-		
-	if (pSettings->line_exist(*hud_sect, "anim_shoot_last"))
-		animGet(mhud.mhud_shots_last, pSettings->r_string(*hud_sect, "anim_shoot_last"));	
-	else 
-		animGet(mhud.mhud_shots_last, pSettings->r_string(*hud_sect, "anim_shoot"));
-		
-	if (IsZoomEnabled())
-		{
-			animGet(mhud.mhud_idle_aim, pSettings->r_string(*hud_sect, "anim_idle_aim"));
-		if (pSettings->line_exist(*hud_sect, "anim_idle_aim_empty"))
-			animGet(mhud.mhud_idle_aim_empty, pSettings->r_string(*hud_sect, "anim_idle_aim_empty"));
-		else
-			animGet(mhud.mhud_idle_aim_empty, pSettings->r_string(*hud_sect, "anim_idle_aim"))	;		
-		};
 
 	if(pSettings->line_exist(section, "chamber_status")) //Kondr48: для поддержки патронника
 		m_bChamberStatus = !!pSettings->r_bool(section, "chamber_status");
@@ -254,9 +241,9 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if (!iAmmoElapsed && actor && GetState() != eReload)
-		Reload();
+	/*CActor	*actor = smart_cast<CActor*>(H_Parent());
+	if (!iAmmoElapsed && actor && GetState() != eReload) // Тестовое отключение авто перезарядки
+		Reload();*/
 }
 
 void CWeaponMagazined::ReloadMf()  //anim_rouge, Kondr48: расклин.	
@@ -828,6 +815,7 @@ void CWeaponMagazined::switch2_Empty()
 	else
 	{
 		inherited::FireEnd();
+		Msg("Вызов огонь конец");
 	}
 }
 void CWeaponMagazined::PlayReloadSound()
@@ -1206,7 +1194,7 @@ void CWeaponMagazined::ApplySilencerKoeffs()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState() == eShowing);
-	if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
+	if (GetAmmoElapsed() == 0 && mhud.mhud_show_empty.size())
 	 m_pHUD->animPlay(random_anim(mhud.mhud_show_empty), FALSE, this, GetState());
 	else
 	 m_pHUD->animPlay(random_anim(mhud.mhud_show), FALSE, this, GetState());
@@ -1215,7 +1203,7 @@ void CWeaponMagazined::PlayAnimShow()
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState() == eHiding);
-	if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
+	if (GetAmmoElapsed() == 0 && mhud.mhud_hide_empty.size())
 		m_pHUD->animPlay(random_anim(mhud.mhud_hide_empty), TRUE, this, GetState());
 	else
 		m_pHUD->animPlay(random_anim(mhud.mhud_hide), TRUE, this, GetState());
@@ -1224,23 +1212,20 @@ void CWeaponMagazined::PlayAnimHide()
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
-	 if (GetAmmoElapsed() == 0 && mhud.mhud_reload_empty.size()) //Kondr48: reload_empty
-	 {
-	  g_actor->callback(GameObject::eOnActorWeaponReloadEmpty)(); //Kondr48: колбек на перезарядку, если магазин пуст.
-	  m_pHUD->animPlay(random_anim(mhud.mhud_reload_empty), TRUE, this, GetState());
-	 }
-	 else
-	 {
-	  StateSwitchCallback(GameObject::eOnActorWeaponReload, GameObject::eOnNPCWeaponReload); // Callbacks added by Cribbledirge.
-	  m_pHUD->animPlay(random_anim(mhud.mhud_reload), TRUE, this, GetState());
-	 }
+	
+	if (GetAmmoElapsed() == 0 && mhud.mhud_reload_empty.size())
+	    m_pHUD->animPlay(random_anim(mhud.mhud_reload_empty), TRUE, this, GetState());
+	else
+	    m_pHUD->animPlay(random_anim(mhud.mhud_reload), TRUE, this, GetState());
+
+	StateSwitchCallback(GameObject::eOnActorWeaponReload, GameObject::eOnNPCWeaponReload); // Callbacks added by Cribbledirge.
 }
 
 void CWeaponMagazined::PlayAnimReloadMisfire() //anim_rouge, Kondr48: расклин.	
 {
 	 VERIFY(GetState() == eReloadMisfire);
 	 if (mhud.mhud_reload_missfire.size()) 
-	  m_pHUD->animPlay(random_anim(mhud.mhud_reload_missfire), TRUE, this, GetState());
+	    m_pHUD->animPlay(random_anim(mhud.mhud_reload_missfire), TRUE, this, GetState());
 }
 
 bool CWeaponMagazined::TryPlayAnimIdle()
@@ -1254,7 +1239,7 @@ bool CWeaponMagazined::TryPlayAnimIdle()
 			pActor->g_State(st);
 			if (st.bSprint && mhud.mhud_idle_sprint.size())
 			{	
-				if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
+				if (GetAmmoElapsed() == 0 && mhud.mhud_idle_sprint_empty.size())
 					m_pHUD->animPlay(random_anim(mhud.mhud_idle_sprint_empty), TRUE, NULL, GetState());
 				else
 					m_pHUD->animPlay(random_anim(mhud.mhud_idle_sprint), TRUE, NULL, GetState());
@@ -1262,7 +1247,7 @@ bool CWeaponMagazined::TryPlayAnimIdle()
 			}
 			else if (st.bMoving && mhud.mhud_idle_moving.size())
 			{	
-				if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
+				if (GetAmmoElapsed() == 0 && mhud.mhud_idle_moving_empty.size())
 					m_pHUD->animPlay(random_anim(mhud.mhud_idle_moving_empty), TRUE, NULL, GetState());
 				else
 					m_pHUD->animPlay(random_anim(mhud.mhud_idle_moving), TRUE, NULL, GetState());
@@ -1275,40 +1260,31 @@ bool CWeaponMagazined::TryPlayAnimIdle()
 
 void CWeaponMagazined::PlayAnimIdle()
 {
+	if (TryPlayAnimIdle()) return;
 	MotionSVec* m = NULL;
 	if (IsZoomed())
 	{
-		if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
-				m = &mhud.mhud_idle_aim_empty;
+		if (GetAmmoElapsed() == 0 && mhud.mhud_idle_aim_empty.size())
+			m = &mhud.mhud_idle_aim_empty;
 		else
 			m = &mhud.mhud_idle_aim;
 	}
 	else
 	{
-		if (GetAmmoElapsed() == 0) //Anim_rouge: анимации для пустого оружия
+		if (GetAmmoElapsed() == 0 && mhud.mhud_idle_empty.size())
 			m = &mhud.mhud_idle_empty;
 		else
 			m = &mhud.mhud_idle;
-		if (TryPlayAnimIdle()) return;
 	}
 
-	if (IsClock() == false)
-	{
 	 VERIFY(GetState() == eIdle);
 	 m_pHUD->animPlay(random_anim(*m), TRUE, NULL, GetState());
-	}
-	else
-	{
-	 VERIFY(GetState() == eIdle);
-	 m = &mhud.mhud_watch_idle;
-	 m_pHUD->animPlay(random_anim(*m), TRUE, NULL, GetState());
-	}
 }
 
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState() == eFire || GetState() == eFire2);
-	if (GetAmmoElapsed() == 1) //Anim_rouge: анимации для пустого оружия
+	if (GetAmmoElapsed() == 1 && mhud.mhud_shots_last.size())
 		m_pHUD->animPlay(random_anim(mhud.mhud_shots_last), TRUE, this, GetState());
 	else
 		m_pHUD->animPlay(random_anim(mhud.mhud_shots), TRUE, this, GetState());

@@ -53,22 +53,22 @@ protected:
 	struct SWMmotions{
 		MotionSVec		mhud_idle;
 		MotionSVec		mhud_idle_aim;
-		MotionSVec		mhud_reload;	//
-		MotionSVec		mhud_hide;		//
-		MotionSVec		mhud_show;		//
-		MotionSVec		mhud_shots;		//
+		MotionSVec		mhud_reload;
+		MotionSVec		mhud_hide;
+		MotionSVec		mhud_show;
+		MotionSVec		mhud_shots;
 		MotionSVec		mhud_idle_sprint;
-		MotionSVec		mhud_idle_moving;     //Kondr48: раскачка оружия при ходьбе
-		MotionSVec		mhud_reload_empty;    //Kondr48: reload_empty
-		MotionSVec		mhud_reload_missfire; //anim_rouge, Kondr48: расклин. 
-		MotionSVec		mhud_watch_in; //Kondr48: часы. 
+		MotionSVec		mhud_idle_moving;     
+		MotionSVec		mhud_reload_empty; 
+		MotionSVec		mhud_reload_missfire;
+		MotionSVec		mhud_watch_in; 
 		MotionSVec		mhud_watch_idle;    
 		MotionSVec		mhud_watch_out;
-		MotionSVec		mhud_idle_empty;		//Anim_rouge: анимации для пустого оружия
+		MotionSVec		mhud_idle_empty;		
 		MotionSVec		mhud_idle_aim_empty;
-		MotionSVec		mhud_hide_empty;		//
-		MotionSVec		mhud_show_empty;		//
-		MotionSVec		mhud_shots_last;		//
+		MotionSVec		mhud_hide_empty;
+		MotionSVec		mhud_show_empty;
+		MotionSVec		mhud_shots_last;
 		MotionSVec		mhud_idle_sprint_empty;
 		MotionSVec		mhud_idle_moving_empty;
 	};
