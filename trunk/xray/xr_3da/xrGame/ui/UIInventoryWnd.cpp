@@ -150,9 +150,10 @@ void CUIInventoryWnd::Init()
 	m_belt_list_over[0] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
 	m_belt_highlight[0] = UIHelper::CreateStatic(uiXml, "highlight_belt_list", this);
 	m_belt_highlight[0]->SetVisible(false);
-	Fvector2 pos;
 	
-	pos        = m_belt_list_over[0]->GetWndPos();
+	Fvector2 pos_list_over = m_belt_list_over[0]->GetWndPos();
+	Fvector2 pos_highlight = m_belt_highlight[0]->GetWndPos();
+
     float    w = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_width",  10.0f);
     float    h = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_height", 10.0f);
 	float sp_x = uiXml.ReadAttribFlt("dragdrop_belt", 0, "cell_sp_x",   10.0f);
@@ -162,18 +163,24 @@ void CUIInventoryWnd::Init()
     {		 
         if (j == 5) //ѕеремещаемс€ на нижний р€д иконок
 		{ 
-		  pos.y += h + sp_y;
-	      pos.x = m_belt_list_over[0]->GetWndPos().x; 
-		  pos.x -= w + sp_x; 
+		  pos_list_over.y += h + sp_y;
+	      pos_list_over.x = m_belt_list_over[0]->GetWndPos().x; 
+		  pos_list_over.x -= w + sp_x; 
+
+		  pos_highlight.y += h + sp_y;
+	      pos_highlight.x = m_belt_highlight[0]->GetWndPos().x; 
+		  pos_highlight.x -= w + sp_x; 
+
 		} 
 
-		  pos.x += w + sp_x;
+		  pos_list_over.x += w + sp_x;
+		  pos_highlight.x += w + sp_x;
 		 
 		  m_belt_list_over[j] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);      // Ѕлокировка €чеек
-		  m_belt_list_over[j]->SetWndPos(pos);
+		  m_belt_list_over[j]->SetWndPos(pos_list_over);
 		 
 		  m_belt_highlight[j] = UIHelper::CreateStatic(uiXml, "highlight_belt_list", this); // ѕодсветка €чеек
-		  m_belt_highlight[j]->SetWndPos(pos);
+		  m_belt_highlight[j]->SetWndPos(pos_highlight);
 		  m_belt_highlight[j]->SetVisible(false);
     }
 
