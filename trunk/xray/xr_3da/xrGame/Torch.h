@@ -1,12 +1,13 @@
 #pragma once
 
 #include "inventory_item_object.h"
-//#include "night_vision_effector.h"
 #include "hudsound.h"
 #include "script_export_space.h"
 
+
 class CLAItem;
 class CMonsterEffector;
+class CEntityCondition;
 
 class CTorch : public CInventoryItemObject {
 private:
@@ -14,8 +15,10 @@ private:
 
 protected:
 	float			fBrightness;
+
+	float			battarey_power;
 	float			battarey_life;
-	float			PowerLoss;
+
 	CLAItem*		lanim;
 	float			time2hide;
 
@@ -27,7 +30,6 @@ protected:
 
 public:
 	bool			m_switched_on;
-	float	        GetPowerLoss	 () {return PowerLoss;}
 
 protected:
 	bool			b_lastState;
@@ -92,6 +94,8 @@ public:
 	void			SetRange(float range, int target = 0);
 	void			SetTexture(LPCSTR texture, int target = 0);
 	void			SetVirtualSize(float size, int target = 0);
+
+	float			GetBattareyLife	() {return battarey_life;}
 
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

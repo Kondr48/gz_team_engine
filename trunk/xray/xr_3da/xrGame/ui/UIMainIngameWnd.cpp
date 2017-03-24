@@ -270,9 +270,6 @@ void CUIMainIngameWnd::Init()
     m_ind_boost_health->Show(false);
     m_ind_boost_power->Show(false);
     m_ind_boost_rad->Show(false);
-
-	m_ind_battarey_frame		    = UIHelper::CreateStatic(uiXml, "battarey_life_frame", this);
-	m_ind_battarey_progress_bar     = UIHelper::CreateProgressBar(uiXml, "battarey_life_progress", this);
 	
 	xml_init.InitStatic			(uiXml, "invincible_static", 0, &UIInvincibleIcon);
 	UIInvincibleIcon.Show		(false);
@@ -685,8 +682,6 @@ void CUIMainIngameWnd::Update()
 	// health&power
 	UIHealthBar.SetProgressPos		                (m_pActor->GetfHealth()*100.0f);
 	UIMotionIcon.SetPower			                (m_pActor->conditions().GetPower()*100.0f);
-	// заряд батареи
-	m_ind_battarey_progress_bar->SetProgressPos		(m_pActor->conditions().GetBattareyLife()*100.0f);
 	
 	UIZoneMap->UpdateRadar			(Device.vCameraPosition);
 	float h,p;

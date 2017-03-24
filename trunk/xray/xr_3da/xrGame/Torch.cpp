@@ -53,6 +53,8 @@ CTorch::CTorch(void)
 	m_delta_h					= 0;
 	SetSlot						(TORCH_SLOT);
 	need_slot					= true;
+	battarey_life               = 1.f;
+	battarey_power              = 1.f;
 }
 
 CTorch::~CTorch(void) 
@@ -77,8 +79,8 @@ inline bool CTorch::can_use_dynamic_lights	()
 void CTorch::Load(LPCSTR section) 
 {
 	inherited::Load			(section);
-	light_trace_bone		= pSettings->r_string(section,"light_trace_bone");
-	battarey_life		    = pSettings->r_float(section,"battarey_life");
+	light_trace_bone		= pSettings->r_string(section, "light_trace_bone");
+	battarey_life		    = pSettings->r_float(section,  "battarey_life");
 }
 
 void CTorch::Switch()
@@ -201,19 +203,17 @@ void CTorch::OnH_B_Independent	(bool just_before_destroy)
 
 void CTorch::UpdatePowerLoss()
 {
-
 	CActor *pA = smart_cast<CActor *>(H_Parent());
-	if (!((pA) ? true : false)) {PowerLoss = 0.0f; return;}
+	if (!((pA) ? true : false)) {battarey_power = 1.0f; return;}
     
 	if (m_switched_on == true)
 	{
-		PowerLoss = 1/battarey_life;
+		battarey_power -= 1 / (battarey_life * 60 * m_fDeltaTime);
+		Msg("Заряд батареи фонаря = %f --- %f", battarey_power, Level().GetGameTime());
 		m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-		if (m_pActor->conditions().GetBattareyLife()<=0 && m_switched_on == true) //если батарейка села, выключаем фонарик
+		if (battarey_power <= 0 && m_switched_on == true)
 			Switch();
 	}	
-	else
-		PowerLoss = 0.0f;
 }
 
 void CTorch::UpdateCL() 

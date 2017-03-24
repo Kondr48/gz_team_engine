@@ -179,7 +179,6 @@ public:
 	_DECLARE_FUNCTION10	(GetAlcohol			,			float);
 	_DECLARE_FUNCTION10	(GetSatiety			,			float);
 	_DECLARE_FUNCTION10	(GetThirst			,			float);
-	_DECLARE_FUNCTION10	(GetBattareyLife	,			float);
 
 //	_DECLARE_FUNCTION11	(Set_Health,			void, float);
 	_DECLARE_FUNCTION11	(SetPsyHealth,		void, float);
@@ -191,7 +190,6 @@ public:
 	_DECLARE_FUNCTION11	(SetMaxPower,		void, float);
 	_DECLARE_FUNCTION11	(SetAlcohol,		void, float);
 	_DECLARE_FUNCTION11	(SetThirst,		    void, float);
-	_DECLARE_FUNCTION11	(SetBattareyLife,   void, float);
 
 			void				set_fov				(float new_fov);
 			void				set_range			(float new_range);

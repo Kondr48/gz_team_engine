@@ -104,7 +104,6 @@ public:
 
 	virtual float				GetSatiety			()					{return 0.f;};
 	virtual float            	GetThirst			()					{return 0.f;};
-	virtual float            	GetBattareyLife		()					{return 0.f;};
 	virtual float xr_stdcall	GetAlcohol			()					{return 0.f;};
 
 	virtual void 			ChangeSatiety			(float value)		{};
@@ -114,7 +113,6 @@ public:
 	void 					ChangePower				(float value);
 	void 					ChangeRadiation			(float value);
 	void 					ChangePsyHealth			(float value);
-	virtual void 			ChangeBattareyLife		(float value)		{};
 	
 	IC void					MaxPower				()					{m_fPower = m_fPowerMax;};
 	IC void					SetMaxPower				(float val)			{m_fPowerMax = val; clamp(m_fPowerMax,0.1f,1.0f);};

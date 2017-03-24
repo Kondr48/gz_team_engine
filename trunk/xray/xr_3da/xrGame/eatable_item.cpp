@@ -49,7 +49,6 @@ void CEatableItem::Load(LPCSTR section)
 	m_fPowerInfluence			= READ_IF_EXISTS	(pSettings, r_float, section, "eat_power",         0.0f);
 	m_fSatietyInfluence			= READ_IF_EXISTS	(pSettings, r_float, section, "eat_satiety",       0.0f);
 	m_fThirstInfluence			= READ_IF_EXISTS	(pSettings, r_float, section, "eat_thirst",        0.0f);
-	m_fBattareyLifeInfluence    = READ_IF_EXISTS	(pSettings, r_float, section, "battarey_life",     0.0f);
 	m_fRadiationInfluence		= READ_IF_EXISTS	(pSettings, r_float, section, "eat_radiation",     0.0f);
 	m_fWoundsHealPerc			= READ_IF_EXISTS	(pSettings, r_float, section, "wounds_heal_perc",  0.0f);
 	clamp						(m_fWoundsHealPerc, 0.f, 1.f);
@@ -121,7 +120,6 @@ void CEatableItem::UseBy (CEntityAlive* entity_alive)
 	entity_alive->conditions().ChangeThirst	        (m_fThirstInfluence);
 	entity_alive->conditions().ChangeRadiation	    (m_fRadiationInfluence);
 	entity_alive->conditions().ChangeBleeding	    (m_fWoundsHealPerc);
-	entity_alive->conditions().ChangeBattareyLife	(m_fBattareyLifeInfluence);
 	entity_alive->conditions().SetMaxPower          (entity_alive->conditions().GetMaxPower()+m_fMaxPowerUpInfluence);
 	
 	for(u8 i = 0; i<(u8)eBoostMaxCount; i++)

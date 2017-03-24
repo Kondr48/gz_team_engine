@@ -218,7 +218,6 @@ void  CEntityCondition::UpdateWounds		()
 void CEntityCondition::UpdateConditionTime()
 {
 	u64 _cur_time = (GameID() == GAME_SINGLE) ? Level().GetGameTime() : Level().timeServer();
-	
 	if(m_bTimeValid)
 	{
 		if (_cur_time > m_iLastTimeCalled){

@@ -34,7 +34,6 @@ private:
 	void				UpdateTutorialThresholds	();
 	void 				UpdateSatiety				();
 	void 				UpdateThirst				();
-	void 				UpdateBattareyLife          ();
 	void		        UpdateBoosters				();
 public:
 						CActorCondition				(CActor *object);
@@ -49,7 +48,6 @@ public:
 	virtual void 		ChangeAlcohol				(float value);
 	virtual void 		ChangeSatiety				(float value);
 	virtual void 		ChangeThirst				(float value);
-	virtual void 		ChangeBattareyLife			(float value);
 
 	void 				BoostParameters				(const SBooster& B);
 	void 				DisableBoostParameters		(const SBooster& B);
@@ -86,7 +84,6 @@ public:
 			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
 			float				GetSatiety			()  {return m_fSatiety;}
 			float				GetThirst			()  {return m_fThirst;}
-			float				GetBattareyLife     ()  {return m_fBattareyLife;}
 			float				GetMaxWalkWeight	()  {return m_MaxWalkWeight;}
 
 public:
@@ -111,8 +108,6 @@ protected:
 	float m_fS_Thirst;
 	float m_fV_SatietyPower;
 	float m_fV_SatietyHealth;
-
-	float m_fBattareyLife;
 //--
 	float m_fPowerLeakSpeed;
 

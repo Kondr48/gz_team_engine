@@ -77,13 +77,11 @@ BIND_FUNCTION10	(&object(),	CScriptGameObject::GetMaxPower,			CEntityAlive,	cond
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetSatiety,			CEntityAlive,	conditions().GetSatiety,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetAlcohol,			CEntityAlive,	conditions().GetAlcohol,		float,							-1);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetThirst,			CEntityAlive,	conditions().GetThirst,		    float,							-1);
-BIND_FUNCTION10	(&object(),	CScriptGameObject::GetBattareyLife,		CEntityAlive,	conditions().GetBattareyLife,	float,							-1);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetPsyHealth,		CEntityAlive,	conditions().ChangePsyHealth,	float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetPower,			CEntityAlive,	conditions().ChangePower,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetMaxPower,			CEntityAlive,	conditions().SetMaxPower,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetRadiation,		CEntityAlive,	conditions().ChangeRadiation,	float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetThirst,		    CEntityAlive,	conditions().ChangeThirst,	    float,							float);
-BIND_FUNCTION01	(&object(),	CScriptGameObject::SetBattareyLife,	    CEntityAlive,	conditions().ChangeBattareyLife,float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetSatiety,			CEntityAlive,	conditions().ChangeSatiety,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetAlcohol,			CEntityAlive,	conditions().ChangeAlcohol,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetCircumspection,	CEntityAlive,	conditions().ChangeCircumspection,float,							float);

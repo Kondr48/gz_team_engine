@@ -10,6 +10,7 @@
 
 #include "physic_item.h"
 #include "inventory_item.h"
+#include "level.h"
 
 class CInventoryItemObject : 
 			public CInventoryItem, 
@@ -72,9 +73,16 @@ protected:
 #ifdef DEBUG
 	virtual void	OnRender				();
 #endif
+	//для отслеживания времени 
+	u64					m_iLastTimeCalled;
+	float				m_fDeltaTime;
+	bool				m_bTimeValid;
 
 public:
-	virtual bool	Useful					() const;
+	virtual     bool	            Useful				    () const;
+	IC const	float				fdelta_time			    () const 	{return		(m_fDeltaTime);			}
+	void					        UpdateTime		        ();
+	IC void					        SetConditionDeltaTime	(float DeltaTime) { m_fDeltaTime = DeltaTime; };
 
 public:
 	virtual u32		ef_weapon_type			() const;

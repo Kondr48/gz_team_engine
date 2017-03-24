@@ -1557,7 +1557,6 @@ void CActor::UpdateArtefactsOnBelt()
 			conditions().ChangePower            (artefact->GetPowerRestoreSpeed()     *  f_update_time);
 			conditions().ChangeSatiety          (artefact->GetSatietyRestoreSpeed()   *  f_update_time);
 			conditions().ChangeThirst           (artefact->GetThirstRestoreSpeed()    *  f_update_time);
-			conditions().ChangeBattareyLife     (artefact->GetPowerLifeRestoreSpeed() *  f_update_time);
 #ifndef OBJECTS_RADIOACTIVE // alpet: отключается для избежания двойного хита
 			conditions().ChangeRadiation		(artefact->GetRadiationRestoreSpeed() *  f_update_time);
 #endif

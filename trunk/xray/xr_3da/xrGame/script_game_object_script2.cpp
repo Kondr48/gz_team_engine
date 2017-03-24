@@ -76,7 +76,6 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.property("max_power",				&CScriptGameObject::GetMaxPower,		&CScriptGameObject::SetMaxPower)
 		// Kondr48
 		.property("thirst",				    &CScriptGameObject::GetThirst,			&CScriptGameObject::SetThirst)
-		.property("battarey_life",			&CScriptGameObject::GetBattareyLife,	&CScriptGameObject::SetBattareyLife)
 
 		.def("get_bleeding",				&CScriptGameObject::GetBleeding)
 		.def("center",						&CScriptGameObject::Center)

@@ -154,12 +154,9 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		det_two_activate();
 	    }break;	
 	case kTORCH:{ 
-		if (conditions().GetBattareyLife()>0) //включить фонарь можно только если есть энергия
-		{
 	    luabind::functor<void>	flashlight_key;
 		if (ai().script_engine().functor("gz_items_hud.flashlight_key",flashlight_key))
 		flashlight_key();
-		}	
 	}break;
 	case kWPN_1:	
 	case kWPN_2:	

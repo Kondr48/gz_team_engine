@@ -65,9 +65,6 @@ protected:
 	CUIStatic*			m_ind_outfit_broken;
 	CUIStatic*			m_ind_overweight;
 
-	CUIStatic*			m_ind_battarey_frame;
-	CUIProgressBar*		m_ind_battarey_progress_bar;
-
 public:
     CUIStatic* m_ind_boost_psy;
     CUIStatic* m_ind_boost_radia;

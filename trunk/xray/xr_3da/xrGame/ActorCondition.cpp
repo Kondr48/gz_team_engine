@@ -49,7 +49,6 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fAlcohol					= 0.f;
 	m_fSatiety					= 1.0f;
 	m_fThirst					= 0.f;
-	m_fBattareyLife				= 1.0f;
 
 	VERIFY						(object);
 	m_object					= object;
@@ -193,11 +192,12 @@ void CActorCondition::UpdateCondition()
 
 	UpdateThirst				();
 
-	UpdateBattareyLife          ();
-
 	UpdateBoosters              (); 
 
 	inherited::UpdateCondition	();
+
+	u64 _cur_time = Level().GetGameTime();
+	Msg("actor: current_time %f", _cur_time);
 
 	if( IsGameTypeSingle() )
 		UpdateTutorialThresholds();
@@ -272,27 +272,6 @@ void CActorCondition::UpdateThirst()
 		  m_fThirst		+= m_fV_Thirst*k*m_fDeltaTime;
 		  
 	    clamp (m_fThirst,			0.0f,		1.0f);   
-	}
-}
-
-void CActorCondition::UpdateBattareyLife()
-{
-	if (!IsGameTypeSingle()) return;
-	
-	if(m_fBattareyLife>0)
-	{	
-		CTorch* pTorch = smart_cast<CTorch*>(object().inventory().ItemFromSlot(TORCH_SLOT));
-		float torch_pl;
-		
-		if (pTorch)
-		 torch_pl = pTorch->GetPowerLoss();
-		else
-         torch_pl = 0.0f;
-		
-		m_fBattareyLife -= (torch_pl)*0.000277f*m_fDeltaTime;
-		//Потеря энергии от всех вкюченных потребителей
-
-		clamp (m_fBattareyLife,			0.0f,		1.0f);
 	}
 }
 
@@ -390,7 +369,6 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_condition_flags, output_packet);
 	save_data			(m_fSatiety, output_packet);
 	save_data			(m_fThirst, output_packet);
-	save_data			(m_fBattareyLife, output_packet);
 	output_packet.w_u8((u8)m_booster_influences.size());
 	BOOSTER_MAP::iterator b = m_booster_influences.begin(), e = m_booster_influences.end();
 	for(; b!=e; b++)
@@ -408,7 +386,6 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_condition_flags, input_packet);
 	load_data			(m_fSatiety, input_packet);
 	load_data			(m_fThirst, input_packet);
-	load_data			(m_fBattareyLife, input_packet);
 	u8 cntr = input_packet.r_u8();
 	for(; cntr>0; cntr--)
 	{
@@ -426,7 +403,6 @@ void CActorCondition::reinit	()
 	inherited::reinit	();
 	m_bLimping					= false;
 	m_fSatiety					= 1.f;
-	m_fBattareyLife				= 1.f;
 	m_fThirst					= 0.f;
 }
 
@@ -445,12 +421,6 @@ void CActorCondition::ChangeThirst(float value)
 {
 	m_fThirst += value;
 	clamp		(m_fThirst, 0.0f, 1.0f);
-}
-
-void CActorCondition::ChangeBattareyLife(float value)
-{
-	m_fBattareyLife	+= value;
-	clamp		(m_fBattareyLife, 0.0f, 1.0f);
 }
 
 void CActorCondition::BoostParameters(const SBooster& B)

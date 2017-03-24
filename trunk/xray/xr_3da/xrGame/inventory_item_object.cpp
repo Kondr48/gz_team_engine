@@ -8,10 +8,12 @@
 
 #include "stdafx.h"
 #include "inventory_item_object.h"
+#include "level.h"
 
 CInventoryItemObject::CInventoryItemObject	()
 {
 	m_class_name = get_class_name<CInventoryItemObject>(this);
+	m_bTimeValid		= false;
 }
 
 CInventoryItemObject::~CInventoryItemObject	()
@@ -99,10 +101,11 @@ void CInventoryItemObject::OnH_A_Chield		()
 	CInventoryItem::OnH_A_Chield		();
 }
 
-void CInventoryItemObject::UpdateCL			()
+void CInventoryItemObject::UpdateCL		()
 {
 	CPhysicItem::UpdateCL				();
 	CInventoryItem::UpdateCL			();
+	UpdateTime                          ();
 }
 
 void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
@@ -144,6 +147,7 @@ void CInventoryItemObject::load				(IReader &packet)
 {
 	CPhysicItem::load					(packet);
 	CInventoryItem::load				(packet);
+	m_bTimeValid = false;
 }
 
 void CInventoryItemObject::renderable_Render()
@@ -162,6 +166,7 @@ void CInventoryItemObject::reinit		()
 {
 	CInventoryItem::reinit				();
 	CPhysicItem::reinit					();
+	m_bTimeValid		= false;
 }
 
 void CInventoryItemObject::activate_physic_shell	()
@@ -226,4 +231,25 @@ bool CInventoryItemObject::NeedToDestroyObject	() const
 bool CInventoryItemObject::Useful				() const
 {
 	return			(CInventoryItem::Useful());
+}
+
+void CInventoryItemObject::UpdateTime()
+{
+	u64 _cur_time = Level().GetGameTime();
+
+	if(m_bTimeValid)
+	{
+		if (_cur_time > m_iLastTimeCalled){
+			float x					= float(_cur_time-m_iLastTimeCalled)/1000.0f;
+			SetConditionDeltaTime	(x);
+		}else 
+			SetConditionDeltaTime(0.0f);
+	}
+	else
+	{
+		SetConditionDeltaTime	(0.0f);
+		m_bTimeValid			= true;
+	}
+
+	m_iLastTimeCalled			= _cur_time;
 }
