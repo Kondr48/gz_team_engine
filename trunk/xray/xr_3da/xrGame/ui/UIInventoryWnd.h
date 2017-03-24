@@ -91,6 +91,7 @@ protected:
 
 	CUIProgressBar*				m_WeaponSlot1_progress;
 	CUIProgressBar*				m_WeaponSlot2_progress;
+	CUIProgressBar*				m_WeaponSlot3_progress;
 	CUIProgressBar*				m_Helmet_progress;
 	CUIProgressBar*				m_Outfit_progress;
 	CUIDragDropListEx*			m_pUIKnifeList;

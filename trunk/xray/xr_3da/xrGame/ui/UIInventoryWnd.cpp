@@ -108,6 +108,7 @@ void CUIInventoryWnd::Init()
 	
 	m_WeaponSlot1_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon1", this);
 	m_WeaponSlot2_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon2", this);
+	m_WeaponSlot3_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon3", this);
 	m_Helmet_progress		= UIHelper::CreateProgressBar(uiXml, "progess_bar_helmet", this);
 	m_Outfit_progress		= UIHelper::CreateProgressBar(uiXml, "progess_bar_outfit", this);
 
@@ -637,6 +638,12 @@ void CUIInventoryWnd::UpdateConditionProgressBars()
 		m_WeaponSlot2_progress->SetProgressPos(iCeil(itm->GetCondition()*15.0f)/15.0f);
 	else
 		m_WeaponSlot2_progress->SetProgressPos(0);
+
+	itm = m_pActor->inventory().ItemFromSlot(APPARATUS_SLOT);
+	if(itm)
+		m_WeaponSlot3_progress->SetProgressPos(iCeil(itm->GetCondition()*15.0f)/15.0f);
+	else
+		m_WeaponSlot3_progress->SetProgressPos(0);
 
 	itm = m_pActor->inventory().ItemFromSlot(OUTFIT_SLOT);
 	if(itm)
