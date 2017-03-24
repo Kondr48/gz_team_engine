@@ -78,7 +78,6 @@ void CUIInventoryWnd::Init()
 	AttachChild							(&UIDescrWnd);
 	xml_init.InitStatic					(uiXml, "descr_static", 0, &UIDescrWnd);
 
-
 	UIDescrWnd.AttachChild				(&UIItemInfo);
 	UIItemInfo.Init						(0, 0, UIDescrWnd.GetWidth(), UIDescrWnd.GetHeight(), INVENTORY_ITEM_XML);
 	
@@ -106,6 +105,11 @@ void CUIInventoryWnd::Init()
 	UIProgressBack.AttachChild	(&UIProgressBarThirst);
 	xml_init.InitProgressBar (uiXml, "progress_bar_thirst", 0, &UIProgressBarThirst);
 	
+	m_QuickSlot1 = UIHelper::CreateStatic(uiXml, "slot_quick_access_1_text", this);
+    m_QuickSlot2 = UIHelper::CreateStatic(uiXml, "slot_quick_access_2_text", this);
+    m_QuickSlot3 = UIHelper::CreateStatic(uiXml, "slot_quick_access_3_text", this);
+    m_QuickSlot4 = UIHelper::CreateStatic(uiXml, "slot_quick_access_4_text", this);
+
 	m_WeaponSlot1_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon1", this);
 	m_WeaponSlot2_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon2", this);
 	m_WeaponSlot3_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon3", this);
@@ -780,4 +784,34 @@ void CUIInventoryWnd::MoveArtefactsToBag()
         ToBag(ci, false);
     }  // for i
 	m_pUIBeltList->ClearAll					(true);
+}
+
+void CUIInventoryWnd::UpdateButtonsLayout()
+{
+    string32 tmp;
+    LPCSTR str = CStringTable().translate("quick_use_str_1").c_str();
+    strncpy_s(tmp, sizeof(tmp), str, 3);
+    if (tmp[2] == ',')
+        tmp[1] = '\0';
+    m_QuickSlot1->SetTextST(tmp);
+
+    str = CStringTable().translate("quick_use_str_2").c_str();
+    strncpy_s(tmp, sizeof(tmp), str, 3);
+    if (tmp[2] == ',')
+        tmp[1] = '\0';
+    m_QuickSlot2->SetTextST(tmp);
+
+    str = CStringTable().translate("quick_use_str_3").c_str();
+    strncpy_s(tmp, sizeof(tmp), str, 3);
+    if (tmp[2] == ',')
+        tmp[1] = '\0';
+    m_QuickSlot3->SetTextST(tmp);
+
+    str = CStringTable().translate("quick_use_str_4").c_str();
+    strncpy_s(tmp, sizeof(tmp), str, 3);
+    if (tmp[2] == ',')
+        tmp[1] = '\0';
+    m_QuickSlot4->SetTextST(tmp);
+
+    UpdateConditionProgressBars();
 }

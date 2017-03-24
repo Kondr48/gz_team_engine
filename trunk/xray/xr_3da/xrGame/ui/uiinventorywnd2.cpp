@@ -70,6 +70,8 @@ void CUIInventoryWnd::InitInventory()
 	m_pMouseCapturer			= NULL;
 	SetCurrentItem				(NULL);
 
+	UpdateButtonsLayout();
+
 	PIItem  _itm							= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
 	if(_itm)
 	{

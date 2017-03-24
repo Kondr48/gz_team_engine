@@ -68,6 +68,8 @@ protected:
 	ref_sound					sounds					[eInvSndMax];
 	void						PlaySnd					(eInventorySndAction a);
 
+	void                        UpdateButtonsLayout();
+
 	CUIStatic					UIBack;
 
 	CUIStatic					UIBagWnd;
@@ -128,6 +130,11 @@ protected:
 
 	CUIStatic* m_HelmetOver;
 	CUIStatic* m_NightvisionOver;
+
+	CUIStatic* m_QuickSlot1;
+    CUIStatic* m_QuickSlot2;
+    CUIStatic* m_QuickSlot3;
+    CUIStatic* m_QuickSlot4;
 
 	enum
     {
