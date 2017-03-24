@@ -20,6 +20,7 @@ struct SBullet
 			u16			allow_sendhit	: 1	;			//statistics
 			u16			skipped_frame	: 1	;			//пропуск первой отрисовки
 			u16			aim_bullet		: 1 ;			//прицеленная пуля( вылетевшая первой после длительного молчания оружия (1-3 сек.))
+			u16			old_mode		: 1 ;			//NewBal Старый способ расчёта хита
 		};
 		u16				_storage			;
 	}				flags				;

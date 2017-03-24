@@ -44,6 +44,10 @@ void SBullet::Init(const Fvector& position,
 {
 	flags._storage		= 0;
 	pos 				= position;
+	if (cartridge.m_kSpeed != 0.f)				//NewBal если k_speed не равно нулю то
+		starting_speed 	*= cartridge.m_kSpeed; 	//NewBal меняем нач. скорость пули в зависимости от типа патрона
+	else										//NewBal иначе
+		flags.old_mode	= 1;					//NewBal старый способ расчёта падения хита с учётом падения скорости
 	speed = max_speed	= starting_speed;
 	VERIFY				(speed>0);
 
@@ -282,10 +286,11 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 		bullet->dir.mul(bullet->speed);
 
 		Fvector air_resistance = bullet->dir;
-		if (GameID() == GAME_SINGLE)
-			air_resistance.mul(-m_fAirResistanceK*delta_time_sec);
-		else
-			air_resistance.mul(-bullet->air_resistance*(bullet->speed)/(bullet->max_speed)*delta_time_sec);
+//NewBal Выключаем старый алгоритм расчёта сопротивления пули.
+//		if (GameID() == GAME_SINGLE)
+//			air_resistance.mul(-m_fAirResistanceK*delta_time_sec);
+//		else //NewBal оставляем алгоритм который в мультиплеере работает
+		air_resistance.mul(-bullet->air_resistance*(bullet->speed)/(bullet->max_speed)*delta_time_sec);
 ///		Msg("Speed - %f; ar - %f, %f", bullet->dir.magnitude(), air_resistance.magnitude(), air_resistance.magnitude()/bullet->dir.magnitude()*100);
 
 		bullet->dir.add(air_resistance);
@@ -294,11 +299,8 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 		bullet->speed = bullet->dir.magnitude();
 		VERIFY(_valid(bullet->speed));
 		VERIFY(!fis_zero(bullet->speed));
-		
-		// by Real Wolf 11.07.2014.
-		R_ASSERT(bullet->speed);
-
 		//вместо normalize(),	 чтоб не считать 2 раза magnitude()
+#pragma todo("а как насчет bullet->speed==0")
 		bullet->dir.x /= bullet->speed;
 		bullet->dir.y /= bullet->speed;
 		bullet->dir.z /= bullet->speed;

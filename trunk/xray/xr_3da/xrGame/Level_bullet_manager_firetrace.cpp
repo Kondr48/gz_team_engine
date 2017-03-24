@@ -382,10 +382,8 @@ void CBulletManager::DynamicObjectHit	(CBulletManager::_event& E)
 
 		NET_Packet			np;
 		Hit.Write_Packet	(np);
-
-
-		if (Hit.hit_type != ALife::eHitTypeFireWound) 
-		    Msg("Hit sended: %d[%d,%d], type = %d", Hit.whoID, Hit.weaponID, Hit.BulletID, Hit.hit_type);
+		
+//		Msg("Hit sended: %d[%d,%d]", Hit.whoID, Hit.weaponID, Hit.BulletID);
 		CGameObject::u_EventSend(np);
 	}
 }
@@ -425,6 +423,8 @@ std::pair<float, float>  CBulletManager::ObjectHit	(SBullet* bullet, const Fvect
 
 	//коэффициент уменьшение силы с падением скорости
 	float speed_factor = bullet->speed/bullet->max_speed;
+	if (!bullet->flags.old_mode) 			//NewBal если не старый_способ, то
+			speed_factor *= speed_factor;	//NewBal speed_factor пропорционален квадрату скорости
 	//получить силу хита выстрела с учетом патрона
 	float power = bullet->hit_power*speed_factor;
 	

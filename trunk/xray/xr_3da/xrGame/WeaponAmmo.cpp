@@ -17,7 +17,7 @@ CCartridge::CCartridge()
 {
 	m_flags.assign			(cfTracer | cfRicochet);
 	m_ammoSect = NULL;
-	m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = 1.f;
+	m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = m_kSpeed = 1.f; //NewBal »нициализаци€ параметра, здесь m_kSpeed должен равен 1
 	m_kAP = 0.0f;
 	m_kAirRes = 0.0f;
 	m_buckShot = 1;
@@ -37,7 +37,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
-	
+	m_kSpeed 				= READ_IF_EXISTS(pSettings, r_float, section, "k_speed", 0.0f); //NewBal «агрузка нового параметра, если не нашли устанавливаем в ноль
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes				=  pSettings->r_float(section, "k_air_resistance");
 	else
@@ -65,7 +65,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 CWeaponAmmo::CWeaponAmmo(void) 
 {
 	m_weight				= .2f;
-	m_flags.set				(Fbelt, TRUE);	
+	m_flags.set				(Fbelt, TRUE);
 }
 
 CWeaponAmmo::~CWeaponAmmo(void)
@@ -83,7 +83,7 @@ void CWeaponAmmo::Load(LPCSTR section)
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
-
+	m_kSpeed 				= READ_IF_EXISTS(pSettings, r_float, section, "k_speed", 0.0f); //NewBal «агрузка нового параметра, если не нашли устанавливаем в ноль
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes				=  pSettings->r_float(section, "k_air_resistance");
 	else
@@ -107,7 +107,7 @@ BOOL CWeaponAmmo::net_Spawn(CSE_Abstract* DC)
 	
 	if(m_boxCurr > m_boxSize)
 		l_pW->a_elapsed		= m_boxCurr = m_boxSize;
-	
+
 	return					bResult;
 }
 
@@ -163,6 +163,7 @@ bool CWeaponAmmo::Get(CCartridge &cartridge)
 	cartridge.m_kAP = m_kAP;
 	cartridge.m_kAirRes = m_kAirRes;
 	cartridge.m_u8ColorID = m_u8ColorID;
+	cartridge.m_kSpeed = m_kSpeed; //NewBal «агрузка параметра 
 	cartridge.m_flags.set(CCartridge::cfTracer ,m_tracer);
 	cartridge.m_buckShot = m_buckShot;
 	cartridge.m_impair = m_impair;
@@ -234,13 +235,3 @@ float CWeaponAmmo::Weight()
 
 	return res;
 }
-
-u32 CWeaponAmmo::Cost() const
-{
-	float res = (float) m_cost;		
-	res *= (float)m_boxCurr/(float)m_boxSize;
-	// return (u32)roundf(res); // VC18 only
-	return (u32)ceil(res + 0.5);
-}
-
-

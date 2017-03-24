@@ -374,8 +374,8 @@ void CExplosive::Explode()
 		cartridge.m_kPierce					= 1.f;
 		cartridge.fWallmarkSize				= fWallmarkSize;
 		cartridge.bullet_material_idx		= GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
-		cartridge.m_flags.set				(CCartridge::cfTracer,FALSE);
-
+		cartridge.m_flags.set				(CCartridge::cfTracer,TRUE); 	//NewBal ¬ключить трассеры у осколков
+		cartridge.m_flags.set				(CCartridge::cfRicochet,TRUE); 	//NewBal ¬ключить рикошет у осколков
 		Level().BulletManager().AddBullet(	pos, frag_dir, m_fFragmentSpeed,
 											m_fFragHit, m_fFragHitImpulse, Initiator(),
 											cast_game_object()->ID(), m_eHitTypeFrag, m_fFragsRadius, 

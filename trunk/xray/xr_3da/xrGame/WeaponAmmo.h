@@ -1,3 +1,8 @@
+/*-------------------------------------
+Проект Новая баллистика
+(с) НаноБот
+-------------------------------------*/
+
 #pragma once
 #include "inventory_item_object.h"
 
@@ -14,7 +19,7 @@ public:
 		cfCanBeUnlimited		= (1<<2),
 		cfExplosive				= (1<<3),
 	};
-	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed; //NewBal Объявляем новый параметр
 	int		m_buckShot;
 	float	m_impair;
 	float	fWallmarkSize;
@@ -49,10 +54,9 @@ public:
 	virtual bool					Useful				() const;
 	virtual float					Weight				();
 
-	virtual u32						Cost				() const;
 	bool							Get					(CCartridge &cartridge);
 
-	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed; //NewBal Объявляем новый параметр
 	int			m_buckShot;
 	float		m_impair;
 	float		fWallmarkSize;
@@ -61,7 +65,6 @@ public:
 	u16			m_boxSize;
 	u16			m_boxCurr;
 	bool		m_tracer;
-
 
 public:
 	virtual CInventoryItem *can_make_killing	(const CInventory *inventory) const;
