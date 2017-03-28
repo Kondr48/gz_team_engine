@@ -150,6 +150,8 @@ public:
 	virtual void				OnMoveToSlot		() {};
 	virtual void				OnMoveToBelt		() {};
 	virtual void				OnMoveToRuck		() {};
+
+	Irect                       GetInvGridRect      () const ;
 					
 			int					GetGridWidth		() const ;
 			int					GetGridHeight		() const ;
@@ -166,8 +168,6 @@ public:
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 			void				ChangeCondition		(float fDeltaCondition);
 			
-	
-
 			bool				Belt				()							{return !!m_flags.test(Fbelt);}
 			void				Belt				(bool on_belt)				{m_flags.set(Fbelt,on_belt);}
 			bool				Ruck				()							{return !!m_flags.test(Fruck);}

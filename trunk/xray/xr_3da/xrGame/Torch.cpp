@@ -140,7 +140,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
 	if (!inherited::net_Spawn(DC))
 		return				(FALSE);
-	
+
 	bool b_r2				= !!psDeviceFlags.test(rsR2);
 
 	CKinematics* K			= smart_cast<CKinematics*>(Visual());
@@ -206,23 +206,19 @@ void CTorch::UpdatePowerLoss()
 	CActor *pA = smart_cast<CActor *>(H_Parent());
 	if (!((pA) ? true : false)) {battarey_power = 1.0f; return;}
     
-	if (m_switched_on == true)
-	{
-		battarey_power -= 1 / (battarey_life * 60 * m_fDeltaTime);
-		Msg("Заряд батареи фонаря = %f --- %f", battarey_power, Level().GetGameTime());
-		m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-		if (battarey_power <= 0 && m_switched_on == true)
-			Switch();
-	}	
+	battarey_power -= (1/(battarey_life * 3600)) * m_fDeltaTime;
+	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	 if (battarey_power <= 0 && m_switched_on == true)
+        Switch();
 }
 
 void CTorch::UpdateCL() 
 {
 	inherited::UpdateCL			();
 	
-	UpdatePowerLoss             ();
-
 	if (!m_switched_on)			return;
+
+	UpdatePowerLoss             ();
 
 	CBoneInstance			&BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
 	Fmatrix					M;
@@ -358,7 +354,6 @@ void CTorch::net_Export			(NET_Packet& P)
 	inherited::net_Export		(P);
 //	P.w_u8						(m_switched_on ? 1 : 0);
 
-
 	BYTE F = 0;
 	F |= (m_switched_on ? eTorchActive : 0);
 	const CActor *pA = smart_cast<const CActor *>(H_Parent());
@@ -373,7 +368,7 @@ void CTorch::net_Export			(NET_Packet& P)
 void CTorch::net_Import			(NET_Packet& P)
 {
 	inherited::net_Import		(P);
-	
+		
 	BYTE F = P.r_u8();
 	bool new_m_switched_on				= !!(F & eTorchActive);
 
@@ -403,4 +398,16 @@ void CTorch::afterDetach			()
 void CTorch::renderable_Render()
 {
 	inherited::renderable_Render();
+}
+
+void CTorch::SetBattareyPower(float x)
+{
+	battarey_power = x;
+	clamp(battarey_power, 0.f, 1.f);
+}
+
+void CTorch::SetBattareyLife(float x)
+{
+    battarey_life = x;
+	clamp(battarey_life, 0.f, 1.f);
 }

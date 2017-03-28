@@ -197,7 +197,6 @@ void CActorCondition::UpdateCondition()
 	inherited::UpdateCondition	();
 
 	u64 _cur_time = Level().GetGameTime();
-	Msg("actor: current_time %f", _cur_time);
 
 	if( IsGameTypeSingle() )
 		UpdateTutorialThresholds();
@@ -243,6 +242,7 @@ void CActorCondition::UpdateBoosters()
 		BOOSTER_MAP::iterator it = m_booster_influences.find((EBoostParams)i);
 		if(it!=m_booster_influences.end())
 		{
+			Msg("Сравним дельты у кндишина %f", m_fDeltaTime); 
 			it->second.fBoostTime -= m_fDeltaTime/(IsGameTypeSingle()?Level().GetGameTimeFactor():1.0f);
 			if(it->second.fBoostTime<=0.0f)
 			{

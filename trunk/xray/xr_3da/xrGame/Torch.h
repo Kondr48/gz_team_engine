@@ -83,6 +83,11 @@ public:
 	virtual void	afterDetach				();
 	virtual void	renderable_Render		();
 
+	float			GetBattareyPower	() {return battarey_power;}
+	float			GetBattareyLife	    () {return battarey_life;}
+	virtual void	SetBattareyPower	(float x);
+	virtual void	SetBattareyLife  	(float x);
+
 	// alpet: управление светом фонаря
 	IRender_Light  *GetLight(int target = 0);
 
@@ -94,9 +99,6 @@ public:
 	void			SetRange(float range, int target = 0);
 	void			SetTexture(LPCSTR texture, int target = 0);
 	void			SetVirtualSize(float size, int target = 0);
-
-	float			GetBattareyLife	() {return battarey_life;}
-
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

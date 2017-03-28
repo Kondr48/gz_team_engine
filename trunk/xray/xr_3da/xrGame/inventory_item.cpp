@@ -1229,3 +1229,15 @@ u16 CInventoryItem::bone_count_to_synchronize	() const
 {
 	return 0;
 }
+
+Irect CInventoryItem::GetInvGridRect() const
+{
+    u32 x, y, w, h;
+
+    x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
+    y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
+    w = pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
+    h = pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+
+    return Irect().set(x, y, w, h);
+}
