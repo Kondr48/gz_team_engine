@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: HandTorch.h
-//	Created 	: 15.02.2017
+//	Created 	: 15.03.2017
 //  Modified 	: 28.03.2017
 //	Author		: Kondr48
 //	Description : Ручной фонарь
@@ -17,14 +17,15 @@ private:
 	typedef			CHudItemBase	inherited;
 
 public:
-									CHandTorch						();
-	virtual							~CHandTorch						();
-	virtual void					Load							(LPCSTR section);
-	virtual BOOL					net_Spawn						(CSE_Abstract* DC);
-	virtual CHandTorch*				cast_hand_torch					()		{return this;}
+									CHandTorch			();
+	virtual							~CHandTorch			();
+	virtual void					Load				(LPCSTR section);
+	virtual BOOL					net_Spawn			(CSE_Abstract* DC);
+	virtual CHandTorch*				cast_hand_torch		()		{return this;}
 
 protected:
-	virtual void	                Switch(bool turn);
+	virtual void	                Switch              (bool turn);
+	virtual void	                PlaySwitch          ();
 
 public:
 	virtual void					UpdateCL			();

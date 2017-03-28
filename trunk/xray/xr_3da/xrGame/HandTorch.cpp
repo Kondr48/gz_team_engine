@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: HandTorch.cpp
-//	Created 	: 15.02.2017
+//	Created 	: 15.03.2017
 //  Modified 	: 28.03.2017
 //	Author		: Kondr48
 //	Description : Ручной фонарь
@@ -96,23 +96,26 @@ void CHandTorch::OnStateSwitch		(u32 S)
 	switch(S){
 	case eTurnOff:
 		{
-			    VERIFY(GetState()==eTurnOff);
-	            m_pHUD->animPlay(random_anim(m_anim_switch), TRUE, this, GetState());
+			    VERIFY(GetState() == eTurnOff);
+	            PlaySwitch();
 		}break;
 	case eTurnOn:
 		{
-			    VERIFY(GetState()==eTurnOn);
-	            m_pHUD->animPlay(random_anim(m_anim_switch), TRUE, this, GetState());
+			    VERIFY(GetState() == eTurnOn);
+	            PlaySwitch();
 		}break;
 	};
 }
 
+void CHandTorch::PlaySwitch()
+{
+	m_pHUD->animPlay(random_anim(m_anim_switch), TRUE, this, GetState());
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	PlaySound(m_snd_switch, pActor->Position());
+}
+
 void CHandTorch::Switch(bool turn)
 {
-	CActor* pActor = smart_cast<CActor*>(H_Parent());
-
-	PlaySound(m_snd_switch, pActor->Position());
-
 	light_render->set_active(turn);
 	glow_render->set_active(turn);
 	CKinematics* pVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
