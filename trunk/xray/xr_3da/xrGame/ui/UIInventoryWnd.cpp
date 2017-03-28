@@ -34,6 +34,8 @@ using namespace InventoryUtilities;
 #include "UI3tButton.h"
 #include "../../../build_config_defines.h"
 
+#include "UIItemInfo.h"
+
 #define				INVENTORY_ITEM_XML		"inventory_item.xml"
 #define				INVENTORY_XML			"inventory_new.xml"
 
@@ -50,6 +52,7 @@ CUIInventoryWnd::CUIInventoryWnd()
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
+
 	Hide								();	
 }
 
@@ -77,9 +80,6 @@ void CUIInventoryWnd::Init()
 
 	AttachChild							(&UIDescrWnd);
 	xml_init.InitStatic					(uiXml, "descr_static", 0, &UIDescrWnd);
-
-	UIDescrWnd.AttachChild				(&UIItemInfo);
-	UIItemInfo.Init						(0, 0, UIDescrWnd.GetWidth(), UIDescrWnd.GetHeight(), INVENTORY_ITEM_XML);
 	
 	AttachChild							(&UIPersonalWnd);
 	xml_init.InitFrameWindow			(uiXml, "character_frame_window", 0, &UIPersonalWnd);
@@ -105,10 +105,10 @@ void CUIInventoryWnd::Init()
 	UIProgressBack.AttachChild	(&UIProgressBarThirst);
 	xml_init.InitProgressBar (uiXml, "progress_bar_thirst", 0, &UIProgressBarThirst);
 	
-	m_QuickSlot1 = UIHelper::CreateStatic(uiXml, "slot_quick_access_1_text", this);
-    m_QuickSlot2 = UIHelper::CreateStatic(uiXml, "slot_quick_access_2_text", this);
-    m_QuickSlot3 = UIHelper::CreateStatic(uiXml, "slot_quick_access_3_text", this);
-    m_QuickSlot4 = UIHelper::CreateStatic(uiXml, "slot_quick_access_4_text", this);
+	m_QuickSlot1 = UIHelper::CreateStatic(uiXml, "slot_quick_access_0_text", this);
+    m_QuickSlot2 = UIHelper::CreateStatic(uiXml, "slot_quick_access_1_text", this);
+    m_QuickSlot3 = UIHelper::CreateStatic(uiXml, "slot_quick_access_2_text", this);
+    m_QuickSlot4 = UIHelper::CreateStatic(uiXml, "slot_quick_access_3_text", this);
 
 	m_WeaponSlot1_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon1", this);
 	m_WeaponSlot2_progress	= UIHelper::CreateProgressBar(uiXml, "progess_bar_weapon2", this);
@@ -320,7 +320,13 @@ void CUIInventoryWnd::Init()
 	::Sound->create						(sounds[eInvDetachAddon],	uiXml.Read("snd_detach_addon",	0,	NULL),st_Effect,sg_SourceType);
 	::Sound->create						(sounds[eInvItemUse],		uiXml.Read("snd_item_use",		0,	NULL),st_Effect,sg_SourceType);
 
+	m_ItemInfo = new CUIItemInfo();
+	m_ItemInfo->Init("inventory_item.xml");
+
 	uiXml.SetLocalRoot					(stored_root);
+
+	m_item_info_view = false;
+    m_highlight_clear = true;
 }
 
 EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
@@ -348,6 +354,7 @@ CUIInventoryWnd::~CUIInventoryWnd()
 {
 //.	ClearDragDrop(m_vDragDropItems);
 	ClearAllLists						();
+	xr_delete(m_ItemInfo);
 }
 
 bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
@@ -373,6 +380,7 @@ bool CUIInventoryWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 void CUIInventoryWnd::Draw()
 {
 	CUIWindow::Draw						();
+	m_ItemInfo->Draw();
 }
 
 
@@ -427,6 +435,8 @@ void CUIInventoryWnd::Update()
 	UpdateOutfit();
 
 	CUIWindow::Update					();
+
+	m_ItemInfo->Update();
 }
 
 void CUIInventoryWnd::Show() 
@@ -605,21 +615,6 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return true;
 	}
 
-	if (WINDOW_KEY_PRESSED == keyboard_action)
-	{
-#ifdef DEBUG
-		if(DIK_NUMPAD7 == dik && CurrentIItem())
-		{
-			CurrentIItem()->ChangeCondition(-0.05f);
-			UIItemInfo.InitItem(CurrentIItem());
-		}
-		else if(DIK_NUMPAD8 == dik && CurrentIItem())
-		{
-			CurrentIItem()->ChangeCondition(0.05f);
-			UIItemInfo.InitItem(CurrentIItem());
-		}
-#endif
-	}
 	if( inherited::OnKeyboard(dik,keyboard_action) )return true;
 
 	return false;
@@ -764,7 +759,7 @@ void CUIInventoryWnd::UpdateOutfit()
     else
         m_NightvisionOver->Show(false);
     
-	if (!outfit) {
+	if (!outfit || (outfit && outfit->get_artefact_count() < m_pUIBeltList->ItemsCount())) {
         MoveArtefactsToBag();
         return;
     }
@@ -789,29 +784,50 @@ void CUIInventoryWnd::MoveArtefactsToBag()
 void CUIInventoryWnd::UpdateButtonsLayout()
 {
     string32 tmp;
-    LPCSTR str = CStringTable().translate("quick_use_str_1").c_str();
+    LPCSTR str = CStringTable().translate("quick_use_str_0").c_str();
     strncpy_s(tmp, sizeof(tmp), str, 3);
     if (tmp[2] == ',')
         tmp[1] = '\0';
     m_QuickSlot1->SetTextST(tmp);
 
-    str = CStringTable().translate("quick_use_str_2").c_str();
+    str = CStringTable().translate("quick_use_str_1").c_str();
     strncpy_s(tmp, sizeof(tmp), str, 3);
     if (tmp[2] == ',')
         tmp[1] = '\0';
     m_QuickSlot2->SetTextST(tmp);
 
-    str = CStringTable().translate("quick_use_str_3").c_str();
+    str = CStringTable().translate("quick_use_str_2").c_str();
     strncpy_s(tmp, sizeof(tmp), str, 3);
     if (tmp[2] == ',')
         tmp[1] = '\0';
     m_QuickSlot3->SetTextST(tmp);
 
-    str = CStringTable().translate("quick_use_str_4").c_str();
+    str = CStringTable().translate("quick_use_str_3").c_str();
     strncpy_s(tmp, sizeof(tmp), str, 3);
     if (tmp[2] == ',')
         tmp[1] = '\0';
     m_QuickSlot4->SetTextST(tmp);
+}
 
-    UpdateConditionProgressBars();
+void CUIInventoryWnd::InfoCurItem(CUICellItem* cell_item)
+{
+    if (!cell_item)
+    {
+        m_ItemInfo->InitItem(NULL);
+        return;
+    }
+
+	PIItem current_item = (PIItem)cell_item->m_pData;
+
+    PIItem compare_item = NULL;
+    /*u16 compare_slot = current_item->BaseSlot();
+    if (compare_slot != NO_ACTIVE_SLOT)
+    {
+        compare_item = m_pActorInvOwner->inventory().ItemFromSlot(compare_slot);
+    }*/
+
+    m_ItemInfo->InitItem			(current_item);
+
+    float dx_pos = GetWndRect().left;
+    fit_in_rect(m_ItemInfo, Frect().set(0.0f, 0.0f, UI_BASE_WIDTH - dx_pos, UI_BASE_HEIGHT), 10.0f, dx_pos);
 }

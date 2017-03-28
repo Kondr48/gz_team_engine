@@ -693,3 +693,54 @@ void CUIWindow::DetachFromParent()
 		this->m_pParentWnd->DetachChild(this);
 	}
 }
+
+static bool is_in(Frect const& a, Frect const& b) // b in a
+{
+    return (a.x1 < b.x1) && (a.x2 > b.x2) && (a.y1 < b.y1) && (a.y2 > b.y2);
+}
+
+bool fit_in_rect(CUIWindow* w, Frect const& vis_rect, float border, float dx16pos) // this = hint wnd
+{
+    float const cursor_height = 43.0f;
+    Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+	/*if (UI()->is_16_9_mode())
+    {
+        cursor_pos.x -= dx16pos;
+    }*/
+
+    if (!vis_rect.in(cursor_pos))
+    {
+        return false;
+    }
+
+    Frect rect;
+    rect.set(-border, -border, w->GetWidth() - 2.0f * border, w->GetHeight() - 2.0f * border);
+    rect.add(cursor_pos.x, cursor_pos.y);
+
+    rect.sub(0.0f, rect.height() - border);
+    if (!is_in(vis_rect, rect))
+    {
+        rect.sub(rect.width() - border, 0.0f);
+    }
+    if (!is_in(vis_rect, rect))
+    {
+        rect.add(0.0f, rect.height() - border);
+    }
+    if (!is_in(vis_rect, rect))
+    {
+        rect.add(rect.width() - border, cursor_height);
+    }
+
+    float yn = rect.top - vis_rect.height() + rect.height() - border + cursor_height;
+    if (!is_in(vis_rect, rect))
+    {
+        rect.sub(0.0f, yn);
+    }
+    if (!is_in(vis_rect, rect))
+    {
+        rect.sub(rect.width() - border, 0.0f);
+    }
+
+    w->SetWndPos(rect.lt);
+    return true;
+}

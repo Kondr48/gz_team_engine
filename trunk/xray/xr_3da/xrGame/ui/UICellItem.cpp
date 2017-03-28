@@ -23,6 +23,7 @@ CUICellItem::CUICellItem()
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
 	m_pConditionState 	= NULL;
+	m_selected          = false;
     //init();
 }
 

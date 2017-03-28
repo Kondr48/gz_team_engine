@@ -88,6 +88,14 @@ void CUIScrollView::Clear				()
 	ScrollToBegin		();
 }
 
+Fvector2 CUIScrollView::GetPadSize()
+{
+    if (m_flags.test(eNeedRecalc))
+        RecalcSize();
+
+    return m_pad->GetWndSize();
+}
+
 void CUIScrollView::Update				()
 {
 	if(m_flags.test	(eNeedRecalc) )

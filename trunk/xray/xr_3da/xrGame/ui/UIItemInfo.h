@@ -8,6 +8,7 @@ class CUIScrollView;
 class CUIProgressBar;
 class CUIWpnParams;
 class CUIArtefactParams;
+class CUIFrameWindow;
 
 extern const char * const 		fieldsCaptionColor;
 
@@ -34,16 +35,21 @@ public:
 	void				TryAddArtefactInfo	(const shared_str& af_section);
 
 	virtual void		Draw				();
+	
+    u32                 delay;
+
 	bool				m_b_force_drawing;
+	bool                m_complex_desc;
+	bool                m_b_FitToHeight;
+
+	CUIFrameWindow*     UIBackground;
 	CUIStatic*			UIName;
 	CUIStatic*			UIWeight;
 	CUIStatic*			UICost;
-	CUIStatic*			UICondition;
 	CUIScrollView*		UIDesc;
-	CUIProgressBar*		UICondProgresBar;
 	CUIWpnParams*		UIWpnParams;
 	CUIArtefactParams*	UIArtefactParams;
-
+	
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;
 };

@@ -56,6 +56,7 @@ virtual void		RecalcSize			();
 			float	GetDesiredChildWidth();
 	virtual	void	SetSelected			(CUIWindow*);
 	CUIWindow*		GetSelected			();
+	Fvector2        GetPadSize();
 			void	ForceUpdate			();
 			int		GetMinScrollPos		();
 			int		GetMaxScrollPos		();

@@ -10,7 +10,6 @@ class CInventory;
 #include "UIOutfitSlot.h"
 
 #include "UIOutfitInfo.h"
-#include "UIItemInfo.h"
 
 #include "../inventory_space.h"
 
@@ -18,6 +17,7 @@ class CArtefact;
 class CUI3tButton;
 class CUIDragDropListEx;
 class CUICellItem;
+class CUIItemInfo;
 
 class CUIInventoryWnd: public CUIDialogWnd
 {
@@ -145,6 +145,9 @@ protected:
 	CUIStatic* m_belt_highlight[e_af_count];
 
 	bool m_highlight_clear;
+	bool m_item_info_view;
+
+	void InfoCurItem(CUICellItem* cell_item); // on update item
 
 private:
 	void clear_highlight_lists();
@@ -184,7 +187,7 @@ public:
 	
 	//информация о персонаже
 	CUIOutfitInfo				UIOutfitInfo;
-	CUIItemInfo					UIItemInfo;
+	CUIItemInfo*                m_ItemInfo;
 
 	CInventory*					m_pInv;
 

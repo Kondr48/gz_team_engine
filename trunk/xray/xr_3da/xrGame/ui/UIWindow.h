@@ -196,7 +196,7 @@ public:
 	CUIWindow*				FindChild			(LPCSTR s)					{return FindChild(shared_str(s) );}
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
-
+	IC u32                  FocusReceiveTime    () const                    { return m_dwFocusReceiveTime; }
 protected:
 	IC void					SafeRemoveChild(CUIWindow* child)				{WINDOW_LIST_it it = std::find(m_ChildWndList.begin(),m_ChildWndList.end(),child); if(it!=m_ChildWndList.end())m_ChildWndList.erase(it);};
 
@@ -255,6 +255,8 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
+bool fit_in_rect(CUIWindow* w, Frect const& vis_rect, float border = 0.0f, float dx16pos = 0.0f);
 
 add_to_type_list(CUIWindow)
 #undef script_type_list

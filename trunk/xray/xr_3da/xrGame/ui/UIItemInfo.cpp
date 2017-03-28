@@ -15,11 +15,14 @@
 #include "UIWpnParams.h"
 #include "ui_af_params.h"
 
+#include "UIFrameWindow.h"
+
+#define INV_GRID_WIDTH2 40.0f
+#define INV_GRID_HEIGHT2 40.0f
+
 CUIItemInfo::CUIItemInfo()
 {
 	UIItemImageSize.set			(0.0f,0.0f);
-	UICondProgresBar			= NULL;
-	UICondition					= NULL;
 	UICost						= NULL;
 	UIWeight					= NULL;
 	UIItemImage					= NULL;
@@ -27,8 +30,11 @@ CUIItemInfo::CUIItemInfo()
 	UIWpnParams					= NULL;
 	UIArtefactParams			= NULL;
 	UIName						= NULL;
+	UIBackground                = NULL;
 	m_pInvItem					= NULL;
 	m_b_force_drawing			= false;
+	m_b_FitToHeight             = false;
+	m_complex_desc              = false;
 }
 
 CUIItemInfo::~CUIItemInfo()
@@ -55,7 +61,17 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		wnd_rect.y2		= uiXml.ReadAttribFlt("main_frame", 0, "height", 0);
 		
 		inherited::Init(wnd_rect.x1, wnd_rect.y1, wnd_rect.x2, wnd_rect.y2);
+		delay = uiXml.ReadAttribInt("main_frame", 0, "delay", 500);
 	}
+	if (uiXml.NavigateToNode("background_frame", 0))
+    {
+        UIBackground = new CUIFrameWindow();
+        UIBackground->SetAutoDelete(true);
+        AttachChild(UIBackground);
+        xml_init.InitFrameWindow(uiXml, "background_frame", 0, UIBackground);
+    }
+
+	m_complex_desc = false;
 
 	if(uiXml.NavigateToNode("static_name",0))
 	{
@@ -63,7 +79,9 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		AttachChild					(UIName);		
 		UIName->SetAutoDelete		(true);
 		xml_init.InitStatic			(uiXml, "static_name", 0,	UIName);
+		m_complex_desc = (uiXml.ReadAttribInt("static_name", 0, "complex_desc", 0) == 1);
 	}
+
 	if(uiXml.NavigateToNode("static_weight",0))
 	{
 		UIWeight				= xr_new<CUIStatic>();	 
@@ -80,20 +98,6 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		xml_init.InitStatic		(uiXml, "static_cost", 0,			UICost);
 	}
 
-	if(uiXml.NavigateToNode("static_condition",0))
-	{
-		UICondition					= xr_new<CUIStatic>();	 
-		AttachChild					(UICondition);
-		UICondition->SetAutoDelete	(true);
-		xml_init.InitStatic			(uiXml, "static_condition", 0,		UICondition);
-	}
-
-	if(uiXml.NavigateToNode("condition_progress",0))
-	{
-		UICondProgresBar			= xr_new<CUIProgressBar>(); AttachChild(UICondProgresBar);UICondProgresBar->SetAutoDelete(true);
-		xml_init.InitProgressBar	(uiXml, "condition_progress", 0, UICondProgresBar);
-	}
-
 	if(uiXml.NavigateToNode("descr_list",0))
 	{
 		UIWpnParams						= xr_new<CUIWpnParams>();
@@ -103,7 +107,8 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		UIDesc							= xr_new<CUIScrollView>(); 
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
-		m_desc_info.bShowDescrText		= !!uiXml.ReadAttribInt("descr_list",0,"only_text_info", 1);
+		m_desc_info.bShowDescrText		= !!uiXml.ReadAttribInt("descr_list", 0, "only_text_info", 1);
+		m_b_FitToHeight                 = !!uiXml.ReadAttribInt("descr_list", 0, "fit_to_height", 0);
 		xml_init.InitScrollView			(uiXml, "descr_list", 0, UIDesc);
 		xml_init.InitFont				(uiXml, "descr_list:font", 0, m_desc_info.uDescClr, m_desc_info.pDescFont);
 	}	
@@ -137,50 +142,81 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	m_pInvItem				= pInvItem;
 	if(!m_pInvItem)			return;
 
+	Fvector2 pos;
+    pos.set(0.0f, 0.0f);
 	string256				str;
 	if(UIName)
 	{
-		UIName->SetText		(pInvItem->Name());
+		UIName->SetText(pInvItem->Name());
+        UIName->AdjustHeightToText();
+        pos.y = UIName->GetWndPos().y + UIName->GetHeight() + 4.0f;
 	}
 	if(UIWeight)
 	{
-		sprintf_s				(str, "%3.2f kg", pInvItem->Weight());
-		UIWeight->SetText	(str);
+		LPCSTR kg_str = CStringTable().translate("st_kg").c_str();
+        float weight = pInvItem->Weight();
+
+		sprintf_s(str, "%3.2f %s", weight, kg_str);
+        UIWeight->SetText(str);
+
+        pos.x = UIWeight->GetWndPos().x;
+        if (m_complex_desc)
+        {
+            UIWeight->SetWndPos(pos);
+        }
 	}
 	if( UICost && IsGameTypeSingle() )
 	{
 		sprintf_s				(str, "%d %s", pInvItem->Cost(),*CStringTable().translate("ui_st_money_regional"));		// will be owerwritten in multiplayer
 		UICost->SetText		(str);
+		pos.x = UICost->GetWndPos().x;
+        if (m_complex_desc)
+        {
+            UICost->SetWndPos(pos);
+        }
 	}
-
-	if(UICondProgresBar)
-	{
-		float cond							= pInvItem->GetConditionToShow();
-		UICondProgresBar->Show				(true);
-		UICondProgresBar->SetProgressPos	( cond*100.0f+1.0f-EPS );
-	}
-
 	if(UIDesc)
 	{
+		pos = UIDesc->GetWndPos();
 		UIDesc->Clear						();
 		VERIFY								(0==UIDesc->GetSize());
-		TryAddWpnInfo						(pInvItem->object().cNameSect());
-		TryAddArtefactInfo					(pInvItem->object().cNameSect());
-		if(m_desc_info.bShowDescrText)
-		{
-			CUIStatic* pItem					= xr_new<CUIStatic>();
-			pItem->SetTextColor					(m_desc_info.uDescClr);
-			pItem->SetFont						(m_desc_info.pDescFont);
-			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());
-			pItem->SetTextComplexMode			(true);
-			pItem->SetText						(*pInvItem->ItemDescription());
-			pItem->AdjustHeightToText			();
-			UIDesc->AddWindow					(pItem, true);
-		}
+		/*TryAddWpnInfo						(pInvItem->object().cNameSect());
+		TryAddArtefactInfo					(pInvItem->object().cNameSect());*/
+		if (m_desc_info.bShowDescrText)
+        {
+            CUIStatic* pItem = new CUIStatic();
+            pItem->SetTextColor(m_desc_info.uDescClr);
+            pItem->SetFont(m_desc_info.pDescFont);
+            pItem->SetWidth(UIDesc->GetDesiredChildWidth());
+            pItem->SetTextComplexMode(true);
+            pItem->SetText(*pInvItem->ItemDescription());
+            pItem->AdjustHeightToText();
+            UIDesc->AddWindow(pItem, true);
+        }
+		if (m_b_FitToHeight)
+        {
+            UIDesc->SetWndSize(Fvector2().set(UIDesc->GetWndSize().x, UIDesc->GetPadSize().y));
+            Fvector2 new_size;
+            new_size.x = GetWndSize().x;
+			Msg("x = %f", GetWndSize().x);
+            new_size.y = UIDesc->GetWndPos().y + UIDesc->GetWndSize().y + 20.0f;
+			new_size.x = UIDesc->GetWndPos().x + UIDesc->GetWndSize().x + 20.0f;
+            new_size.x = _max(105.0f, new_size.x);
+            new_size.y = _max(105.0f, new_size.y);
+
+            SetWndSize(new_size);
+            
+			if (UIBackground)
+			{
+				UIBackground->SetWidth			(GetWndSize().x);
+				UIBackground->SetHeight			(GetWndSize().y);
+				Msg("Установка размера окна %f на %f", GetWndSize().x, GetWndSize().y);
+			}
+        }
 		UIDesc->ScrollToBegin				();
 	}
-	if(UIItemImage)
-	{
+	if (UIItemImage)
+    {
 		// Загружаем картинку
 		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
 
@@ -203,8 +239,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 
 		UIItemImage->GetUIStaticItem().SetRect	(v_r);
 		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));
-		UIItemImage->SetHeight					(_min(v_r.height(),	UIItemImageSize.y));
-	}
+    }
 }
 
 void CUIItemInfo::TryAddWpnInfo (const shared_str& wpn_section){

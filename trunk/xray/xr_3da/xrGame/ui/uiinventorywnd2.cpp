@@ -18,6 +18,8 @@
 #include "../script_game_object.h"
 #include "../Actor.h"
 
+#include "UIItemInfo.h"
+
 #include "../../../build_config_defines.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
@@ -34,7 +36,6 @@ void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 {
 	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
-	UIItemInfo.InitItem			(CurrentIItem());
 }
 
 void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -434,50 +435,66 @@ void CUIInventoryWnd::AddItemToBag(PIItem pItem)
 
 bool CUIInventoryWnd::OnItemStartDrag(CUICellItem* itm)
 {
+	InfoCurItem(NULL);
 	return false; //default behaviour
 }
 
 bool CUIInventoryWnd::OnItemSelected(CUICellItem* itm)
 {
 	SetCurrentItem		(itm);
+	InfoCurItem(NULL);
+	m_item_info_view = false;
 	return				false;
 }
 
 bool CUIInventoryWnd::OnItemFocusReceive(CUICellItem* itm)
 {
-    set_highlight_item(itm);
+    InfoCurItem(NULL);
+	m_item_info_view = true;
+
+	itm->m_selected = true;
+	set_highlight_item(itm);
     return true;
 }
 
 bool CUIInventoryWnd::OnItemFocusLost(CUICellItem* itm)
 {
-    clear_highlight_lists();
+	if (itm)
+    {
+        itm->m_selected = false;
+    }
+	InfoCurItem(NULL);
+	clear_highlight_lists();
     return true;
 }
 
 bool CUIInventoryWnd::OnItemFocusedUpdate(CUICellItem* itm)
 {
-    if (CUIDragDropListEx::m_drag_item || UIPropertiesBox.IsShown()) {
-		return true;
-    }
-	
-	if (itm) {
-        //itm->m_selected = true;
-        if (m_highlight_clear) {
+if (itm)
+    {
+        itm->m_selected = true;
+        if (m_highlight_clear)
+        {
             set_highlight_item(itm);
         }
     }
+    VERIFY(m_ItemInfo);
+    if (Device.dwTimeGlobal < itm->FocusReceiveTime() + m_ItemInfo->delay)
+    {
+        return true; // false
+    }
+    if (CUIDragDropListEx::m_drag_item || UIPropertiesBox.IsShown() || !m_item_info_view)
+    {
+        return true;
+    }
 
-	/*if (Device.dwTimeGlobal < itm->FocusReceiveTime() + m_ItemInfo->delay) {
-        return true;  // false
-    }*/
-
-
+    InfoCurItem(itm);
     return true;
 }
 
 bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 {
+	InfoCurItem(NULL);
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
 	if(old_owner==new_owner || !old_owner || !new_owner)
@@ -553,6 +570,7 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
 #include "../eatable_item.h"
 bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 {
+	InfoCurItem(NULL);
 	PIItem	__item		= (PIItem)itm->m_pData;
 	u32		__slot		= __item->GetSlot();
 	auto	old_owner	= itm->OwnerList();
@@ -609,6 +627,8 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 bool CUIInventoryWnd::OnItemRButtonClick(CUICellItem* itm)
 {
 	SetCurrentItem				(itm);
+	InfoCurItem(NULL);
+	m_item_info_view = true;
 	ActivatePropertiesBox		();
 	return						false;
 }
