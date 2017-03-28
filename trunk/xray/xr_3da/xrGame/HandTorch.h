@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: HandTorch.h
 //	Created 	: 15.02.2017
-//  Modified 	: 04.03.2017
+//  Modified 	: 28.03.2017
 //	Author		: Kondr48
 //	Description : Ручной фонарь
 ////////////////////////////////////////////////////////////////////////////
@@ -26,11 +26,20 @@ public:
 protected:
 	virtual void	                Switch(bool turn);
 
-
 public:
 	virtual void					UpdateCL			();
 	virtual void					OnStateSwitch		(u32 S);
 	virtual void					OnAnimationEnd		(u32 state);
+	virtual void					Hide				();
+
+	enum EHandTorchStates {
+		eIdle		= 0,
+		eShowing,
+		eHiding,
+		eHidden,
+		eTurnOn,
+		eTurnOff
+	};
 
 protected:
 	shared_str		                light_trace_bone;
@@ -38,6 +47,10 @@ protected:
 	ref_glow		                glow_render;
 	CLAItem*		                lanim;
 	float			                fBrightness;
+
+	HUD_SOUND                       m_snd_switch;
+
+	MotionSVec						m_anim_switch;
 };
 
 

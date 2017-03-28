@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: HandTorch.cpp
 //	Created 	: 15.02.2017
-//  Modified 	: 04.03.2017
+//  Modified 	: 28.03.2017
 //	Author		: Kondr48
 //	Description : Ручной фонарь
 ////////////////////////////////////////////////////////////////////////////
@@ -17,6 +17,7 @@
 #include "../camerabase.h"
 #include "../LightAnimLibrary.h"
 #include "xrserver_objects_alife_items.h"
+#include "ai_sounds.h"
 
 CHandTorch::CHandTorch(void) 
 {
@@ -38,14 +39,19 @@ CHandTorch::~CHandTorch(void)
 {
     light_render.destroy ();
 	glow_render.destroy  ();
+	HUD_SOUND::DestroySound(m_snd_switch);
 }
 
 void CHandTorch::Load(LPCSTR section) 
 {
 	inherited::Load		(section);
 
-	light_trace_bone	    = pSettings->r_string(section, "light_trace_bone");
-	VERIFY(light_trace_bone!=BI_NONE);
+	animGet				(m_anim_switch,					pSettings->r_string(*hud_sect,"anim_switch"));
+	
+	HUD_SOUND::LoadSound(section, "snd_switch", m_snd_switch, ESoundTypes(SOUND_TYPE_ITEM_USING));
+
+	light_trace_bone = pSettings->r_string(section, "light_trace_bone"); 
+	VERIFY(light_trace_bone != BI_NONE);
 }
 
 BOOL CHandTorch::net_Spawn(CSE_Abstract* DC) 
@@ -79,21 +85,34 @@ BOOL CHandTorch::net_Spawn(CSE_Abstract* DC)
 	return					(TRUE);
 }
 
+void CHandTorch::Hide()
+{
+	SwitchState(eTurnOff);
+}
+
 void CHandTorch::OnStateSwitch		(u32 S)
 {
 	inherited::OnStateSwitch	(S);
 	switch(S){
-	case eHiding:
+	case eTurnOff:
 		{
-			    Switch(false);
-			    VERIFY(GetState()==eHiding);
-	            m_pHUD->animPlay(random_anim(m_anim_hide), TRUE, this, GetState());
+			    VERIFY(GetState()==eTurnOff);
+	            m_pHUD->animPlay(random_anim(m_anim_switch), TRUE, this, GetState());
+		}break;
+	case eTurnOn:
+		{
+			    VERIFY(GetState()==eTurnOn);
+	            m_pHUD->animPlay(random_anim(m_anim_switch), TRUE, this, GetState());
 		}break;
 	};
 }
 
 void CHandTorch::Switch(bool turn)
 {
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+
+	PlaySound(m_snd_switch, pActor->Position());
+
 	light_render->set_active(turn);
 	glow_render->set_active(turn);
 	CKinematics* pVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
@@ -106,16 +125,30 @@ void CHandTorch::Switch(bool turn)
 
 void CHandTorch::OnAnimationEnd		(u32 state)
 {
-	
-	if(state == eShowing && !light_render->get_active()) 
+	switch (state)
 	{
-		Switch(true);
-	} 
-
-	inherited::OnAnimationEnd(state);
+	case eHiding:
+		{
+			SwitchState(eHidden);
+		}break;
+	case eShowing:
+		{
+			SwitchState(eTurnOn);
+		}break;
+	case eTurnOn:
+		{
+			Switch(true);
+			SwitchState(eIdle);
+		}break;
+	case eTurnOff:
+		{
+			Switch(false);
+			SwitchState(eHiding);
+		}break;
+	};
 }
 
-void CHandTorch::UpdateCL() // Kondr48, механизм абсолютно не катит для худового фонаря - тупо не красиво.
+void CHandTorch::UpdateCL()
 {
 	inherited::UpdateCL();
 	
