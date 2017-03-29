@@ -66,6 +66,9 @@ void CUIInventoryWnd::InitInventory()
 	m_pInv						= &pInvOwner->inventory();
 
 	UIPropertiesBox.Hide		();
+
+	InfoCurItem(NULL);
+	
 	clear_highlight_lists       ();
 	ClearAllLists				();
 	m_pMouseCapturer			= NULL;
