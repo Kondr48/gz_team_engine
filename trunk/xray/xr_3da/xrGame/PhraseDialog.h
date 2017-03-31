@@ -136,7 +136,7 @@ public:
 	void					SetPriority	(int val);
 	void					SetDialogForceReload(bool value=false) {data()->b_bForceReload=value;}
 	bool					GetDialogForceReload() {return data()->b_bForceReload;}
-
+	CPhrase*                GetPhrase(const shared_str& phrase_id);
 protected:
 
 	static void				InitXmlIdToIndex();
