@@ -31,6 +31,8 @@
 #include "PHActivationShape.h"
 #include "game_base_space.h"
 #include "profiler.h"
+#include "../../build_config_defines.h"
+
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
@@ -374,8 +376,12 @@ void CExplosive::Explode()
 		cartridge.m_kPierce					= 1.f;
 		cartridge.fWallmarkSize				= fWallmarkSize;
 		cartridge.bullet_material_idx		= GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
+#ifdef NEW_BAL
 		cartridge.m_flags.set				(CCartridge::cfTracer,TRUE); 	//NewBal ¬ключить трассеры у осколков
 		cartridge.m_flags.set				(CCartridge::cfRicochet,TRUE); 	//NewBal ¬ключить рикошет у осколков
+#else
+		cartridge.m_flags.set				(CCartridge::cfTracer,FALSE);
+#endif	
 		Level().BulletManager().AddBullet(	pos, frag_dir, m_fFragmentSpeed,
 											m_fFragHit, m_fFragHitImpulse, Initiator(),
 											cast_game_object()->ID(), m_eHitTypeFrag, m_fFragsRadius, 

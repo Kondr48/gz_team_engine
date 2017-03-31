@@ -10,6 +10,7 @@
 #include "gamemtllib.h"
 #include "level.h"
 #include "string_table.h"
+#include "../../build_config_defines.h"
 
 #define BULLET_MANAGER_SECTION "bullet_manager"
 
@@ -17,7 +18,11 @@ CCartridge::CCartridge()
 {
 	m_flags.assign			(cfTracer | cfRicochet);
 	m_ammoSect = NULL;
+#ifdef NEW_BAL
 	m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = m_kSpeed = 1.f; //NewBal »нициализаци€ параметра, здесь m_kSpeed должен равен 1
+#else
+	m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = 1.f;
+#endif
 	m_kAP = 0.0f;
 	m_kAirRes = 0.0f;
 	m_buckShot = 1;
@@ -37,7 +42,9 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
+#ifdef NEW_BAL
 	m_kSpeed 				= READ_IF_EXISTS(pSettings, r_float, section, "k_speed", 0.0f); //NewBal «агрузка нового параметра, если не нашли устанавливаем в ноль
+#endif
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes				=  pSettings->r_float(section, "k_air_resistance");
 	else
@@ -83,7 +90,9 @@ void CWeaponAmmo::Load(LPCSTR section)
 	m_kPierce				= pSettings->r_float(section, "k_pierce");
 	m_kAP					= READ_IF_EXISTS(pSettings, r_float, section, "k_ap", 0.0f);
 	m_u8ColorID				= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
+#ifdef NEW_BAL
 	m_kSpeed 				= READ_IF_EXISTS(pSettings, r_float, section, "k_speed", 0.0f); //NewBal «агрузка нового параметра, если не нашли устанавливаем в ноль
+#endif
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		m_kAirRes				=  pSettings->r_float(section, "k_air_resistance");
 	else
@@ -163,7 +172,9 @@ bool CWeaponAmmo::Get(CCartridge &cartridge)
 	cartridge.m_kAP = m_kAP;
 	cartridge.m_kAirRes = m_kAirRes;
 	cartridge.m_u8ColorID = m_u8ColorID;
+#ifdef NEW_BAL
 	cartridge.m_kSpeed = m_kSpeed; //NewBal «агрузка параметра 
+#endif
 	cartridge.m_flags.set(CCartridge::cfTracer ,m_tracer);
 	cartridge.m_buckShot = m_buckShot;
 	cartridge.m_impair = m_impair;

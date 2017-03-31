@@ -10,6 +10,7 @@
 #include "gamepersistent.h"
 #include "mt_config.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "../../build_config_defines.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -44,10 +45,14 @@ void SBullet::Init(const Fvector& position,
 {
 	flags._storage		= 0;
 	pos 				= position;
+
+#ifdef NEW_BAL
 	if (cartridge.m_kSpeed != 0.f)				//NewBal если k_speed не равно нулю то
 		starting_speed 	*= cartridge.m_kSpeed; 	//NewBal меняем нач. скорость пули в зависимости от типа патрона
 	else										//NewBal иначе
 		flags.old_mode	= 1;					//NewBal старый способ расчёта падения хита с учётом падения скорости
+#endif
+	
 	speed = max_speed	= starting_speed;
 	VERIFY				(speed>0);
 
@@ -286,12 +291,13 @@ bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISp
 		bullet->dir.mul(bullet->speed);
 
 		Fvector air_resistance = bullet->dir;
-//NewBal Выключаем старый алгоритм расчёта сопротивления пули.
-//		if (GameID() == GAME_SINGLE)
-//			air_resistance.mul(-m_fAirResistanceK*delta_time_sec);
-//		else //NewBal оставляем алгоритм который в мультиплеере работает
-		air_resistance.mul(-bullet->air_resistance*(bullet->speed)/(bullet->max_speed)*delta_time_sec);
-///		Msg("Speed - %f; ar - %f, %f", bullet->dir.magnitude(), air_resistance.magnitude(), air_resistance.magnitude()/bullet->dir.magnitude()*100);
+
+#ifndef NEW_BAL //NewBal Выключаем старый алгоритм расчёта сопротивления пули.
+ 		if (GameID() == GAME_SINGLE)
+ 			air_resistance.mul(-m_fAirResistanceK*delta_time_sec);
+ 		else //NewBal оставляем алгоритм который в мультиплеере работает
+#endif
+            air_resistance.mul(-bullet->air_resistance*(bullet->speed)/(bullet->max_speed)*delta_time_sec);
 
 		bullet->dir.add(air_resistance);
 		bullet->dir.y -= m_fGravityConst*delta_time_sec;

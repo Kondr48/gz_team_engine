@@ -5,6 +5,7 @@
 
 #pragma once
 #include "inventory_item_object.h"
+#include "../../build_config_defines.h"
 
 class CCartridge 
 {
@@ -19,7 +20,13 @@ public:
 		cfCanBeUnlimited		= (1<<2),
 		cfExplosive				= (1<<3),
 	};
+
+#ifdef NEW_BAL
 	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed; //NewBal ќбъ€вл€ем новый параметр
+#else
+	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+#endif
+	
 	int		m_buckShot;
 	float	m_impair;
 	float	fWallmarkSize;
@@ -56,7 +63,12 @@ public:
 
 	bool							Get					(CCartridge &cartridge);
 
+#ifdef NEW_BAL
 	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed; //NewBal ќбъ€вл€ем новый параметр
+#else
+	float		m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes;
+#endif
+	
 	int			m_buckShot;
 	float		m_impair;
 	float		fWallmarkSize;

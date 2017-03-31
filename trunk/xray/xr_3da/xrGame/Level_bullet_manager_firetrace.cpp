@@ -19,6 +19,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "../xr_collide_defs.h"
 #include "weapon.h"
+#include "../../build_config_defines.h"
 
 //константы shoot_factor, определ€ющие 
 //поведение пули при столкновении с объектом
@@ -423,8 +424,12 @@ std::pair<float, float>  CBulletManager::ObjectHit	(SBullet* bullet, const Fvect
 
 	//коэффициент уменьшение силы с падением скорости
 	float speed_factor = bullet->speed/bullet->max_speed;
+
+#ifdef NEW_BAL
 	if (!bullet->flags.old_mode) 			//NewBal если не старый_способ, то
 			speed_factor *= speed_factor;	//NewBal speed_factor пропорционален квадрату скорости
+#endif
+
 	//получить силу хита выстрела с учетом патрона
 	float power = bullet->hit_power*speed_factor;
 	

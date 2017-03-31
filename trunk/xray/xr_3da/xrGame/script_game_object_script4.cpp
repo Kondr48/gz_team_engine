@@ -145,7 +145,7 @@ void lua_pushgameobject(lua_State *L, CGameObject *obj)
 	if (smart_cast<CInventoryItem*>(obj))
 	{
 		if (// наследнички CInventoryItem 
-			test_pushobject<CTorch>						(L, obj) ||						
+			test_pushobject<CTorch>						(L, obj) ||
 			test_pushobject<CArtefact>					(L, obj) ||			
 			test_pushobject<CEatableItemObject>			(L, obj) ||
 			test_pushobject<CGrenade>					(L, obj) ||

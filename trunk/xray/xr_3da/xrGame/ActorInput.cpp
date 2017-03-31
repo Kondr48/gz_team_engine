@@ -114,7 +114,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kCAM_2:	cam_Set			(eacLookAt);				break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
 	case kNIGHT_VISION:{                                                       // Kondr48: ПНВ вообще у нас может быть в двух случаях:
-		PIItem nvd_in_outfit  = inventory().ItemFromSlot(OUTFIT_SLOT);         // ПНВ встроен в костюм, получаем предмет в слоте броника
+		PIItem nvd_in_outfit  = inventory().ItemFromSlot(OUTFIT_SLOT);         // ПНВ встроен в костюм, получаем предмет в слоте броник
 		CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(nvd_in_outfit);     // Убедимся, что это именно броник (ну а мало ли, хотя что там может быть еще?)
 		if (nvd_in_outfit && outfit && outfit->NightVisionDevice())            // Если в слоте есть бронежилет, у него есть ПНВ
 		{
@@ -154,9 +154,14 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		det_two_activate();
 	    }break;	
 	case kTORCH:{ 
-	    luabind::functor<void>	flashlight_key;
-		if (ai().script_engine().functor("gz_items_hud.flashlight_key",flashlight_key))
-		flashlight_key();
+	    PIItem torch_in_slot  = inventory().ItemFromSlot(TORCH_SLOT);  // Несмотря на то, что фонарь сейчас работает на скриптах
+		CTorch* torch = smart_cast<CTorch*>(torch_in_slot);            // Проверять заряд мы будем здесь
+		if (torch && torch->GetBattareyPower() > 0)                    // Если батарейка села, функция тупо не запускается
+		    {
+		        luabind::functor<void>	flashlight_key;
+		        if (ai().script_engine().functor("gz_items_hud.flashlight_key",flashlight_key))
+		        flashlight_key();
+		    }
 	}break;
 	case kWPN_1:	
 	case kWPN_2:	
