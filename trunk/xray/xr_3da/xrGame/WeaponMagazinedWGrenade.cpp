@@ -226,7 +226,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
 	m_bGrenadeMode		= !m_bGrenadeMode;
-	m_fZoomFactor = g_fov; // Karlan: сбрасываем зум
+	m_fZoomFactor       = g_fov; // Karlan: сбрасываем зум
 
 	iMagazineSize		= m_bGrenadeMode?1:iMagazineSize2;
 
@@ -446,14 +446,15 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
+	Msg("ѕроверка, патронник подствола %d", iAmmoElapsed);
+	if (m_bGrenadeMode && m_bChamberStatus && iAmmoElapsed == 1) return;
+
 	inherited::ReloadMagazine();
 
 	//перезар€дка подствольного гранатомета
 	if(iAmmoElapsed && !getRocketCount() && m_bGrenadeMode) 
 	{
-//.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
 		shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
-		
 		CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
 	}
 }
