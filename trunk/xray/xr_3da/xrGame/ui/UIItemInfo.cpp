@@ -17,6 +17,9 @@
 
 #include "UIFrameWindow.h"
 
+#include "../Torch.h"
+#include "../HandTorch.h"
+
 #define INV_GRID_WIDTH2 40.0f
 #define INV_GRID_HEIGHT2 40.0f
 
@@ -180,8 +183,6 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		pos = UIDesc->GetWndPos();
 		UIDesc->Clear						();
 		VERIFY								(0==UIDesc->GetSize());
-		/*TryAddWpnInfo						(pInvItem->object().cNameSect());
-		TryAddArtefactInfo					(pInvItem->object().cNameSect());*/
 		if (m_desc_info.bShowDescrText)
         {
             CUIStatic* pItem = new CUIStatic();
@@ -193,14 +194,29 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
             pItem->AdjustHeightToText();
             UIDesc->AddWindow(pItem, true);
         }
+		    
+		CTorch* torch = smart_cast<CTorch*>(pInvItem);
+	    if (torch) 
+		{
+			float bp = torch->GetBattareyPower(); 
+			TryAddPowerLevelInfo(bp);	
+		}
+
+		CHandTorch* hand_torch = smart_cast<CHandTorch*>(pInvItem);
+	    if (hand_torch) 
+		{
+			float bp = hand_torch->GetBattareyPower(); 
+			TryAddPowerLevelInfo(bp);	
+		}
+
+		TryAddArtefactInfo					(pInvItem->object().cNameSect());
+		TryAddWpnInfo		    			(pInvItem->object().cNameSect());
 		if (m_b_FitToHeight)
         {
             UIDesc->SetWndSize(Fvector2().set(UIDesc->GetWndSize().x, UIDesc->GetPadSize().y));
             Fvector2 new_size;
-            new_size.x = GetWndSize().x;
-			Msg("x = %f", GetWndSize().x);
             new_size.y = UIDesc->GetWndPos().y + UIDesc->GetWndSize().y + 20.0f;
-			new_size.x = UIDesc->GetWndPos().x + UIDesc->GetWndSize().x + 20.0f;
+			new_size.x = GetWndSize().x;
             new_size.x = _max(105.0f, new_size.x);
             new_size.y = _max(105.0f, new_size.y);
 
@@ -210,7 +226,6 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 			{
 				UIBackground->SetWidth			(GetWndSize().x);
 				UIBackground->SetHeight			(GetWndSize().y);
-				Msg("Установка размера окна %f на %f", GetWndSize().x, GetWndSize().y);
 			}
         }
 		UIDesc->ScrollToBegin				();
@@ -229,7 +244,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 														float(iGridWidth*INV_GRID_WIDTH),	float(iGridHeight*INV_GRID_HEIGHT));
 		UIItemImage->TextureOn				();
 		UIItemImage->ClipperOn				();
-		UIItemImage->SetStretchTexture		(true);
+		UIItemImage->SetStretchTexture		(false);
 		Frect v_r							= {	0.0f, 
 												0.0f, 
 												float(iGridWidth*INV_GRID_WIDTH),	
@@ -250,17 +265,32 @@ void CUIItemInfo::TryAddWpnInfo (const shared_str& wpn_section){
 	}
 }
 
-void CUIItemInfo::TryAddArtefactInfo	(const shared_str& af_section)
+void CUIItemInfo::TryAddArtefactInfo(const shared_str& af_section)
 {
-	if (UIArtefactParams->Check(af_section))
-	{
-		UIArtefactParams->SetInfo(&m_pInvItem->object());
-		UIDesc->AddWindow(UIArtefactParams, false);
-	}
+    if (UIArtefactParams->Check(af_section))
+    {
+        UIArtefactParams->SetInfo(&m_pInvItem->object());
+        UIDesc->AddWindow(UIArtefactParams, false);
+    }
 }
 
 void CUIItemInfo::Draw()
 {
 	if(m_pInvItem || m_b_force_drawing)
 		inherited::Draw();
+}
+
+void CUIItemInfo::TryAddPowerLevelInfo (float power_level)
+{
+	string128 _buff;
+	CUIStatic* BattareyPower = new CUIStatic();
+	BattareyPower->SetTextColor(m_desc_info.uDescClr);
+	BattareyPower->SetFont(m_desc_info.pDescFont);
+	BattareyPower->SetWidth(UIDesc->GetDesiredChildWidth());
+	BattareyPower->SetTextComplexMode(true);
+	int pl = iFloor((power_level*100)+0.5);
+	sprintf_s(_buff, "%s: %u %s", "Заряд батареи",	pl, "%.");
+	BattareyPower->SetText(_buff);
+	BattareyPower->AdjustHeightToText();
+	UIDesc->AddWindow(BattareyPower, true);
 }

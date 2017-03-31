@@ -203,12 +203,13 @@ void CTorch::OnH_B_Independent	(bool just_before_destroy)
 
 void CTorch::UpdatePowerLoss()
 {
-	CActor *pA = smart_cast<CActor *>(H_Parent());
-	if (!((pA) ? true : false)) {battarey_power = 1.0f; return;}
+	m_pActor = smart_cast<CActor *>(H_Parent());
+	if (!((m_pActor) ? true : false)) {battarey_power = 1.0f; return;}
     
 	battarey_power -= (1/(battarey_life * 3600)) * m_fDeltaTime;
-	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-	 if (battarey_power <= 0 && m_switched_on == true)
+	clamp(battarey_power, 0.0f, 1.0f);
+
+	if (battarey_power <= 0 && m_switched_on == true)
         Switch();
 }
 

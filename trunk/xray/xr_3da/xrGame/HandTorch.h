@@ -26,6 +26,8 @@ public:
 protected:
 	virtual void	                Switch              (bool turn);
 	virtual void	                PlaySwitch          ();
+	virtual void	                UpdatePowerLoss     ();
+	CActor*			                m_pActor;
 
 public:
 	virtual void					UpdateCL			();
@@ -45,13 +47,21 @@ public:
 protected:
 	shared_str		                light_trace_bone;
 	ref_light		                light_render;
-	ref_glow		                glow_render;
+	//ref_glow		                glow_render;
 	CLAItem*		                lanim;
 	float			                fBrightness;
 
 	HUD_SOUND                       m_snd_switch;
 
 	MotionSVec						m_anim_switch;
+
+	float			                battarey_power;
+	float			                battarey_life;
+	bool                            m_switched_on;
+
+public:
+	float			GetBattareyPower	() {return battarey_power;}
+	float			GetBattareyLife	    () {return battarey_life;}
+	virtual void	SetBattareyPower	(float x);
+	virtual void	SetBattareyLife  	(float x);
 };
-
-

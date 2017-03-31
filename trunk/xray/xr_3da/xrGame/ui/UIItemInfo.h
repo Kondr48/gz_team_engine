@@ -25,18 +25,19 @@ private:
 	_desc_info				m_desc_info;
 	CInventoryItem* m_pInvItem;
 public:
-						CUIItemInfo			();
-	virtual				~CUIItemInfo		();
+						CUIItemInfo			 ();
+	virtual				~CUIItemInfo		 ();
+	void				Init				 (float x, float y, float width, float height, LPCSTR xml_name);
+	void				Init				 (LPCSTR xml_name);
+	void				InitItem			 (CInventoryItem* pInvItem);
+	void				TryAddWpnInfo		 (const shared_str& wpn_section);
+	void				TryAddArtefactInfo	 (const shared_str& af_section);
+	void				TryAddPowerLevelInfo (float power_level);
 
-	void				Init				(float x, float y, float width, float height, LPCSTR xml_name);
-	void				Init				(LPCSTR xml_name);
-	void				InitItem			(CInventoryItem* pInvItem);
-	void				TryAddWpnInfo		(const shared_str& wpn_section);
-	void				TryAddArtefactInfo	(const shared_str& af_section);
-
-	virtual void		Draw				();
+	virtual void		Draw				 ();
 	
     u32                 delay;
+	u32                 GetPercentColor;
 
 	bool				m_b_force_drawing;
 	bool                m_complex_desc;
