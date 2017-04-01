@@ -159,9 +159,9 @@ void CHandTorch::UpdateCL()
 {
 	inherited::UpdateCL();
 	
-	CKinematics* pVisual				= smart_cast<CKinematics*>(m_pHUD->Visual());
-	u16	bone_id			= pVisual->LL_BoneID(light_trace_bone);
-	CBoneInstance& BI = smart_cast<CKinematics*>(m_pHUD->Visual())->LL_GetBoneInstance(bone_id);
+	CKinematics* pVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
+	u16	bone_id			 = pVisual->LL_BoneID(light_trace_bone);
+	CBoneInstance& BI    = pVisual->LL_GetBoneInstance(bone_id);
 
 	Fmatrix M;
 	M.mul(m_pHUD->Transform(), BI.mTransform);
