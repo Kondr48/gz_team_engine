@@ -28,6 +28,8 @@ struct SZoneObjectInfo
 	u32						hit_num;
 	//количество повреждений нанесенных зоной
 	float					total_damage;
+	//существо померло в зоне
+	bool					death_in_zone;
 
 	bool operator == (const CGameObject* O) const {return object==O;}
 };
@@ -105,6 +107,9 @@ protected:
 		eUseOnOffTime			=(1<<8),
 		eBlowoutLightVolumetric =(1<<9),
 		eIdleLightVolumetric 	=(1<<10),
+		eBirthOnNonAlive		=(1<<11),
+		eBirthOnAlive			=(1<<12),
+		eBirthOnDead			=(1<<13),
 	};
 	u32					m_owner_id;		//if created from artefact
 	u32					m_ttl;
@@ -325,7 +330,7 @@ protected:
 
 	//рождение артефакта в зоне, во время ее срабатывания
 	//и присоединение его к зоне
-					void	BornArtefact				();
+					void	BornArtefact				(bool forced);
 	//выброс артефактов из зоны
 					void	ThrowOutArtefact			(CArtefact* pArtefact);
 	
@@ -341,6 +346,8 @@ protected:
 	//вероятность того, что артефакт засповниться при единичном 
 	//срабатывании аномалии
 	float					m_fArtefactSpawnProbability;
+	// bak вероятность спавна при смерти в зоне
+	float					m_fArtefactSpawnOnDeathProbability;
 	//величина импульса выкидывания артефакта из зоны
 	float					 m_fThrowOutPower;
 	//высота над центром зоны, где будет появляться артефакт
@@ -363,6 +370,8 @@ protected:
 	//расстояние от зоны до текущего актера
 	float					m_fDistanceToCurEntity;
 
+	// bak / флаг для рождения артефакта
+	bool					m_bBornOnBlowoutFlag;
 protected:
 	u32						m_ef_anomaly_type;
 	u32						m_ef_weapon_type;
