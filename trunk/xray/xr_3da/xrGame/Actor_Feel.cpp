@@ -206,12 +206,10 @@ void	CActor::PickupModeUpdate_COD	()
 
 	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
-	if (pNearestItem && m_bPickupMode)
+	if (pNearestItem && m_bPickupMode && !m_pPersonWeLookingAt)
 	{
 		//подбирание объекта
 		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
-		
-		PickupModeOff();
 	}
 };
 
