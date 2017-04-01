@@ -719,6 +719,7 @@ public:
 	virtual	bool				InventoryAllowSprint			();
 	virtual void				OnNextWeaponSlot				();
 	virtual void				OnPrevWeaponSlot				();
+	virtual void				RepackAmmo			        	();
 
 public:
 	

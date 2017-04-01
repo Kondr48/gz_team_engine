@@ -461,6 +461,9 @@ void CUIInventoryWnd::Hide()
 
 	//достать вещь в активный слот
 	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
+	
+	if (pActor) pActor->RepackAmmo(); 
+	
 	if(pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && 
 		pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
 	{

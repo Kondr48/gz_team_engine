@@ -241,7 +241,6 @@ void CGrenade::UpdateCL()
 	if(!IsGameTypeSingle())	make_Interpolation();
 }
 
-
 bool CGrenade::Action(s32 cmd, u32 flags) 
 {
 	if(inherited::Action(cmd, flags)) return true;
@@ -255,19 +254,44 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 			{
 				if(m_pCurrentInventory)
 				{
+// 					TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
+// 					TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
+// 					for(;it!=it_e;++it) 
+// 					{
+// 						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
+// 						if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
+// 						{
+// 							m_pCurrentInventory->Ruck(this);
+// 							m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+// 							m_pCurrentInventory->Slot(pGrenade);
+// 							return true;
+// 						}
+// 					}
+// 					return true;
+					xr_vector<CGrenade*> grens;
+					typedef xr_vector<CGrenade*>::iterator gr_it;
 					TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
 					TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
-					for(;it!=it_e;++it) 
+					for(;it!=it_e;++it)
 					{
-						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-						if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
-						{
-							m_pCurrentInventory->Ruck(this);
-							m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-							m_pCurrentInventory->Slot(pGrenade);
-							return true;
-						}
-					}
+						CGrenade *pGrenade = smart_cast<CGrenade*>(*it); 
+						if (pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) grens.push_back(pGrenade);	//собираем гранаты с секцией отличной от текущей				
+					};
+
+					if (!grens.size()) return false; // не на что переключать
+					std::sort(grens.begin(), grens.end(), [](CGrenade* a, CGrenade* b){ return a->cNameSect() < b->cNameSect(); }); // сортируем по секции
+
+					u8 idx = 0;
+					// ищем гранату с секцией больше текущей
+					for (; idx < grens.size() || (grens[idx]->cNameSect() > cNameSect()); idx++);
+
+					// если не нашлась, выбираем начальный элемент
+					if (idx == grens.size()) idx = 0;
+
+					// и ставим её в слот
+					m_pCurrentInventory->Ruck(this);
+					m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+					m_pCurrentInventory->Slot(grens[idx]);
 					return true;
 				}
 			}
@@ -276,7 +300,6 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 	}
 	return false;
 }
-
 
 bool CGrenade::NeedToDestroyObject()	const
 {

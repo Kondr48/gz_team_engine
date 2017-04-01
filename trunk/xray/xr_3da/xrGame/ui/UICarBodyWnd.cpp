@@ -222,6 +222,8 @@ void CUICarBodyWnd::Hide()
 	inherited::Hide								();
 	if(m_pInventoryBox)
 		m_pInventoryBox->m_in_use				= false;
+	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (pActor) pActor->RepackAmmo(); 
 }
 
 void CUICarBodyWnd::UpdateLists()
