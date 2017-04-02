@@ -17,7 +17,8 @@ public:
 		u32			bStatic	:	1;
 		u32			bActive	:	1;
 		u32			bShadow	:	1;
-		u32 		bVolumetric :1;
+		u32 		bVolumetric : 1;
+		u32         bHudMode    : 1;
 	}				flags;
 	Fvector			position	;
 	Fvector			direction	;
@@ -99,14 +100,8 @@ public:
 	virtual void	set_type				(LT type)						{ flags.type = type;		}
 	virtual void	set_active				(bool b);
 	virtual bool	get_active				()								{ return flags.bActive;		}
-	virtual void	set_shadow				(bool b)						
-	{ 
-		flags.bShadow=b;			
-	}
-	virtual void 	set_volumetric 			(bool b)
-	{
-		flags.bVolumetric=b;
-	}
+	virtual void	set_shadow				(bool b)			            { flags.bShadow=b;	     	}
+	virtual void 	set_volumetric 			(bool b)                        { flags.bVolumetric=b;      }
 	virtual void	set_volumetric_quality 	(float fValue)  				{ m_volumetric_quality = fValue; 	}
 	virtual void	set_volumetric_intensity(float fValue) 					{ m_volumetric_intensity = fValue; 	}
 	virtual void	set_volumetric_distance (float fValue)  				{ m_volumetric_distance = fValue; 	}
@@ -122,6 +117,8 @@ public:
 	};
 	virtual void	set_color				(const Fcolor& C)				{ color.set(C);				}
 	virtual void	set_color				(float r, float g, float b)		{ color.set(r,g,b,1);		}
+	virtual void    set_hud_mode            (bool b)                        { flags.bHudMode = b; }
+    virtual bool    get_hud_mode            ()                              { return flags.bHudMode; };
 	virtual void	set_texture				(LPCSTR name);
 
 	virtual	void	spatial_move			();

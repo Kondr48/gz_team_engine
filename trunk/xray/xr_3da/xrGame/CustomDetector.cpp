@@ -37,12 +37,15 @@ CCustomDetector::CCustomDetector(void)
 {
 	m_class_name				= get_class_name<CCustomDetector>(this);
 	SetSlot (DETECTOR_ONE_SLOT);
+	m_ui = NULL;
 }
 
 
 CCustomDetector::~CCustomDetector(void) 
 {
 	 m_artefacts.destroy();
+	 TurnDetectorInternal(false);
+	 xr_delete(m_ui);
 }
 
 void CCustomDetector::Load(LPCSTR section) 
@@ -63,10 +66,9 @@ void CCustomDetector::Load(LPCSTR section)
 
 BOOL CCustomDetector::net_Spawn(CSE_Abstract* DC) 
 {
-	BOOL result = inherited::net_Spawn(DC);
+    TurnDetectorInternal(false);
 	SetState					(eHidden);
-
-	return result;	
+    return (inherited::net_Spawn(DC));
 }
 
 void CCustomDetector::net_Destroy() 
@@ -97,7 +99,7 @@ void CCustomDetector::UpdateCL		()
 void CCustomDetector::UpfateWork()
 {
 	UpdateAf				();
-	//m_ui->update			();
+	m_ui->update			();
 }
 
 void CCustomDetector::shedule_Update		(u32 dt) 
@@ -176,7 +178,8 @@ void CCustomDetector::OnStateSwitch		(u32 S)
 	switch(S){
 	case eShowing:
 		{
-				VERIFY(GetState()==eShowing);
+				TurnDetectorInternal(true);
+			    VERIFY(GetState()==eShowing);
 	            m_pHUD->animPlay		(random_anim(m_anim_show), FALSE, this, GetState());
 		}break;
 	case eHiding:
@@ -199,6 +202,7 @@ void CCustomDetector::OnAnimationEnd		(u32 state)
 	case eHiding:
 		{
 			SwitchState(eHidden);
+			TurnDetectorInternal(false);
 		}break;
 	case eShowing:
 		{
@@ -223,10 +227,6 @@ bool CCustomDetector::TryPlayAnimIdle()
 			else if (st.bMoving && m_anim_idle_moving.size())
 			{
 				m_pHUD->animPlay(random_anim(m_anim_idle_moving), TRUE, NULL, GetState());
-				if (GetHUD()->Visual())
-					Msg("Есть визуал");
-				
-				CKinematics* K = smart_cast<CKinematics*>(GetHUD()->Visual());
 				return true;
 			}
 		}
@@ -246,6 +246,25 @@ void CCustomDetector::onMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 		PlayAnimIdle();
 }
 
+void CCustomDetector::OnMoveToRuck()
+{
+    inherited::OnMoveToRuck();
+    TurnDetectorInternal(false);
+}
+
+void CCustomDetector::TurnDetectorInternal(bool b)
+{
+    m_bWorking = b;
+    if (b && m_ui == NULL)
+    {
+        CreateUI();
+    }
+    else
+    {
+        //.		xr_delete			(m_ui);
+    }
+}
+
 BOOL CAfList::feel_touch_contact	(CObject* O)
 {
 	TypesMapIt it				= m_TypesMap.find(O->cNameSect());
@@ -262,10 +281,7 @@ BOOL CAfList::feel_touch_contact	(CObject* O)
 	return						res;
 }
 
-bool CCustomDetector::IsWorking()
-{
-	if(!H_Parent()) return false;
-	CInventoryOwner* pA = smart_cast<CInventoryOwner*>(H_Parent());
-	if(!pA) return false;
-	return  H_Parent()==Level().CurrentViewEntity() && !!(pA->inventory().ActiveItem());
+bool CCustomDetector::IsWorking() 
+{ 
+	return m_bWorking && H_Parent() && H_Parent() == Level().CurrentViewEntity(); 
 }

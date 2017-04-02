@@ -163,8 +163,8 @@ protected:
 	MotionSVec			m_anim_hide;
 	MotionSVec			m_anim_show;
 
-	virtual void	    PlayAnimIdle();
-	bool			    TryPlayAnimIdle();
+	virtual void	    PlayAnimIdle          ();
+	bool			    TryPlayAnimIdle       ();
 public:
 	enum EAFHudStates {
 		eIdle		= 0,
@@ -179,12 +179,15 @@ public:
 	virtual	void	UpdateXForm			();
 	virtual void	OnStateSwitch		(u32 S);
 	virtual void	OnAnimationEnd		(u32 state);
-	virtual bool	IsHidden			()	const	{return GetState()==eHidden;}
+	virtual bool	IsHidden			()	const	 {return GetState()==eHidden;}
 	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
+	virtual void    OnMoveToRuck        ();
 
 protected:
-	virtual void	UpfateWork			();
-	virtual void 	UpdateAf			()	{};
-
+	virtual void	UpfateWork			  ();
+	virtual void 	UpdateAf			  ()	     {};
+	bool            m_bWorking;
+	void            TurnDetectorInternal  (bool b);
+	virtual void    CreateUI              ()         {};
 	CAfList			m_artefacts;
 };

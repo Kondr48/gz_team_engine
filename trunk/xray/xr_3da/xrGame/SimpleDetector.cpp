@@ -12,10 +12,23 @@ CSimpleDetector::CSimpleDetector(void)
 CSimpleDetector::~CSimpleDetector(void)
 {}
 
+void CSimpleDetector::Load(LPCSTR section) 
+{
+	inherited::Load		(section);
+
+	flash_bone = pSettings->r_string(*hud_sect, "flash_bone"); 
+	on_off_bone = pSettings->r_string(*hud_sect, "on_off_bone"); 
+
+	flash_point = pSettings->r_fvector3(*hud_sect, "flash_point"); 
+
+	flash_light_range  = pSettings->r_float(*hud_sect, "flash_light_range"); 
+	onoff_light_range  = pSettings->r_float(*hud_sect, "onoff_light_range"); 
+}
+
 void CSimpleDetector::CreateUI()
 {
-	R_ASSERT(NULL==m_ui);
-	m_ui				= new CUIArtefactDetectorSimple();
+    R_ASSERT(NULL == m_ui);
+    m_ui = new CUIArtefactDetectorSimple();
 	ui().construct		(this);
 }
 
@@ -83,7 +96,7 @@ void CUIArtefactDetectorSimple::construct(CSimpleDetector* p)
 	m_parent							= p;
 	m_flash_bone						= BI_NONE;
 	m_on_off_bone						= BI_NONE;
-	Flash								(false,0.0f);
+	Flash								(false, 0.0f);
 }
 
 CUIArtefactDetectorSimple::~CUIArtefactDetectorSimple()
@@ -94,68 +107,67 @@ CUIArtefactDetectorSimple::~CUIArtefactDetectorSimple()
 
 void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 {
-	/*if (!m_parent->GetHUD()->Visual()) return;
-	Msg("Визуал определился");
-	CKinematics* K = smart_cast<CKinematics*>(m_parent->GetHUD()->Visual());
-	Msg("Кинематик определился");
-	R_ASSERT			(K);
-	Msg("Ассерт кинематика... WTF?!");*/
-	/*
+	if (!m_parent) return;
+
+	CKinematics* pVisual = smart_cast<CKinematics*>(m_parent->GetHUD()->Visual());
+	
+	R_ASSERT			(pVisual);
+	
+	if (m_flash_bone == BI_NONE)
+        setup_internals();
+
 	if(bOn)
 	{
-		K->LL_SetBoneVisible(m_flash_bone, TRUE, TRUE);
-		m_turn_off_flash_time = Device.dwTimeGlobal+iFloor(fRelPower*1000.0f);
+		pVisual->LL_SetBoneVisible(m_flash_bone, TRUE, TRUE);
+		m_flash_light->set_active(true);
+		m_turn_off_flash_time = Device.dwTimeGlobal+iFloor(fRelPower*100.0f);
 	}else
 	{
-		K->LL_SetBoneVisible(m_flash_bone, FALSE, TRUE);
-		m_turn_off_flash_time	= 0;
+		pVisual->LL_SetBoneVisible(m_flash_bone, FALSE, TRUE);
+		m_flash_light->set_active(false);
+		m_turn_off_flash_time = 0;
 	}
-	if(bOn!=m_flash_light->get_active())
-		m_flash_light->set_active(bOn);*/
 }
 
 void CUIArtefactDetectorSimple::setup_internals()
 {
-	/*CCustomDetector*		cast_detector;
-	if (!cast_detector->Visual()) return;
+	if (!m_parent) return;
 
 	R_ASSERT						(!m_flash_light);
 	m_flash_light					= ::Render->light_create();
 	m_flash_light->set_shadow		(false);
 	m_flash_light->set_type			(IRender_Light::POINT);
-	m_flash_light->set_range		(pSettings->r_float(m_parent->m_sect_name,"flash_light_range"));
-	//m_flash_light->set_hud_mode		(true);
-	
+	m_flash_light->set_range		(m_parent->flash_light_range);
+	m_flash_light->set_hud_mode     (true);
+		
 	R_ASSERT						(!m_on_off_light);
 	m_on_off_light					= ::Render->light_create();
 	m_on_off_light->set_shadow		(false);
 	m_on_off_light->set_type		(IRender_Light::POINT);
-	m_on_off_light->set_range		(pSettings->r_float(m_parent->m_sect_name,"onoff_light_range"));
-	//m_on_off_light->set_hud_mode	(true);
+	m_on_off_light->set_range		(m_parent->onoff_light_range);
+	m_on_off_light->set_hud_mode    (true);
 
-	CKinematics* K                  = smart_cast<CKinematics*>(cast_detector->Visual());
+	CKinematics* K                  = smart_cast<CKinematics*>(m_parent->GetHUD()->Visual());
 	R_ASSERT						(K);
 
 	R_ASSERT						(m_flash_bone==BI_NONE);
 	R_ASSERT						(m_on_off_bone==BI_NONE);
 	
-	m_flash_bone					= K->LL_BoneID	("light_bone_2");
-	m_on_off_bone					= K->LL_BoneID	("light_bone_1");
+	m_flash_bone					= K->LL_BoneID	(m_parent->flash_bone.c_str());
+	m_on_off_bone					= K->LL_BoneID	(m_parent->on_off_bone.c_str());
 	
 	K->LL_SetBoneVisible			(m_flash_bone,	FALSE, TRUE);
 	K->LL_SetBoneVisible			(m_on_off_bone, TRUE, TRUE);
 
-	/*m_pOnOfLAnim					= LALib.FindItem("det_on_off");
-	m_pFlashLAnim					= LALib.FindItem("det_flash");*/
+    m_pOnOfLAnim					= LALib.FindItem("det_on_off");
+	m_pFlashLAnim					= LALib.FindItem("det_flash");
 }
 
 void CUIArtefactDetectorSimple::update()
 {
 	inherited::update					();
-	
-	/*CCustomDetector*		cast_detector;
 
-	if(cast_detector->Visual())
+	if(m_parent)
 	{
 		if(m_flash_bone==BI_NONE)
 			setup_internals();
@@ -163,19 +175,32 @@ void CUIArtefactDetectorSimple::update()
 		if(m_turn_off_flash_time && m_turn_off_flash_time<Device.dwTimeGlobal)
 			Flash (false, 0.0f);
 
-		/*firedeps		fd;
-		m_parent->setup_firedeps(fd);
+		CKinematics* K      = smart_cast<CKinematics*>(m_parent->GetHUD()->Visual());
+		Fmatrix M;
+
 		if(m_flash_light->get_active())
-			m_flash_light->set_position(fd.vLastFP);
+		{
+            CBoneInstance& BI = K->LL_GetBoneInstance(m_on_off_bone);
+			M.mul(m_parent->GetHUD()->Transform(), BI.mTransform);
+            Fvector3 bone_pos = M.c;
+			Fvector3 point_pos = m_parent->flash_point;
+			bone_pos.x += point_pos.x;
+			bone_pos.y += point_pos.y;
+			bone_pos.z += point_pos.z;
+			m_flash_light->set_position	(bone_pos);
+		}
 
-		m_on_off_light->set_position(fd.vLastFP2);
+		CBoneInstance& BI = K->LL_GetBoneInstance(m_flash_bone);
+		M.mul(m_parent->GetHUD()->Transform(), BI.mTransform);
+		m_on_off_light->set_position	(M.c);
+		
 		if(!m_on_off_light->get_active())
-			m_on_off_light->set_active(true);*/
+			m_on_off_light->set_active(true);
 
-		/*int frame = 0;
+		int frame = 0;
 		u32 clr					= m_pOnOfLAnim->CalculateRGB(Device.fTimeGlobal,frame);
 		Fcolor					fclr;
 		fclr.set				(clr);
 		m_on_off_light->set_color(fclr);
-	}*/
+	}
 }

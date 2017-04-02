@@ -9,6 +9,8 @@ class CSimpleDetector :public CCustomDetector
 public:
 					CSimpleDetector				();
 	virtual			~CSimpleDetector			();
+
+	virtual void    Load						(LPCSTR section);
 	
 protected:
 //.	virtual void 	UpdateZones					();
@@ -16,5 +18,12 @@ protected:
 	virtual void 	CreateUI					();
 	CUIArtefactDetectorSimple&	ui				();
 	HUD_SOUND		detect_snds;
+
+public:
+    shared_str		flash_bone;
+	shared_str		on_off_bone;
+	float           flash_light_range;
+	float           onoff_light_range;
+	Fvector3        flash_point;
 };
 

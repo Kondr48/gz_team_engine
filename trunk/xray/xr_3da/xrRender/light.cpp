@@ -9,6 +9,7 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	flags.bActive	= false;
 	flags.bShadow	= false;
 	flags.bVolumetric= false;
+	flags.bHudMode = false;
 	position.set	(0,-1000,0);
 	direction.set	(0,-1,0);
 	right.set		(0,0,0);
