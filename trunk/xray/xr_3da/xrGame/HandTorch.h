@@ -47,7 +47,7 @@ public:
 protected:
 	shared_str		                light_trace_bone;
 	ref_light		                light_render;
-	//ref_glow		                glow_render;
+	ref_glow		                glow_render;
 	CLAItem*		                lanim;
 	float			                fBrightness;
 

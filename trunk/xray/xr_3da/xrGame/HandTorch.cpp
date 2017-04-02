@@ -29,7 +29,7 @@ CHandTorch::CHandTorch(void)
 	light_render->set_virtual_size (0.1);
 	light_render->set_shadow	(true);
 		
-	//glow_render					= ::Render->glow_create();
+	glow_render					= ::Render->glow_create();
 	
 	fBrightness					= 1.f;
 	lanim						= 0;
@@ -41,7 +41,7 @@ CHandTorch::CHandTorch(void)
 CHandTorch::~CHandTorch(void) 
 {
     light_render.destroy ();
-	//glow_render.destroy  ();
+	glow_render.destroy  ();
 	HUD_SOUND::DestroySound(m_snd_switch);
 }
 
@@ -81,9 +81,9 @@ BOOL CHandTorch::net_Spawn(CSE_Abstract* DC)
 	light_render->set_volumetric_intensity(pUserData->r_float 	("torch_definition","volumetric_intensity_r2"));
 	light_render->set_volumetric_distance(pUserData->r_float 	("torch_definition","volumetric_distance_r2"));
 
-	/*glow_render->set_texture(pUserData->r_string				("torch_definition","glow_texture"));
+	glow_render->set_texture(pUserData->r_string				("torch_definition","glow_texture"));
 	glow_render->set_color	(clr);
-	glow_render->set_radius	(pUserData->r_float					("torch_definition","glow_radius"));*/
+	glow_render->set_radius	(pUserData->r_float					("torch_definition","glow_radius"));
 
 	return					(TRUE);
 }
@@ -120,7 +120,7 @@ void CHandTorch::PlaySwitch()
 void CHandTorch::Switch(bool turn)
 {
 	light_render->set_active(turn);
-	//glow_render->set_active(turn);
+	glow_render->set_active(turn);
 	CKinematics* pVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
 	u16 bi				 = pVisual->LL_BoneID(light_trace_bone);
 	if (turn==true)
@@ -166,8 +166,8 @@ void CHandTorch::UpdateCL()
 	Fmatrix M;
 	M.mul(m_pHUD->Transform(), BI.mTransform);
 	light_render->set_rotation	(M.k,M.i);
-	/*glow_render->set_direction(M.k);
-	glow_render->set_position	(M.c);*/
+	glow_render->set_direction(M.k);
+	glow_render->set_position	(M.c);
 	light_render->set_position	(M.c);
 
 	UpdatePowerLoss();
