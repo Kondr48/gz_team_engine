@@ -44,6 +44,7 @@ public:
 	float				param			[MAX_BONE_PARAMS];	// 
 	u32					Callback_type;						//
 	// methods
+	void*               callback_param  () { return Callback_Param; }
 	void				construct		();
 	void				set_callback	(u32 Type, BoneCallback C, void* Param, BOOL overwrite=FALSE);
 	void				reset_callback	();

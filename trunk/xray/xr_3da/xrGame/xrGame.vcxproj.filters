@@ -6577,6 +6577,7 @@
     <ClInclude Include="Helmet.h" />
     <ClInclude Include="Nightvision.h" />
     <ClInclude Include="HudItemBase.h" />
+    <ClInclude Include="AdvancedDetector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9746,6 +9747,7 @@
     <ClCompile Include="Nightvision.cpp" />
     <ClCompile Include="Nightvision_script.cpp" />
     <ClCompile Include="HudItemBase.cpp" />
+    <ClCompile Include="AdvancedDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="graph_abstract.h">

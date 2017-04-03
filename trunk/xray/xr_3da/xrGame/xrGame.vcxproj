@@ -1089,6 +1089,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdvancedDetector.h" />
     <ClInclude Include="derived_client_classes.h" />
     <ClInclude Include="HandTorch.h" />
     <ClInclude Include="Helmet.h" />
@@ -2535,6 +2536,7 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdvancedDetector.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>

@@ -254,10 +254,10 @@ void CCustomDetector::OnMoveToRuck()
 
 void CCustomDetector::TurnDetectorInternal(bool b)
 {
-    m_bWorking = b;
+	m_bWorking = b;
     if (b && m_ui == NULL)
     {
-        CreateUI();
+		CreateUI();
     }
     else
     {
