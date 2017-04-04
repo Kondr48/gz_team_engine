@@ -140,7 +140,7 @@ void SActorState::CreateClimb(CKinematicsAnimated* K)
 	//climb anims
 	strcpy(base,"cl");
 	legs_idle		= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_idle_1"));
-	m_torso_idle	= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_torso_5_aim_0"));
+	m_torso_idle	= K->ID_Cycle(strconcat(sizeof(buf),buf,base,"_torso_0_aim_0"));
 	m_walk.Create	(K,base,"_run");
 	m_run.Create	(K,base,"_run");
 

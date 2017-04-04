@@ -550,39 +550,84 @@ bool CUICarBodyWnd::OnItemStartDrag(CUICellItem* itm)
 	return				false; //default behaviour
 }
 
+#include "../../xr_input.h"
 bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 {
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= (old_owner==m_pUIOthersBagList)?m_pUIOurBagList:m_pUIOthersBagList;
 
-	if(m_pOthersObject)
+	if(m_pOthersObject) //use dead body
 	{
-		if( TransferItem		(	CurrentIItem(),
-								(old_owner==m_pUIOthersBagList)?m_pOthersObject:m_pOurObject, 
-								(old_owner==m_pUIOurBagList)?m_pOthersObject:m_pOurObject, 
-								(old_owner==m_pUIOurBagList)
-								)
-			)
+		bool bMoveDir = old_owner==m_pUIOurBagList;
+		if(pInput->iGetAsyncKeyState(DIK_LCONTROL)) // multitransfer
 		{
-			CUICellItem* ci			= old_owner->RemoveItem(CurrentItem(), false);
-			new_owner->SetItem		(ci);
-		}
-	}else
+			PIItem _itm;
+			for(u32 j=0; j<itm->ChildsCount(); ++j)
+			{
+				_itm		= (PIItem)(itm->Child(j)->m_pData);
+				TransferItem	(_itm,
+					(bMoveDir)?m_pOurObject:m_pOthersObject,
+					(bMoveDir)?m_pOthersObject:m_pOurObject,
+					(bMoveDir));
+			}
+			_itm		= (PIItem)(itm->m_pData);
+			if(	TransferItem	(_itm,
+				(bMoveDir)?m_pOurObject:m_pOthersObject,
+				(bMoveDir)?m_pOthersObject:m_pOurObject,
+				(bMoveDir)
+				))
+			{
+				CUICellItem* ci			= old_owner->RemoveItem(itm, false);
+				new_owner->SetItem		(ci);
+			};
+		}else // if(pInput->iGetAsyncKeyState(DIK_LCONTROL))
+		{		
+			if( TransferItem		(	CurrentIItem(),
+				(bMoveDir)?m_pOurObject:m_pOthersObject, 
+				(bMoveDir)?m_pOthersObject:m_pOurObject, 
+				(bMoveDir)
+				)
+				)
+			{
+				CUICellItem* ci			= old_owner->RemoveItem(CurrentItem(), false);
+				new_owner->SetItem		(ci);
+			}
+		} // if(pInput->iGetAsyncKeyState(DIK_LCONTROL))
+	}else//use invbox
 	{
-		if(false && old_owner==m_pUIOurBagList) return true;
+		//if(false && old_owner==m_pUIOurBagList) return true;
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
 		u16 tmp_id				= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+		if(pInput->iGetAsyncKeyState(DIK_LCONTROL))
+		{
+			PIItem _itm;
+			for(u32 j=0; j<itm->ChildsCount(); ++j)
+			{
+				_itm		= (PIItem)(itm->Child(j)->m_pData);
+				move_item		(
+					bMoveDirection?m_pInventoryBox->ID():tmp_id,
+					bMoveDirection?tmp_id:m_pInventoryBox->ID(),
+					_itm->object().ID());
+			}
+			_itm = (PIItem)(itm->m_pData);
+			move_item			(
+				bMoveDirection?m_pInventoryBox->ID():tmp_id,
+				bMoveDirection?tmp_id:m_pInventoryBox->ID(),
+				_itm->object().ID());
+		}else //if(pInput->iGetAsyncKeyState(DIK_LCONTROL))
+		{
+		
 		move_item				(
 								bMoveDirection?m_pInventoryBox->ID():tmp_id,
 								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
 								CurrentIItem()->object().ID());
-
+		}//if(pInput->iGetAsyncKeyState(DIK_LCONTROL))
 	}
 	SetCurrentItem				(NULL);
 
 	return						true;
-}
+} 
 
 bool CUICarBodyWnd::OnItemSelected(CUICellItem* itm)
 {
