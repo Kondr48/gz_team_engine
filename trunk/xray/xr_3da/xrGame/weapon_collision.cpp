@@ -17,6 +17,7 @@ CWeaponCollision::CWeaponCollision()
 
 CWeaponCollision::~CWeaponCollision()
 {
+	xr_delete(fReminderStrafe);
 }
 
 void CWeaponCollision::Load()
@@ -101,7 +102,7 @@ void CWeaponCollision::Update(Fmatrix &o, float range, bool is_zoom)
 
 	} else fReminderNeedStrafe = dir.z;
 
-	float result;
+	float result = 0.0f;
 	if (fNewStrafeTime>(float)Device.dwTimeGlobal)
 		result = fReminderStrafe->Evaluate(Device.dwTimeGlobal);
 	else {
