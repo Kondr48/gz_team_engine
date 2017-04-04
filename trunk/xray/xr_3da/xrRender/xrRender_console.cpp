@@ -154,8 +154,8 @@ float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .3f;				// r2-only
 //Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
-//Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
 //float		ps_r2_aa_kernel				= .5f;				// r2-only
+Fvector		ps_r2_helmet				= { .25f,.25f,0};	// r2-only
 float		ps_r2_mblur					= .5f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
 int			ps_r2_GI_photons			= 16;				// 8..64
@@ -657,10 +657,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.02f,	2.f		);
 
 	/*tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);
+	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);*/
 
 	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_weight",			&ps_r2_aa_weight,			tw_min, tw_max	);*/
+	CMD4(CCC_Vector3,	"ps_r2_helmet",			&ps_r2_helmet,			    tw_min, tw_max	);
 	
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
 	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
