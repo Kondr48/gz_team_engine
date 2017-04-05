@@ -9,6 +9,8 @@ enum{
 		AF_AUTOPICKUP		=(1<<5),
 		AF_PSP				=(1<<6),
 		AF_STRAFE_INERT		=(1<<7),
+		AF_AUTO_LOSS        =(1<<8),
+		AF_AUTO_RELOAD      =(1<<9),
 };
 
 extern Flags32 psActorFlags;

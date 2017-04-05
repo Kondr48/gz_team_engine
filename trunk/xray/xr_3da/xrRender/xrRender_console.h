@@ -85,7 +85,6 @@ extern ECORE_API float			ps_r2_ls_dsm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_psm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_ssm_kernel;		// r2-only
 extern ECORE_API Fvector		ps_r2_aa_barier;			// r2-only
-extern ECORE_API Fvector		ps_r2_helmet;			    // r2-only
 extern ECORE_API float			ps_r2_aa_kernel;			// r2-only
 extern ECORE_API float			ps_r2_mblur;				// .5f
 extern ECORE_API int			ps_r2_GI_depth;				// 1..5
@@ -147,20 +146,15 @@ enum
 	R2FLAG_TRUE_SHADOWS			= (1<<18),
 	R2FLAG_SOFT_WATER			= (1<<19),
 	R2FLAG_SOFT_PARTICLES		= (1<<20),
-	
 	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<21),
 	R2FLAG_DOF	                = (1<<22),
-	R2FLAG_LENSFLARES			= (1<<23),
-	R2FLAG_FILMGRAIN			= (1<<24),
-	AUTO_LOSS_FLAG              = (1<<25),
 };
 
 enum
 {
 	R2FLAGEXT_SSAO_BLUR 		= (1<<0),
 	R2FLAGEXT_SUN_ZCULLING 		= (1<<1),
-	R2FLAGEXT_SUN_OLD 			= (1<<2),
-	R2FLAG_NIGHTVISION          = (1<<3)
+	R2FLAGEXT_SUN_OLD 			= (1<<2)
 };
 
 extern void						xrRender_initconsole	();

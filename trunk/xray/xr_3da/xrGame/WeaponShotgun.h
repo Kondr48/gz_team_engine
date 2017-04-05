@@ -29,7 +29,6 @@ public:
 
 	virtual void	UpdateSounds		();
 	virtual void	PlayAnimOpenWeapon	();
-	virtual void	PlayAnimOpenWeaponEmpty	();	//anim_rouge: пустая зарядка дробовика
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon	();
 

@@ -61,9 +61,6 @@ protected:
 		MotionSVec		mhud_idle_moving;     
 		MotionSVec		mhud_reload_empty; 
 		MotionSVec		mhud_reload_missfire;
-		MotionSVec		mhud_watch_in; 
-		MotionSVec		mhud_watch_idle;    
-		MotionSVec		mhud_watch_out;
 		MotionSVec		mhud_idle_empty;		
 		MotionSVec		mhud_idle_aim_empty;
 		MotionSVec		mhud_hide_empty;
@@ -122,10 +119,6 @@ public:
 	virtual void	FireEnd			();
 	virtual void	Reload			();
 	virtual void	ReloadMf	    (); //anim_rouge, Kondr48: расклин.	
-
-	virtual void	WatchIn			(); //Kondr48: часы.	
-	virtual void	WatchIdle       ();
-	virtual void	WatchOut        ();
 	
 	virtual	void	UpdateCL		();
 	virtual void	net_Destroy		();
@@ -170,9 +163,6 @@ protected:
 	bool			m_chamber; 
 	virtual void	Chamber ();
 
-	bool			m_bClockMode; //Kondr48: показ часов у худа оружия
-	bool			m_bClockShow;
-
 	//  [7/20/2005]
 	//после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-зи Абакана)
 	int				m_iShootEffectorStart;
@@ -204,9 +194,7 @@ public:
 	virtual	void	OnNextFireMode		();
 	virtual	void	OnPrevFireMode		();
 	virtual bool	HasFireModes		() { return m_bHasDifferentFireModes; };
-	
-	bool			IsClock()	const	{ return m_bClockMode; }; //Kondr48: показ часов у худа оружия
-	
+		
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 	virtual LPCSTR	GetCurrentFireModeStr	() {return m_sCurFireMode;};
 

@@ -44,8 +44,6 @@ CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapo
 
 	m_bFireSingleShot = false;
 	m_chamber         = false;
-	m_bClockMode      = false;
-	m_bClockShow      = false;
 	m_iShotNum        = 0;
 	m_iQueueSize      = WEAPON_ININITE_QUEUE;
 	m_bLockType       = false;
@@ -158,16 +156,6 @@ void CWeaponMagazined::Load(LPCSTR section)
 	if (pSettings->line_exist(*hud_sect, "anim_idle_moving_empty"))
 		animGet(mhud.mhud_idle_moving_empty, pSettings->r_string(*hud_sect, "anim_idle_moving_empty"));	
 	
-	//Kondr48: Часы. 
-	if (pSettings->line_exist(*hud_sect, "anim_watch_in")) 
-		animGet(mhud.mhud_watch_in, pSettings->r_string(*hud_sect, "anim_watch_in"));
-
-	if (pSettings->line_exist(*hud_sect, "anim_watch_idle"))
-		animGet(mhud.mhud_watch_idle, pSettings->r_string(*hud_sect, "anim_watch_idle"));
-
-	if (pSettings->line_exist(*hud_sect, "anim_watch_out"))
-		animGet(mhud.mhud_watch_out, pSettings->r_string(*hud_sect, "anim_watch_out"));
-
 	if(pSettings->line_exist(section, "chamber_status")) //Kondr48: для поддержки патронника
 		m_bChamberStatus = !!pSettings->r_bool(section, "chamber_status");
 	else
@@ -221,7 +209,6 @@ void CWeaponMagazined::FireStart()
 			if (GetState() == eShowing) return;
 			if (GetState() == eHiding) return;
 			if (GetState() == eMisfire) return;
-			//if (GetState() == eWatchIdle) WatchOut();
 
 			inherited::FireStart();
 
@@ -237,13 +224,15 @@ void CWeaponMagazined::FireStart()
 	}
 }
 
+extern Flags32 psActorFlags;
+
 void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	/*CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if (!iAmmoElapsed && actor && GetState() != eReload) // Тестовое отключение авто перезарядки
-		Reload();*/
+	CActor	*actor = smart_cast<CActor*>(H_Parent());
+	if (!iAmmoElapsed && actor && GetState() != eReload && psActorFlags.test(AF_AUTO_RELOAD))
+		Reload();
 }
 
 void CWeaponMagazined::ReloadMf()  //anim_rouge, Kondr48: расклин.	
@@ -547,15 +536,6 @@ void CWeaponMagazined::OnStateSwitch(u32 S)
 	case eReloadMisfire: //anim_rouge, Kondr48: расклин.	
 		switch2_ReloadMisfire();
 		break;
-    case eWatchIn:
-		WatchIn();
-		break;
-	case eWatchIdle:
-		WatchIdle();
-		break;
-	case eWatchOut:
-		WatchOut();
-		break;
 	}
 }
 
@@ -574,9 +554,6 @@ void CWeaponMagazined::UpdateCL()
 		case eHiding:
 		case eReload:
 		case eReloadMisfire:
-		case eWatchIn:
-		case eWatchIdle:
-		case eWatchOut:
 		case eIdle:
 			fTime -= dt;
 			if (fTime < 0)
@@ -742,8 +719,6 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 	case eHiding:	 SwitchState(eHidden);                              break;	// End of Hide
 	case eShowing:	 SwitchState(eIdle);		                        break;	// End of Show
 	case eIdle:		 switch2_Idle();			                        break;  // Keep showing idle
-	case eWatchIn:   Msg("Идл с конца вызывается"); SwitchState(eWatchIdle);                           break;
-	case eWatchOut:   Msg("Идл ствола с конца вызывается"); SwitchState(eIdle);                                break;
 	}
 }
 
@@ -807,16 +782,16 @@ void CWeaponMagazined::switch2_Fire()
 void CWeaponMagazined::switch2_Empty()
 {
 	OnZoomOut();
-
-	if (!TryReload())
+	
+	if (psActorFlags.test(AF_AUTO_RELOAD))
 	{
-		OnEmptyClick();
+		if (!TryReload())
+			OnEmptyClick();
+		else
+			inherited::FireEnd();
 	}
 	else
-	{
-		inherited::FireEnd();
-		Msg("Вызов огонь конец");
-	}
+		OnEmptyClick();
 }
 void CWeaponMagazined::PlayReloadSound()
 {
@@ -889,9 +864,9 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 			}
 			else
 			{
-				if ((iAmmoElapsed < iMagazineSize) || (m_bChamberStatus && !m_chamber && iAmmoElapsed == iMagazineSize)) //Kondr48: магазин заряжен, но мы можем
-					Reload();                                                                                            // воткнуть другой, если нет патрона
-			}                                                                                                            // в патроннике, это даст нам на 1 патрон больше.
+				if ((iAmmoElapsed < iMagazineSize) || (m_bChamberStatus && !m_chamber && iAmmoElapsed == iMagazineSize)) 
+					Reload(); //Kondr48: магазин заряжен, но мы можем воткнуть другой, если нет патрона в патроннике, это даст нам на 1 патрон больше.
+			}
 	}
 		return true;
 	case kWPN_FIREMODE_PREV:
@@ -910,46 +885,8 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 			return true;
 		};
 	}break;
-	case kCLOCK:
-	{
-		if (flags&CMD_START && m_bClockShow == false)
-		{
-		 SwitchState(eWatchIn);
-		 Msg("поехали");
-		 m_bClockShow = true;
-		}
-		else if (flags&CMD_STOP && IsClock() == true)
-		 SwitchState(eWatchOut);
-	return true;
-	}break;
 	}
 	return false;
-}
-
-void CWeaponMagazined::WatchIn()
-{
- if (mhud.mhud_watch_in.size())
-  VERIFY(GetState() == eWatchIn);
-  m_bPending = true;
-  m_pHUD->animPlay(random_anim(mhud.mhud_watch_in), FALSE, NULL, GetState());
-  m_bClockMode = true;
-}
-
-void CWeaponMagazined::WatchIdle()
-{
-  VERIFY(GetState() == eWatchIdle);
-  Msg("Играется идле часов");
-  m_bClockMode = true;
-  m_pHUD->animPlay(random_anim(mhud.mhud_watch_idle), FALSE, NULL, GetState());
-}
-
-void CWeaponMagazined::WatchOut()
-{
- VERIFY(GetState() == eWatchOut);
- m_bClockShow = false;
- m_bClockMode = false;
- m_bPending = true;
- m_pHUD->animPlay(random_anim(mhud.mhud_watch_out), FALSE, NULL, GetState());
 }
 
 bool CWeaponMagazined::CanAttach(PIItem pIItem)
@@ -1233,7 +1170,7 @@ bool CWeaponMagazined::TryPlayAnimIdle()
 	VERIFY(GetState() == eIdle);
 	if (!IsZoomed()){
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
-		if (pActor && IsClock() == false)
+		if (pActor)
 		{
 			CEntity::SEntityState st;
 			pActor->g_State(st);

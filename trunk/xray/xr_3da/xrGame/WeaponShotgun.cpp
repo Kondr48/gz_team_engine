@@ -46,22 +46,19 @@ void CWeaponShotgun::Load	(LPCSTR section)
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	};
 	
-	if(pSettings->line_exist(section, "bolt_action")) //anim_rouge: для оружия с зарядкой через окно выброса гильз
-		m_bBoltAction = !!pSettings->r_bool(section, "bolt_action");
-	else
-		m_bBoltAction = false;
+	m_bBoltAction = !!READ_IF_EXISTS(pSettings, r_bool, section, "bolt_action", false);
 		
 	if(m_bTriStateReload){
 		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
 		animGet	(mhud_open,	pSettings->r_string(*hud_sect,"anim_open_weapon"));
 		
 		if(pSettings->line_exist(section, "snd_open_weapon_empty"))
+			HUD_SOUND::LoadSound(section, "snd_open_weapon_empty", m_sndOpenEmpty, m_eSoundOpen);
+		else
 			HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpenEmpty, m_eSoundOpen);
 		
 		if(pSettings->r_string(*hud_sect,"anim_open_weapon_empty"))
 			animGet	(mhud_open_empty,	pSettings->r_string(*hud_sect,"anim_open_weapon_empty"));	
-		else
-			animGet	(mhud_open_empty,	pSettings->r_string(*hud_sect,"anim_open_weapon"));	
 		
 		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
 		animGet	(mhud_add_cartridge,	pSettings->r_string(*hud_sect,"anim_add_cartridge"));
@@ -313,20 +310,15 @@ void CWeaponShotgun::OnStateSwitch	(u32 S)
 	};
 }
 
-void CWeaponShotgun::switch2_StartReload() //anim_rouge: Проигрывание анимации и звука зарядки пустого дробовика
+void CWeaponShotgun::switch2_StartReload()
 {
-	
-	if(iAmmoElapsed <= 0)
-	    {
-			PlayAnimOpenWeaponEmpty	();
-			PlaySound			(m_sndOpenEmpty,get_LastFP());
-		}
-		else 
-		{
-			PlayAnimOpenWeapon	();
-			PlaySound			(m_sndOpen,get_LastFP());
-		}
-	m_bPending = true;
+   PlayAnimOpenWeapon	();
+   if (iAmmoElapsed <= 0)
+     PlaySound			(m_sndOpenEmpty,get_LastFP());
+   else
+     PlaySound			(m_sndOpen,get_LastFP());
+  
+   m_bPending = true;
 }
 
 void CWeaponShotgun::switch2_AddCartgidge	()
@@ -346,13 +338,12 @@ void CWeaponShotgun::switch2_EndReload	()
 void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud_open),TRUE,this,GetState());
+	if(iAmmoElapsed <= 0 && mhud_open_empty.size())
+	  m_pHUD->animPlay(random_anim(mhud_open_empty),TRUE,this,GetState());
+	else
+	  m_pHUD->animPlay(random_anim(mhud_open),TRUE,this,GetState());
 }
-void CWeaponShotgun::PlayAnimOpenWeaponEmpty() //anim_rouge: анимация зарядки пустого дробовика
-{
-	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud_open_empty),TRUE,this,GetState());
-}
+
 void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState()==eReload);

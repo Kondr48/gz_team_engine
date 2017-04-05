@@ -69,15 +69,10 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	animGet				(mhud_switch,	        pSettings->r_string(*hud_sect, "anim_switch_grenade_off"));
 	animGet				(mhud_show_g,	        pSettings->r_string(*hud_sect, "anim_draw_g"));
 	animGet				(mhud_hide_g,	        pSettings->r_string(*hud_sect, "anim_holster_g"));
-	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint_g")) //Kondr48: анимации спринта для подствольного гранатомёта
-	 animGet				(mhud_idle_sprint_g,	pSettings->r_string(*hud_sect, "anim_idle_sprint_g"));
-	if (pSettings->line_exist(*hud_sect, "anim_idle_sprint_gl"))
-	 animGet				(mhud_idle_sprint_gl,	pSettings->r_string(*hud_sect, "anim_idle_sprint_gl"));
-	if (pSettings->line_exist(*hud_sect, "anim_idle_moving_g")) //Kondr48: анимации ходьбы для подствольного гранатомёта
-	 animGet				(mhud_idle_moving_g,	pSettings->r_string(*hud_sect, "anim_idle_moving_g"));
-	if (pSettings->line_exist(*hud_sect, "anim_idle_moving_gl"))
-	 animGet				(mhud_idle_moving_gl,	pSettings->r_string(*hud_sect, "anim_idle_moving_gl"));
-
+	animGet				(mhud_idle_sprint_g,	pSettings->r_string(*hud_sect, "anim_idle_sprint_g"));
+	animGet				(mhud_idle_sprint_gl,	pSettings->r_string(*hud_sect, "anim_idle_sprint_gl"));
+	animGet				(mhud_idle_moving_g,	pSettings->r_string(*hud_sect, "anim_idle_moving_g"));
+	animGet				(mhud_idle_moving_gl,	pSettings->r_string(*hud_sect, "anim_idle_moving_gl"));
 	animGet				(mhud_idle_w_gl,	pSettings->r_string(*hud_sect, "anim_idle_gl"));
 	animGet				(mhud_reload_w_gl,	pSettings->r_string(*hud_sect, "anim_reload_gl"));
 	animGet				(mhud_show_w_gl,	pSettings->r_string(*hud_sect, "anim_draw_gl"));
@@ -226,7 +221,8 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
 	m_bGrenadeMode		= !m_bGrenadeMode;
-	m_fZoomFactor       = g_fov; // Karlan: сбрасываем зум
+	m_bChamberStatus    = !m_bGrenadeMode;  // Kondr48: отключаем патронник, при переходе в режим ПГ
+	m_fZoomFactor       = g_fov;            // Karlan: сбрасываем зум
 
 	iMagazineSize		= m_bGrenadeMode?1:iMagazineSize2;
 
@@ -446,9 +442,6 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
-	Msg("Проверка, патронник подствола %d", iAmmoElapsed);
-	if (m_bGrenadeMode && m_bChamberStatus && iAmmoElapsed == 1) return;
-
 	inherited::ReloadMagazine();
 
 	//перезарядка подствольного гранатомета
@@ -652,58 +645,62 @@ void CWeaponMagazinedWGrenade::PlayAnimReload()
 		inherited::PlayAnimReload();
 }
 
+bool CWeaponMagazinedWGrenade::TryPlayAnimIdle() // Kondr48: анимации ходьбы и бега для подствола
+{
+	CActor* pActor = smart_cast<CActor*>(H_Parent());	
+	CEntity::SEntityState st;
+	pActor->g_State(st);
+	if (!IsZoomed()){
+		if (st.bSprint)
+		{
+			if (m_bGrenadeMode)
+				m_pHUD->animPlay(random_anim(mhud_idle_sprint_g), TRUE, NULL, GetState());
+			else
+				m_pHUD->animPlay(random_anim(mhud_idle_sprint_gl), TRUE, NULL, GetState());
+			return true;
+		} 
+		else if (st.bMoving)
+		{
+			if (m_bGrenadeMode)
+				m_pHUD->animPlay(random_anim(mhud_idle_moving_g), TRUE, NULL, GetState());
+			else
+				m_pHUD->animPlay(random_anim(mhud_idle_moving_gl), TRUE, NULL, GetState());
+			return true;		
+		}		
+	}			
+	return false;
+}
+
 void CWeaponMagazinedWGrenade::PlayAnimIdle()
 {
-	//if(TryPlayAnimIdle())	return;
-	VERIFY(GetState()==eIdle);
+	VERIFY(GetState() == eIdle);
 	if(IsGrenadeLauncherAttached())
 	{
-			CActor* pActor = smart_cast<CActor*>(H_Parent());
-			if(pActor)
-			{
-				CEntity::SEntityState st;
-				pActor->g_State(st);
-				if(m_bGrenadeMode)
-		        {
-			      if(IsZoomed())
-				    m_pHUD->animPlay(random_anim(mhud_idle_g_aim), FALSE, NULL, GetState());
-			      else
-					if (st.bSprint && mhud_idle_sprint_g.size()) //Kondr48: анимации спринта для подствольного гранатомёта
-					  {
-				       m_pHUD->animPlay(random_anim(mhud_idle_sprint_g), FALSE, NULL, GetState());
-					  }
-					else if(st.bMoving && mhud_idle_moving_g.size()) //Kondr48: анимации ходьбы для подствольного гранатомёта
-					  {
-				       m_pHUD->animPlay(random_anim(mhud_idle_moving_g), FALSE, NULL, GetState());
-					  }
+		CActor* pActor = smart_cast<CActor*>(H_Parent());
+		if(pActor)
+		{
+			if (TryPlayAnimIdle())	return;
+					
+			CEntity::SEntityState st;
+			pActor->g_State(st);
+			if(m_bGrenadeMode)
+				{
+					if(IsZoomed())
+						m_pHUD->animPlay(random_anim(mhud_idle_g_aim), TRUE, NULL, GetState());
 					else
-					{
-						m_pHUD->animPlay(random_anim(mhud_idle_g), FALSE, NULL, GetState());
-					}
+						m_pHUD->animPlay(random_anim(mhud_idle_g), TRUE, NULL, GetState());
 		        }
-		        else
-		        {
-			      if(IsZoomed())
-				    m_pHUD->animPlay(random_anim(mhud_idle_w_gl_aim), TRUE, NULL, GetState());
-			      else
-				    if(st.bSprint && mhud_idle_sprint_gl.size()) //Kondr48: анимации спринта для подствольного гранатомёта
-					  {
-				       m_pHUD->animPlay(random_anim(mhud_idle_sprint_gl), FALSE, NULL, GetState());
-					  }
-					else if(st.bMoving && mhud_idle_moving_gl.size()) //Kondr48: анимации ходьбы для подствольного гранатомёта
-					  {
-				       m_pHUD->animPlay(random_anim(mhud_idle_moving_gl), FALSE, NULL, GetState());
-					  }
+			else
+				{
+					if(IsZoomed())
+						m_pHUD->animPlay(random_anim(mhud_idle_w_gl_aim), TRUE, NULL, GetState());
 					else
-					{
 						m_pHUD->animPlay(random_anim(mhud_idle_w_gl), TRUE, NULL, GetState());
-					}	 
-		}
-				
+				}
+		}		
 	}
-	}
-	else
-   inherited::PlayAnimIdle();
+    else 
+		inherited::PlayAnimIdle();
 }
 void CWeaponMagazinedWGrenade::PlayAnimShoot()
 {

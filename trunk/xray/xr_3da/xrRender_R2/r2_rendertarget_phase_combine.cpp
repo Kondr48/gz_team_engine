@@ -222,10 +222,7 @@ void	CRenderTarget::phase_combine	()
 		Fvector2	vDofKernel;
 		vDofKernel.set(0.5f/Device.dwWidth, 0.5f/Device.dwHeight);
 		vDofKernel.mul(ps_r2_dof_kernel_size);
-		// extensions tonemapping
-		CEnvDescriptorMixer& envdesc_ext= g_pGamePersistent->Environment().CurrentEnv		;
-		Fvector4 defog_clr = { envdesc_ext.m_vDefog.x, envdesc_ext.m_vDefog.y, envdesc_ext.m_vDefog.z, 0 };
-
+		
 		// Draw COLOR
 		//if (ps_r2_ls_flags.test(R2FLAG_AA))			RCache.set_Element	(s_combine->E[bDistort?3:1]);	// look at blender_combine.cpp
 		//else										RCache.set_Element	(s_combine->E[bDistort?4:2]);	// look at blender_combine.cpp
@@ -236,11 +233,9 @@ void	CRenderTarget::phase_combine	()
 		g_pGamePersistent->GetCurrentDof(dof);
 		RCache.set_c				("dof_params",	dof.x, dof.y, dof.z, ps_r2_dof_sky);
 		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
-		RCache.set_c				("e_visor",	    ps_r2_helmet.x,	ps_r2_helmet.y,	ps_r2_helmet.z,	0);
 		RCache.set_c				("m_current",	m_current);
 		RCache.set_c				("m_previous",	m_previous);
 		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);
-		RCache.set_c 				("c_tnmp_defog",defog_clr);
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}

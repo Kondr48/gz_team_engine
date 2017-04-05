@@ -155,7 +155,6 @@ float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .3f;				// r2-only
 //Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
 //float		ps_r2_aa_kernel				= .5f;				// r2-only
-Fvector		ps_r2_helmet				= { .25f,.25f,0};	// r2-only
 float		ps_r2_mblur					= .5f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
 int			ps_r2_GI_photons			= 16;				// 8..64
@@ -658,9 +657,6 @@ void		xrRender_initconsole	()
 
 	/*tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
 	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);*/
-
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"ps_r2_helmet",			&ps_r2_helmet,			    tw_min, tw_max	);
 	
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
 	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
@@ -690,16 +686,12 @@ void		xrRender_initconsole	()
 	
 	//Need restart
 	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
-	CMD3(CCC_Mask, 		"r2_lens_flares",		        &ps_r2_ls_flags, 			R2FLAG_LENSFLARES);
-	CMD3(CCC_Mask, 		"r2_film_grain",		        &ps_r2_ls_flags, 			R2FLAG_FILMGRAIN);
 
     //Kondr48
 	CMD3(CCC_Token,		"r2_moon_cycle",				&ps_r_moon_cycle,			qmoon_cycle_token);
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
 	
-	CMD3(CCC_Mask, 		"r2_nightvision",		        &ps_r2_ls_flags_ext, 		R2FLAG_NIGHTVISION);
-
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
 }
 

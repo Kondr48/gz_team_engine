@@ -1363,6 +1363,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"g_always_run",			&psActorFlags,	AF_ALWAYSRUN);
 	CMD1(CCC_GameDifficulty,	"g_game_difficulty"		);
 	CMD3(CCC_Mask,				"weapon_strafe_inertion",		&psActorFlags,	AF_STRAFE_INERT);
+	CMD3(CCC_Mask,				"auto_loss",		            &psActorFlags,	AF_AUTO_LOSS);
+	CMD3(CCC_Mask,				"auto_reload",		            &psActorFlags,	AF_AUTO_RELOAD);
 
 	CMD3(CCC_Mask,				"g_backrun",			&psActorFlags,	AF_RUN_BACKWARD);
 
