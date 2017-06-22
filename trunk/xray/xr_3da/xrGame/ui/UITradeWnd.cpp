@@ -51,7 +51,8 @@ struct CUITradeInternal{
 	CUIDragDropListEx	UIOthersTradeList;
 
 	//кнопки
-	CUI3tButton			UIPerformTradeButton;
+	CUI3tButton			UIPerformSellButton;
+	CUI3tButton			UIPerformBuyButton;
 	CUI3tButton			UIToTalkButton;
 
 	//информация о персонажах 
@@ -159,12 +160,14 @@ void CUITradeWnd::Init()
 
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
 
+	AttachChild							(&m_uidata->UIPerformSellButton);
+	xml_init.Init3tButton				(uiXml, "button", 0, &m_uidata->UIPerformSellButton);
 
-	AttachChild							(&m_uidata->UIPerformTradeButton);
-	xml_init.Init3tButton					(uiXml, "button", 0, &m_uidata->UIPerformTradeButton);
+	AttachChild							(&m_uidata->UIPerformBuyButton);
+	xml_init.Init3tButton				(uiXml, "button", 1, &m_uidata->UIPerformBuyButton);
 
 	AttachChild							(&m_uidata->UIToTalkButton);
-	xml_init.Init3tButton					(uiXml, "button", 1, &m_uidata->UIToTalkButton);
+	xml_init.Init3tButton				(uiXml, "button", 2, &m_uidata->UIToTalkButton);
 
 	m_uidata->UIDealMsg					= NULL;
 
@@ -203,9 +206,13 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	{
 		SwitchToTalk();
 	}
-	else if(pWnd == &m_uidata->UIPerformTradeButton && msg == BUTTON_CLICKED)
+	else if(pWnd == &m_uidata->UIPerformSellButton && msg == BUTTON_CLICKED)
 	{
-		PerformTrade();
+		PerformSell();
+	}
+	else if(pWnd == &m_uidata->UIPerformBuyButton && msg == BUTTON_CLICKED)
+	{
+		PerformBuy();
 	}
 
 	CUIWindow::SendMessage(pWnd, msg, pData);
@@ -393,13 +400,37 @@ u32 CUITradeWnd::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, bool b
 	return					iPrice;
 }
 
-void CUITradeWnd::PerformTrade()
+void CUITradeWnd::PerformBuy() // Kondr48: Купить предметы
 {
-
-	if (m_uidata->UIOurTradeList.ItemsCount()==0 && m_uidata->UIOthersTradeList.ItemsCount()==0) 
+	if (m_uidata->UIOthersTradeList.ItemsCount()==0) 
 		return;
 
 	int our_money			= (int)m_pInvOwner->get_money();
+	int others_money		= 0;
+
+	int delta_price			= int(m_iOurTradePrice-m_iOthersTradePrice);
+
+	our_money				+= delta_price;
+	others_money			-= delta_price;
+
+	if(our_money>=0 && (m_iOurTradePrice>=0 || m_iOthersTradePrice>0))
+	{
+		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
+		TransferItems		(&m_uidata->UIOthersTradeList,	&m_uidata->UIOurBagList,	m_pOthersTrade,	false);
+	}else
+	{
+		m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
+		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
+	}
+	SetCurrentItem			(NULL);
+}
+
+void CUITradeWnd::PerformSell()
+{
+	if (m_uidata->UIOurTradeList.ItemsCount()==0) 
+		return;
+
+	int our_money			= 0;
 	int others_money		= (int)m_pOthersInvOwner->get_money();
 
 	int delta_price			= int(m_iOurTradePrice-m_iOthersTradePrice);
@@ -407,19 +438,16 @@ void CUITradeWnd::PerformTrade()
 	our_money				+= delta_price;
 	others_money			-= delta_price;
 
-	if(our_money>=0 && others_money>=0 && (m_iOurTradePrice>=0 || m_iOthersTradePrice>0))
+	if(others_money>=0 && (m_iOurTradePrice>=0 || m_iOthersTradePrice>0))
 	{
 		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
-		
 		TransferItems		(&m_uidata->UIOurTradeList,		&m_uidata->UIOthersBagList, m_pOthersTrade,	true);
-		TransferItems		(&m_uidata->UIOthersTradeList,	&m_uidata->UIOurBagList,	m_pOthersTrade,	false);
 	}else
 	{
-		if(others_money<0)
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
+	    if(others_money<0)
+		    m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
 		else
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
-
+			Msg("Торговец не интересуется таким товаром");
 
 		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
 	}
@@ -466,10 +494,7 @@ void CUITradeWnd::UpdatePrices()
 	}
 }
 
-void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList,
-								CUIDragDropListEx* pBuyList,
-								CTrade* pTrade,
-								bool bBuying)
+void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
 {
 	while(pSellList->ItemsCount())
 	{
