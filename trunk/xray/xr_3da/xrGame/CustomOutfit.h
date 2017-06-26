@@ -2,8 +2,11 @@
 
 #include "inventory_item_object.h"
 #include "Nightvision.h"
+#include "..\..\..\build_config_defines.h"
 
+#ifndef FIRE_WOUND_HIT_FIXED
 struct SBoneProtections;
+#endif
 
 class CCustomOutfit: public CInventoryItemObject {
 	friend class COutfitScript;
@@ -24,7 +27,10 @@ public:
 	float							GetHitTypeProtection(ALife::EHitType hit_type, s16 element);
 	float							GetDefHitTypeProtection(ALife::EHitType hit_type);
 
+#ifndef FIRE_WOUND_HIT_FIXED
 	float							HitThruArmour		(float hit_power, s16 element, float AP);
+#endif
+
 	//коэффициент на который домножается потеря силы
 	//если на персонаже надет костюм
 	float							GetPowerLoss		();
@@ -40,7 +46,11 @@ protected:
 
 	shared_str						m_ActorVisual;
 	shared_str						m_full_icon_name;
-	SBoneProtections*				m_boneProtection;	
+
+#ifndef FIRE_WOUND_HIT_FIXED
+	SBoneProtections*				m_boneProtection;
+#endif
+
 protected:
 	u32								m_ef_equipment_type;
 	CNightVisionDevice*				m_NightVisionDevice;
@@ -62,7 +72,11 @@ public:
 
 	virtual u32						ef_equipment_type		() const;
 	CNightVisionDevice*				NightVisionDevice		() { return m_NightVisionDevice; };
+
+#ifndef FIRE_WOUND_HIT_FIXED
 	virtual	BOOL					BonePassBullet			(int boneID);
+#endif
+
 	const shared_str&				GetFullIconName			() const	{return m_full_icon_name;};
 	u32						        get_artefact_count		() const	{ return m_artefact_count; }
 

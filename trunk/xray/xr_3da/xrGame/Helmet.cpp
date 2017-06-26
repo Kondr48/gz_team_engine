@@ -4,7 +4,10 @@
 #include "inventory_space.h"
 #include "Inventory.h"
 #include "ai_sounds.h"
-#include "BoneProtections.h"
+
+#ifndef FIRE_WOUND_HIT_FIXED
+  #include "BoneProtections.h"
+#endif
 
 #include "../xr_ioconsole.h"
 
@@ -16,7 +19,10 @@ CHelmet::CHelmet(void)
 	for(int i=0; i<ALife::eHitTypeMax; i++)
 		m_HitTypeProtection[i] = 1.0f;
 
+#ifndef FIRE_WOUND_HIT_FIXED
 	m_boneProtection = xr_new<SBoneProtections>();
+#endif
+
 	m_flags.set(FUsingCondition, TRUE);
 	SetSlot (HELMET_SLOT);
 	m_NightVisionDevice         = NULL;
@@ -25,7 +31,9 @@ CHelmet::CHelmet(void)
 
 CHelmet::~CHelmet(void) 
 {
-    xr_delete(m_boneProtection);
+#ifndef FIRE_WOUND_HIT_FIXED
+	xr_delete(m_boneProtection);
+#endif
 	xr_delete(m_NightVisionDevice);
 	HUD_SOUND::DestroySound(m_breath_sound);
 }
@@ -206,8 +214,11 @@ void CHelmet::HelmetDressing()
    bool bPlaySoundFirstPerson = (pA == Level().CurrentViewEntity());
    HUD_SOUND::PlaySound(m_breath_sound, pA->Position(), pA, bPlaySoundFirstPerson, true);
    Console->Execute("r2_visor 1, 1, 1"); //Kondr48: дикий костыль
+
+#ifndef FIRE_WOUND_HIT_FIXED
    if(pSettings->line_exist(cNameSect(),"bones_koeff_protection"))
 		m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<CKinematics*>(pA->Visual()) );
+#endif
 }
 
 void CHelmet::HelmetUndressing()
@@ -232,10 +243,15 @@ float CHelmet::GetDefHitTypeProtection(ALife::EHitType hit_type)
 float CHelmet::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 {
 	float fBase = m_HitTypeProtection[hit_type]*GetCondition();
+#ifndef FIRE_WOUND_HIT_FIXED
 	float bone = m_boneProtection->getBoneProtection(element);
 	return 1.0f - fBase*bone;
+#else
+	return 1.0f - fBase;
+#endif
 }
 
+#ifndef FIRE_WOUND_HIT_FIXED
 float	CHelmet::HitThruArmour(float hit_power, s16 element, float AP)
 {
 	float BoneArmour = m_boneProtection->getBoneArmour(element)*GetCondition()*(1-AP);	
@@ -243,8 +259,4 @@ float	CHelmet::HitThruArmour(float hit_power, s16 element, float AP)
 	if (NewHitPower < hit_power*m_boneProtection->m_fHitFrac) return hit_power*m_boneProtection->m_fHitFrac;
 	return NewHitPower;
 };
-
-BOOL	CHelmet::BonePassBullet					(int boneID)
-{
-	return m_boneProtection->getBonePassBullet(s16(boneID));
-};
+#endif

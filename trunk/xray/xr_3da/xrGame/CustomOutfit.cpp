@@ -7,7 +7,10 @@
 #include "Actor.h"
 #include "game_cl_base.h"
 #include "Level.h"
+
+#ifndef FIRE_WOUND_HIT_FIXED
 #include "BoneProtections.h"
+#endif
 
 
 CCustomOutfit::CCustomOutfit()
@@ -20,14 +23,19 @@ CCustomOutfit::CCustomOutfit()
 	for(int i=0; i<ALife::eHitTypeMax; i++)
 		m_HitTypeProtection[i] = 1.0f;
 
+#ifndef FIRE_WOUND_HIT_FIXED
 	m_boneProtection = xr_new<SBoneProtections>();
+#endif
+
 	m_bAlwaysProcessing = TRUE;
 	m_NightVisionDevice = NULL;
 }
 
 CCustomOutfit::~CCustomOutfit() 
 {
+#ifndef FIRE_WOUND_HIT_FIXED
 	xr_delete(m_boneProtection);
+#endif
 	xr_delete(m_NightVisionDevice);
 }
 
@@ -75,10 +83,8 @@ void CCustomOutfit::Load(LPCSTR section)
 		m_ActorVisual = NULL;
 
 	m_ef_equipment_type		= pSettings->r_u32(section,"ef_equipment_type");
-	if (pSettings->line_exist(section, "power_loss"))
-		m_fPowerLoss = pSettings->r_float(section, "power_loss");
-	else
-		m_fPowerLoss = 1.0f;	
+	m_fPowerLoss            = READ_IF_EXISTS(pSettings, r_float,    section, "power_loss",  1.0f );
+
 
 	m_additional_weight				= pSettings->r_float(section,"additional_inventory_weight");
 	m_additional_weight2			= pSettings->r_float(section,"additional_inventory_weight2");
@@ -116,10 +122,15 @@ float CCustomOutfit::GetDefHitTypeProtection(ALife::EHitType hit_type)
 float CCustomOutfit::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 {
 	float fBase = m_HitTypeProtection[hit_type]*GetCondition();
+#ifndef FIRE_WOUND_HIT_FIXED
 	float bone = m_boneProtection->getBoneProtection(element);
 	return 1.0f - fBase*bone;
+#else
+	return 1.0f - fBase;
+#endif
 }
 
+#ifndef FIRE_WOUND_HIT_FIXED
 float	CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
 {
 	float BoneArmour = m_boneProtection->getBoneArmour(element)*GetCondition()*(1-AP);	
@@ -132,6 +143,7 @@ BOOL	CCustomOutfit::BonePassBullet					(int boneID)
 {
 	return m_boneProtection->getBonePassBullet(s16(boneID));
 };
+#endif
 
 #include "torch.h"
 void	CCustomOutfit::OnMoveToSlot		()
@@ -172,10 +184,10 @@ void	CCustomOutfit::OnMoveToSlot		()
 			if(pPNV && !bIsNightvisionAvaliable)
 				pActor->inventory().Ruck(pPNV);
 
-			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
+#ifndef FIRE_WOUND_HIT_FIXED
+			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection"))
 				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<CKinematics*>(pActor->Visual()) );
-
-			};
+#endif
 		}
 	}
 };

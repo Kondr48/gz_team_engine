@@ -3,8 +3,11 @@
 #include "HudItemBase.h"
 #include "Nightvision.h"
 #include "hudsound.h"	
+#include "..\..\..\build_config_defines.h"
 
+#ifndef FIRE_WOUND_HIT_FIXED
 struct SBoneProtections;
+#endif
 
 class CHelmet:	public CHudItemBase {
 private:
@@ -23,7 +26,9 @@ public:								CHelmet						();
 	float							GetHitTypeProtection(ALife::EHitType hit_type, s16 element);
 	float							GetDefHitTypeProtection(ALife::EHitType hit_type);
 
+#ifndef FIRE_WOUND_HIT_FIXED
 	float							HitThruArmour		(float hit_power, s16 element, float AP);
+#endif
 
 	virtual BOOL					net_Spawn					(CSE_Abstract* DC);
 	virtual CHelmet*				cast_helmet 				()		{ return this; }
@@ -33,7 +38,10 @@ protected:
 	MotionSVec						m_anim_filtr;
 	HUD_SOUND				        m_breath_sound;
 	HitImmunity::HitTypeSVec		m_HitTypeProtection;
+
+#ifndef FIRE_WOUND_HIT_FIXED
 	SBoneProtections*				m_boneProtection;	
+#endif
 
 public:
 	enum EHudItemBasestates {
@@ -74,6 +82,4 @@ public:
 	virtual void                    HelmetUndressing        ();
 
 	virtual void		            onMovementChanged		(ACTOR_DEFS::EMoveCommand cmd);
-
-	virtual	BOOL					BonePassBullet			(int boneID);
 };
