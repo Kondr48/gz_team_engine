@@ -52,13 +52,13 @@ void CWeaponShotgun::Load	(LPCSTR section)
 		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
 		animGet	(mhud_open,	pSettings->r_string(*hud_sect,"anim_open_weapon"));
 		
+		if(pSettings->line_exist(*hud_sect,"anim_open_weapon_empty"))
+			animGet	(mhud_open_empty, pSettings->r_string(*hud_sect,"anim_open_weapon_empty"));
+
 		if(pSettings->line_exist(section, "snd_open_weapon_empty"))
 			HUD_SOUND::LoadSound(section, "snd_open_weapon_empty", m_sndOpenEmpty, m_eSoundOpen);
 		else
 			HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpenEmpty, m_eSoundOpen);
-		
-		if(pSettings->r_string(*hud_sect,"anim_open_weapon_empty"))
-			animGet	(mhud_open_empty,	pSettings->r_string(*hud_sect,"anim_open_weapon_empty"));	
 		
 		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
 		animGet	(mhud_add_cartridge,	pSettings->r_string(*hud_sect,"anim_add_cartridge"));
