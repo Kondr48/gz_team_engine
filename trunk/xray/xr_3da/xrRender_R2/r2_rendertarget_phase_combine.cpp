@@ -185,6 +185,12 @@ void	CRenderTarget::phase_combine	()
 	BOOL	PP_Complex		= u_need_PP	();
 	if (_menu_pp)			PP_Complex	= FALSE;
 
+	 if ( !_menu_pp ) 
+  	{
+  		if ( ps_r2_ls_flags.test(R2FLAG_RAIN_DROPS) && ps_r2_visor.x > 0.9) 
+			phase_rain_drops();
+  	}
+
 	// Combine everything + perform AA
 	if		(PP_Complex)	u_setrt		( rt_Color,0,0,HW.pBaseZB );			// LDR RT
 	else					u_setrt		( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
@@ -236,6 +242,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("m_current",	m_current);
 		RCache.set_c				("m_previous",	m_previous);
 		RCache.set_c				("m_blur",		m_blur_scale.x,m_blur_scale.y, 0,0);
+		RCache.set_c				("e_visor",	    ps_r2_visor.x,	ps_r2_visor.y,	ps_r2_visor.z,	0);
 		RCache.set_Geometry			(g_aa_AA);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}

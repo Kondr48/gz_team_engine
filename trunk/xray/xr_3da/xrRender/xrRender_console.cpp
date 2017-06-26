@@ -153,7 +153,7 @@ float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .3f;				// r2-only
-//Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
+Fvector		ps_r2_visor  				= { .0f, .0f, 0};	// r2-only
 //float		ps_r2_aa_kernel				= .5f;				// r2-only
 float		ps_r2_mblur					= .5f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
@@ -191,6 +191,9 @@ float		ps_r2_slight_fade			= 1.f;				// 1.f
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
 float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
+
+// by mrmnwar
+float		ps_r2_rain_rops_debug_control= 1.f;				// 1.f
 
 // KD start
 Flags32		ps_common_flags				= { 0 };		// r1-only
@@ -655,8 +658,8 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.02f,	2.f		);
 
-	/*tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);*/
+	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
+	CMD4(CCC_Vector3,	"r2_visor",			&ps_r2_visor,			tw_min, tw_max	);
 	
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
 	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
@@ -668,12 +671,16 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);	
 
+	// mrmnwar
+ 	CMD4(CCC_Float,		"r2_rain_drops_debug_intensity", &ps_r2_rain_rops_debug_control, 0.f, 3.f);
+ 	CMD3(CCC_Mask,		"r2_rain_drops",				 &ps_r2_ls_flags, R2FLAG_RAIN_DROPS);
+
 	// KD
-	CMD3(CCC_Mask,			"r__bloodmarks",		&ps_common_flags,			RFLAG_BLOODMARKS);
-	CMD3(CCC_Mask,			"r2_sun_true_shadows",	&ps_r2_ls_flags,			R2FLAG_TRUE_SHADOWS		);
-	CMD3(CCC_Mask,			"r2_soft_water",		&ps_r2_ls_flags,			R2FLAG_SOFT_WATER		);
-	CMD3(CCC_Mask,			"r2_soft_particles",	&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES	);
-	CMD3(CCC_Token,			"r2_steep_parallax",	&ps_steep_parallax,			ext_quality_token	);
+	CMD3(CCC_Mask,		"r__bloodmarks",		&ps_common_flags,			RFLAG_BLOODMARKS);
+	CMD3(CCC_Mask,		"r2_sun_true_shadows",	&ps_r2_ls_flags,			R2FLAG_TRUE_SHADOWS		);
+	CMD3(CCC_Mask,		"r2_soft_water",		&ps_r2_ls_flags,			R2FLAG_SOFT_WATER		);
+	CMD3(CCC_Mask,		"r2_soft_particles",	&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES	);
+	CMD3(CCC_Token,		"r2_steep_parallax",	&ps_steep_parallax,			ext_quality_token	);
 #ifdef KD_DETAIL_RADIUS
 	CMD4(CCC_detail_radius,	"r__detail_radius",		&ps_r__detail_radius,		49,	250	);
 #endif
@@ -691,6 +698,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token,		"r2_moon_cycle",				&ps_r_moon_cycle,			qmoon_cycle_token);
 	CMD3(CCC_Token,		"r2_night_brightness",			&ps_r_night_brightness,		qnight_brightness_token);
 	CMD3(CCC_Token,		"r2_weather_preset",			&ps_r_weather_preset,		qweather_preset_token);
+	CMD3(CCC_Mask,		"r2_visor_reflections",			&ps_r2_ls_flags,			R2FLAG_VISOR_REFLECTIONS);
 	
 	CMD3(CCC_Token, 	"r2_smap", 				&ps_r_smapsize, 			qsmapsize_token );
 }

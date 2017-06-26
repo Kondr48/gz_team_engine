@@ -141,7 +141,9 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	}break;
 	case kGAZMASK:
 		{
-		Msg("Нажата кнопка шлема");
+		PIItem helmet = inventory().ItemFromSlot(HELMET_SLOT);
+		if (helmet && inventory().GetActiveSlot() != 11)
+			inventory().Activate(11);
 	}break;
 	case kDET1:{
 		luabind::functor<void>	det_one_activate;

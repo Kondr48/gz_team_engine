@@ -697,7 +697,12 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	c_sun_quality;
 		def_it						++;
 	}
-
+	// Kondr48
+	if (ps_r2_ls_flags.test(R2FLAG_VISOR_REFLECTIONS))		{
+		defines[def_it].Name		=	"USE_VISOR_REFLECTIONS";
+		defines[def_it].Definition	=	"1";
+		def_it						++	;
+	}
 	// finish
 	defines[def_it].Name			=	0;
 	defines[def_it].Definition		=	0;

@@ -65,6 +65,8 @@ protected:
 	CUIStatic*			m_ind_outfit_broken;
 	CUIStatic*			m_ind_overweight;
 
+	CUIStatic*          m_helmet_glass;
+
 public:
     CUIStatic* m_ind_boost_psy;
     CUIStatic* m_ind_boost_radia;

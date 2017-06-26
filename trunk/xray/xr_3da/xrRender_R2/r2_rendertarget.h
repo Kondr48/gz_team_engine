@@ -29,6 +29,7 @@ public:
 	IBlender*					b_ssao;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
+	IBlender*					b_rain_drops;
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -90,6 +91,9 @@ public:
 private:
 	// OCCq
 	ref_shader					s_occq;
+
+	ref_shader					s_rain_drops;
+	float						rain_drops_intensity;
 
 	// Accum
 	ref_shader					s_accum_mask	;
@@ -193,6 +197,7 @@ public:
 	BOOL						u_DBT_enable			(float zMin, float zMax);
 	void						u_DBT_disable			();
 
+	void						phase_rain_drops		();
 	void						phase_ssao				();
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();

@@ -161,6 +161,10 @@ protected:
 	//изменение силы хита в зависимости от надетого костюма
 	//(только для InventoryOwner)
 	float					HitOutfitEffect			(float hit_power, ALife::EHitType hit_type, s16 element, float AP);
+	//изменение силы хита в зависимости от надетого шлема
+	//(только для InventoryOwner)
+    float					HitHelmetEffect			(float hit_power, ALife::EHitType hit_type, s16 element, float AP);
+
 	//изменение потери сил в зависимости от надетого костюма
 	float					HitPowerEffect			(float power_loss);
 	

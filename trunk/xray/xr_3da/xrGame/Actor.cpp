@@ -21,6 +21,7 @@
 #include "SleepEffector.h"
 #include "character_info.h"
 #include "CustomOutfit.h"
+#include "Helmet.h"
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -1221,7 +1222,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	//для свойст артефактов, находящихся на поясе
 	UpdateArtefactsOnBelt						();
-	UpdtateOutfitInSlot			    			();
+	UpdtateOutfitAndHelmetInSlot			    ();
 	m_pPhysics_support->in_shedule_Update		(DT);
 	Check_for_AutoPickUp						();
 };
@@ -1600,17 +1601,15 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 	return					res_hit_power_k * hit_power;
 }
 
-#define OUTFIT_UPDATE_TIME 0.100f
+#define OUTFIT_AND_HELMET_UPDATE_TIME 0.100f
 
-#include "CustomOutfit.h"
-
-void CActor::UpdtateOutfitInSlot()
+void CActor::UpdtateOutfitAndHelmetInSlot()
 {
 	static float update_time = 0;
 
 	float f_update_time = 0;
 
-	if(update_time<OUTFIT_UPDATE_TIME)
+	if(update_time<OUTFIT_AND_HELMET_UPDATE_TIME)
 	{
 		update_time += conditions().fdelta_time();
 		return;
@@ -1631,6 +1630,19 @@ void CActor::UpdtateOutfitInSlot()
 			conditions().ChangeThirst(outfit->m_fThirstRestoreSpeed*f_update_time);
 #ifndef OBJECTS_RADIOACTIVE // alpet: отключается для избежания двойного хита
 			conditions().ChangeRadiation		(outfit->m_fRadiationRestoreSpeed*f_update_time);
+#endif
+		}
+
+	CHelmet* helmet = GetHelmet();
+	if(helmet && helmet->helmet_is_dressed)
+		{
+			conditions().ChangeBleeding(helmet->m_fBleedingRestoreSpeed*f_update_time);
+			conditions().ChangeHealth(helmet->m_fHealthRestoreSpeed*f_update_time);
+			conditions().ChangePower(helmet->m_fPowerRestoreSpeed*f_update_time);
+			conditions().ChangeSatiety(helmet->m_fSatietyRestoreSpeed*f_update_time);
+			conditions().ChangeThirst(helmet->m_fThirstRestoreSpeed*f_update_time);
+#ifndef OBJECTS_RADIOACTIVE // alpet: отключается для избежания двойного хита
+			conditions().ChangeRadiation		(helmet->m_fRadiationRestoreSpeed*f_update_time);
 #endif
 		}
 
@@ -1798,6 +1810,11 @@ CCustomOutfit* CActor::GetOutfit() const
 	return _of?smart_cast<CCustomOutfit*>(_of):NULL;
 }
 
+CHelmet* CActor::GetHelmet() const
+{
+	PIItem _of	= inventory().m_slots[HELMET_SLOT].m_pIItem;
+	return _of?smart_cast<CHelmet*>(_of):NULL;
+}
 
 void CActor::block_action(EGameActions cmd)
 {

@@ -10,6 +10,7 @@
 #include "../script_engine.h"
 #include "../actor.h"
 #include "../ActorCondition.h"
+#include "../Helmet.h"
 #include "../EntityCondition.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
@@ -253,6 +254,8 @@ void CUIMainIngameWnd::Init()
 	m_ind_helmet_broken		    = UIHelper::CreateStatic(uiXml, "indicator_helmet_broken", this);
 	m_ind_outfit_broken		    = UIHelper::CreateStatic(uiXml, "indicator_outfit_broken", this);
 	m_ind_overweight		    = UIHelper::CreateStatic(uiXml, "indicator_overweight", this);
+
+	m_helmet_glass		        = UIHelper::CreateStatic(uiXml, "helmet_static", this);
 
 	m_ind_boost_psy = UIHelper::CreateStatic(uiXml, "indicator_booster_psy", this);
     m_ind_boost_radia = UIHelper::CreateStatic(uiXml, "indicator_booster_radia", this);
@@ -568,35 +571,54 @@ void CUIMainIngameWnd::Update()
 			m_ind_radiation->SetClrLightAnim("ui_fast_blinking_alpha", true, true, false, true);
 		}
 	}
-
-// Helmet broken icon
-	PIItem	helmet = m_pActor->inventory().ItemFromSlot(HELMET_SLOT);
+	
+    // Helmet broken icon and glass
+	PIItem helmet = m_pActor->inventory().ItemFromSlot(HELMET_SLOT);
+	CHelmet* custom_helmet = smart_cast<CHelmet*>(helmet);
+	
 	m_ind_helmet_broken->Show(false);
-	m_ind_helmet_broken->ResetClrAnimation();
-	if(helmet)
+	m_helmet_glass->Show(false);
+	
+	if(helmet && custom_helmet && custom_helmet->helmet_is_dressed)
 	{
+		m_helmet_glass->Show(true);
+		string256 _buff;
+		u16 index;
+		
 		float condition = helmet->GetCondition();
-		if(condition<0.75f)
-		{
+		
+		if(condition <= 0.8f)
 			m_ind_helmet_broken->Show(true);
-			if(condition>0.5f)
-			{
-				m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_green");
-				m_ind_helmet_broken->ResetClrAnimation();
-			}
-			else if(condition>0.25f)
-			{
-				m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_yellow");
-				m_ind_helmet_broken->ResetClrAnimation();
-			}
-			else
-			{
-				m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_red");
-				m_ind_helmet_broken->SetClrLightAnim("ui_slow_blinking_alpha", true, true, false, true);
-			}
+		
+		if(condition > 0.8f)
+		{
+			index = 1;
 		}
+		else if (condition > 0.6f)
+		{
+		    index = 2;
+			m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_green");
+		}
+		else if (condition > 0.4f)
+		{
+			index = 3;
+			m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_yellow");
+		}
+		else if (condition > 0.2f)
+		{
+			index = 4;
+		    m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_orange");
+		}
+		else
+		{
+			index = 5;
+			m_ind_helmet_broken->InitTexture("ui_inGame2_circle_Helmetbroken_red");
+		}
+		sprintf_s(_buff, "ui\\helmets_hud\\%s_%d", custom_helmet->glass_texture.c_str(), index);
+		m_helmet_glass->InitTexture(_buff);
 	}
-// Weapon broken icon
+	
+    // Weapon broken icon
 	u32 slot = m_pActor->inventory().GetActiveSlot();
 	m_ind_weapon_broken->Show(false);
 	m_ind_weapon_broken->ResetClrAnimation();

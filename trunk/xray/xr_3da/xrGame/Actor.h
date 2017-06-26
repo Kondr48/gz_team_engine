@@ -22,6 +22,7 @@ class CInfoPortion;
 struct GAME_NEWS_DATA;
 class CActorCondition;
 class CCustomOutfit;
+class CHelmet;
 class CKnownContactsRegistryWrapper;
 class CEncyclopediaRegistryWrapper;
 class CGameTaskRegistryWrapper;
@@ -207,7 +208,7 @@ public:
 	const xr_vector<const CArtefact*>& ArtefactsOnBelt() {return m_ArtefactsOnBelt;}
 
 	//свойства брони
-	virtual void		UpdtateOutfitInSlot	();
+	virtual void		UpdtateOutfitAndHelmetInSlot	();
 protected:
 
 	//звук тяжелого дыхания
@@ -684,6 +685,7 @@ protected:
 public:
 		void							SetWeaponHideState				(u32 State, bool bSet);
 		virtual CCustomOutfit*			GetOutfit() const;
+		virtual CHelmet*	    		GetHelmet() const;
 private:
 	CActorCondition				*m_entity_condition;
 

@@ -84,7 +84,7 @@ extern ECORE_API float			ps_r2_ls_bloom_speed;		// r2-only
 extern ECORE_API float			ps_r2_ls_dsm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_psm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_ssm_kernel;		// r2-only
-extern ECORE_API Fvector		ps_r2_aa_barier;			// r2-only
+extern ECORE_API Fvector		ps_r2_visor;		    	// r2-only
 extern ECORE_API float			ps_r2_aa_kernel;			// r2-only
 extern ECORE_API float			ps_r2_mblur;				// .5f
 extern ECORE_API int			ps_r2_GI_depth;				// 1..5
@@ -117,6 +117,8 @@ extern ECORE_API Fvector3		ps_r2_dof;
 extern ECORE_API float			ps_r2_dof_sky;				//	distance to sky
 extern ECORE_API float			ps_r2_dof_kernel_size;		//	7.0f
 
+extern ECORE_API float			ps_r2_rain_rops_debug_control;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
@@ -124,7 +126,7 @@ enum
 	R2FLAG_SUN_TSM				= (1<<2),
 	R2FLAG_SUN_DETAILS			= (1<<3),
 	R2FLAG_TONEMAP				= (1<<4),
-//	R2FLAG_AA					= (1<<5),
+	R2FLAG_RAIN_DROPS           = (1<<5),
 	R2FLAG_GI					= (1<<6),
 	R2FLAG_FASTBLOOM			= (1<<7),
 	R2FLAG_GLOBALMATERIAL		= (1<<8),
@@ -148,6 +150,9 @@ enum
 	R2FLAG_SOFT_PARTICLES		= (1<<20),
 	R2FLAG_VOLUMETRIC_LIGHTS	= (1<<21),
 	R2FLAG_DOF	                = (1<<22),
+
+	//Kondr48
+	R2FLAG_VISOR_REFLECTIONS    = (1<<23),
 };
 
 enum

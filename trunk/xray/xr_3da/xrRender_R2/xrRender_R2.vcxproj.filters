@@ -247,6 +247,7 @@
       <Filter>Shading templates</Filter>
     </ClInclude>
     <ClInclude Include="blender_ssao.h" />
+    <ClInclude Include="blender_rain_drops.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -548,6 +549,8 @@
     </ClCompile>
     <ClCompile Include="blender_ssao.cpp" />
     <ClCompile Include="r2_rendertarget_phase_ssao.cpp" />
+    <ClCompile Include="blender_rain_drops.cpp" />
+    <ClCompile Include="r2_rendertarget_phase_rain_drops.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="todo.txt" />

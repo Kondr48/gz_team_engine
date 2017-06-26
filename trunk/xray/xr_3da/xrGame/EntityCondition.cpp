@@ -3,6 +3,7 @@
 #include "entitycondition.h"
 #include "inventoryowner.h"
 #include "customoutfit.h"
+#include "helmet.h"
 #include "inventory.h"
 #include "wound.h"
 #include "level.h"
@@ -10,6 +11,7 @@
 #include "entity_alive.h"
 #include "..\SkeletonCustom.h"
 #include "object_broker.h"
+#include "..\..\..\build_config_defines.h"
 
 #define MAX_HEALTH 1.0f
 #define MIN_HEALTH -0.01f
@@ -312,13 +314,38 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
 
 	float new_hit_power				= hit_power;
 
+#ifndef FIRE_WOUND_HIT_FIXED
 	if (hit_type == ALife::eHitTypeFireWound)
 		new_hit_power				= pOutfit->HitThruArmour(hit_power, element, AP);
 	else
+#endif
 		new_hit_power				*= pOutfit->GetHitTypeProtection(hit_type,element);
 	
 	//увеличить изношенность костюма
 	pOutfit->Hit					(hit_power, hit_type);
+
+	return							new_hit_power;
+}
+
+float CEntityCondition::HitHelmetEffect(float hit_power, ALife::EHitType hit_type, s16 element, float AP)
+{
+    CInventoryOwner* pInvOwner		= smart_cast<CInventoryOwner*>(m_object);
+	if(!pInvOwner)					return hit_power;
+
+	CHelmet* custom_helmet			= (CHelmet*)pInvOwner->inventory().m_slots[HELMET_SLOT].m_pIItem;
+	if(!custom_helmet || !custom_helmet->helmet_is_dressed) return hit_power;
+
+	float new_hit_power				= hit_power;
+
+#ifndef FIRE_WOUND_HIT_FIXED
+	if (hit_type == ALife::eHitTypeFireWound)
+		new_hit_power				= custom_helmet->HitThruArmour(hit_power, element, AP);
+	else
+#endif
+		new_hit_power				*= custom_helmet->GetHitTypeProtection(hit_type,element);
+	
+	//увеличить изношенность шлема
+	custom_helmet->Hit					(hit_power, hit_type);
 
 	return							new_hit_power;
 }
@@ -378,6 +405,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
 	hit_power = HitOutfitEffect(hit_power, pHDS->hit_type, pHDS->boneID, pHDS->ap);
+	hit_power = HitHelmetEffect(hit_power, pHDS->hit_type, pHDS->boneID, pHDS->ap);
 
 	bool bAddWound = true;
 	switch(pHDS->hit_type)
