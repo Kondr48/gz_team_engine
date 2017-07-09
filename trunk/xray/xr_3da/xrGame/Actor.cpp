@@ -1588,15 +1588,6 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 		}
 	}
 
-	PIItem helmet = inventory().m_slots[HELMET_SLOT].m_pIItem;
-	if (helmet){
-		CArtefact* helmet_artefact = smart_cast<CArtefact*>(helmet);
-		if(helmet_artefact){
-			res_hit_power_k	+= helmet_artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
-			_af_count		+= 1.0f;
-		}
-	}
-
 	res_hit_power_k			-= _af_count;
 	return					res_hit_power_k * hit_power;
 }
@@ -1907,3 +1898,19 @@ void CActor::RepackAmmo()
 			_ammo.erase(std::remove_if(_ammo.begin(), _ammo.end(), remove_predikat(asect)), _ammo.end());
 	}// while
 } 
+
+float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
+{
+    float sum = 0.0f;
+    TIItemContainer::iterator it = inventory().m_belt.begin();
+    TIItemContainer::iterator ite = inventory().m_belt.end();
+    for (; it != ite; ++it)
+    {
+        CArtefact* artefact = smart_cast<CArtefact*>(*it);
+        if (artefact)
+        {
+            sum += artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+        }
+    }
+    return sum;
+}

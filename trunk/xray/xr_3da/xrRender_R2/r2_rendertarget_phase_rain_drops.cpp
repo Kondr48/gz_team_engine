@@ -48,7 +48,7 @@ void	CRenderTarget::phase_rain_drops	()
 
 	clamp			(rain_drops_intensity,			0.0f,		3.0f);
 
-	Msg("rain_drops_intensity = %f", rain_drops_intensity);
+	/*Msg("rain_drops_intensity = %f", rain_drops_intensity);*/
 
 	// Draw COLOR
 	RCache.set_Element			(s_rain_drops->E[0]);

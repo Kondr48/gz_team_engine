@@ -17,10 +17,14 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../Actor.h"
+#include "../Actor_Flags.h"
 
 #include "UIItemInfo.h"
 
 #include "../../../build_config_defines.h"
+
+#include "../CustomOutfit.h"
+#include "../Helmet.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
 {
@@ -66,6 +70,8 @@ void CUIInventoryWnd::InitInventory()
 	m_pInv						= &pInvOwner->inventory();
 
 	UIPropertiesBox.Hide		();
+
+	UIActorProtectionInfo->Show(false);
 
 	InfoCurItem(NULL);
 	
@@ -187,6 +193,9 @@ void CUIInventoryWnd::InitInventory()
 		CUICellItem* itm			= create_cell_item(*itb);
 		m_pUIBagList->SetItem		(itm);
 	}
+
+	if (psActorFlags.test(AF_ACTOR_PROTECTION_INFO_ENABLE))
+		UIActorProtectionInfo->Show(true);
 	
 	InventoryUtilities::UpdateWeight					(UIBagWnd, true);
 
@@ -661,4 +670,72 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUISlotQuickAccessList_3->ClearAll	(true);
 	m_pUINightvisionList->ClearAll			(true);
 	m_pUIDetectorTwoList->ClearAll			(true);
+}
+
+void CUIInventoryWnd::UpdateActorPotectionProgressBars()
+{	
+	if (!psActorFlags.test(AF_ACTOR_PROTECTION_INFO_ENABLE)) return;
+
+	CActor*	pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
+
+	if(!pActor) return;
+	
+	float burn_value = 0.0f;
+	float strk_value = 0.0f;
+    float radi_value = 0.0f;
+    float cmbn_value = 0.0f;
+    float tele_value = 0.0f;
+    float woun_value = 0.0f;
+    float shoc_value = 0.0f;
+    float fwou_value = 0.0f;
+    float expl_value = 0.0f;
+
+	CCustomOutfit* outfit = pActor->GetOutfit();
+    CHelmet* helmet = pActor->GetHelmet();
+	
+    if (outfit) // Kondr48: защита бронежилета
+    {
+        burn_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeBurn);
+		strk_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeStrike);
+        shoc_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeShock); 
+        woun_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeWound);
+		radi_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
+        tele_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
+		cmbn_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
+		expl_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeExplosion);
+		fwou_value += outfit->GetDefHitTypeProtection(ALife::eHitTypeFireWound);
+	}
+
+	if (helmet) // Kondr48: защита шлема
+    {
+        burn_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeBurn);
+		strk_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeStrike);
+        shoc_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeShock); 
+        woun_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeWound);
+		radi_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeRadiation);
+        tele_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeTelepatic);
+		cmbn_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeChemicalBurn);
+		expl_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeExplosion);
+		fwou_value += helmet->GetDefHitTypeProtection(ALife::eHitTypeFireWound);
+	}
+	    // Kondr48: защита от артефактов
+	    burn_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeBurn);
+		strk_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeStrike);
+        shoc_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeShock); 
+        woun_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeWound);
+		radi_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeRadiation);
+        tele_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeTelepatic);
+		cmbn_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeChemicalBurn);
+		expl_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeExplosion);
+		fwou_value += pActor->GetProtection_ArtefactsOnBelt(ALife::eHitTypeFireWound);
+
+	UIProgressBarBurnImmunity->SetProgressPos     (iCeil(burn_value*15.0f)/15.0f);
+	UIProgressBarStrikeImmunity->SetProgressPos   (iCeil(strk_value*15.0f)/15.0f);
+	UIProgressBarShockImmunity->SetProgressPos    (iCeil(shoc_value*15.0f)/15.0f);
+	UIProgressBarWoundImmunity->SetProgressPos    (iCeil(woun_value*15.0f)/15.0f);
+	UIProgressBarRadiationImmunity->SetProgressPos(iCeil(radi_value*15.0f)/15.0f);
+	UIProgressBarTelepaticImmunity->SetProgressPos(iCeil(tele_value*15.0f)/15.0f);
+	UIProgressBarChemicalImmunity->SetProgressPos (iCeil(cmbn_value*15.0f)/15.0f);
+	UIProgressBarExplosionImmunity->SetProgressPos(iCeil(expl_value*15.0f)/15.0f);
+	UIProgressBarFireWoundImmunity->SetProgressPos(iCeil(fwou_value*15.0f)/15.0f);
 }

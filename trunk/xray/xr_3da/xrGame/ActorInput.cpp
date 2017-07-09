@@ -146,14 +146,16 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			inventory().Activate(11);
 	}break;
 	case kDET1:{
-		luabind::functor<void>	det_one_activate;
-		if (ai().script_engine().functor("gz_items_hud.det_one_activate",det_one_activate))
-		det_one_activate();
+        if (inventory().GetActiveSlot() == 8)
+			inventory().Activate(NO_ACTIVE_SLOT);
+		else
+			inventory().Activate(8);
 	    }break;
     case kDET2:{
-		luabind::functor<void>	det_two_activate;
-		if (ai().script_engine().functor("gz_items_hud.det_two_activate",det_two_activate))
-		det_two_activate();
+        if (inventory().GetActiveSlot() == 17)
+			inventory().Activate(NO_ACTIVE_SLOT);
+		else
+			inventory().Activate(17);
 	    }break;	
 	case kTORCH:{ 
 	    PIItem torch_in_slot  = inventory().ItemFromSlot(TORCH_SLOT);  // Несмотря на то, что фонарь сейчас работает на скриптах

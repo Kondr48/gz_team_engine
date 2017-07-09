@@ -1,3 +1,14 @@
+////////////////////////////////////////////////////////////////////////////
+//	Module 		: Helmet.cpp
+//	Created 	: 15.03.2017
+//  Modified 	: 27.06.2017
+//	Author		: Kondr48
+//	Description : Шлемы
+////////////////////////////////////////////////////////////////////////////
+
+//Kondr48:
+//нужно сохранять в сейвах: filter_condition,
+
 #include "stdafx.h"
 #include "helmet.h"
 #include "Actor.h"
@@ -22,7 +33,7 @@ CHelmet::CHelmet(void)
 #ifndef FIRE_WOUND_HIT_FIXED
 	m_boneProtection = xr_new<SBoneProtections>();
 #endif
-
+	filter_condition            = 1.0f;
 	m_flags.set(FUsingCondition, TRUE);
 	SetSlot (HELMET_SLOT);
 	m_NightVisionDevice         = NULL;
@@ -47,10 +58,19 @@ void CHelmet::Load(LPCSTR section)
 	HUD_SOUND::LoadSound(section, "breath_sound", m_breath_sound, SOUND_TYPE_ITEM_USING);
 
 	glass_texture = pSettings->r_string(section, "glass_texture");	
+	
+	filter_is_used	= !!READ_IF_EXISTS(pSettings, r_bool, section, "filter_is_used", false);
+
+	if (filter_is_used)
+	{
+		filter_section = pSettings->r_string(section, "filter_section");
+		filter_life = pSettings->r_s32(section, "filter_life");
+		animGet (m_anim_filtr, pSettings->r_string(*hud_sect,"anim_filtr"));
+		HUD_SOUND::LoadSound(section, "change_filter", m_change_filter, SOUND_TYPE_ITEM_USING);
+	}
 
 	animGet				(m_anim_show,			pSettings->r_string(*hud_sect,"anim_show"));
 	animGet				(m_anim_hide,		    pSettings->r_string(*hud_sect,"anim_hide"));
-	animGet				(m_anim_filtr,			pSettings->r_string(*hud_sect,"anim_filtr"));
 
 	m_HitTypeProtection[ALife::eHitTypeBurn]		= pSettings->r_float(section,"burn_protection");
 	m_HitTypeProtection[ALife::eHitTypeStrike]		= pSettings->r_float(section,"strike_protection");
@@ -89,6 +109,12 @@ void CHelmet::Load(LPCSTR section)
 BOOL CHelmet::net_Spawn(CSE_Abstract* DC) 
 {
 	BOOL result = inherited::net_Spawn(DC);
+
+	if(helmet_is_dressed)
+		HelmetDressing();
+	else
+		Console->Execute("r2_visor 0, 0, 0"); //Kondr48: дикий костыль
+
 	return result;	
 }
 
@@ -126,15 +152,39 @@ void CHelmet::UpdateCL()
 	inherited::UpdateCL();
 	if (H_Parent() && H_Parent()->ID() == Actor()->ID() && m_NightVisionDevice)
 		m_NightVisionDevice->UpdateSwitchNightVision();
+	
+    if (helmet_is_dressed && filter_is_used)
+	{
+		if (filter_condition > 0)
+		{
+			filter_condition -= 0.001f;
+			clamp(filter_condition, 0.0f, 1.0f);
+			int h = iFloor((filter_condition * filter_life)/60);
+			int m = iFloor(filter_condition * filter_life - h * 60);
+			Msg("Состояние фильтра: %f, Время: %02i:%02i", filter_condition, h, m);
+			float test = 1.0f / filter_life * m_fDeltaTime;
+			Msg("Тест фильтра: %f, %d, %f", test, filter_life, m_fDeltaTime);
+		}
+		else
+		{
+			/*HUD_SOUND::StopSound(m_breath_sound);*/
+			Msg("Идет типа отравление");
+		}
+	}
 }
 
 void CHelmet::Show()
 {
     CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());
     LastActiveSlot = pActor->inventory().GetActiveSlot();
-
-	if (helmet_is_dressed)
-	   SwitchState(eHelmetUndressing);
+	
+ 	if (helmet_is_dressed)
+	{
+	   if(filter_is_used && filter_condition == 0)
+		SwitchState(eChangeFilter);
+	   else
+		SwitchState(eHelmetUndressing);
+	}
 	else
 	   SwitchState(eHelmetDressing);
 }
@@ -145,18 +195,21 @@ void CHelmet::OnStateSwitch		(u32 S)
 	switch(S){
 	case eHelmetDressing:
 		{
-			    m_bPending = true;
 				m_pHUD->animPlay		(random_anim(m_anim_show), FALSE, this, GetState());
 		}break;
 	case eHelmetUndressing:
 		{
-				m_bPending = true;
 				HelmetUndressing();
 				m_pHUD->animPlay		(random_anim(m_anim_hide), FALSE, this, GetState());
 		}break;
 	case eHiding:
 		{
 				SwitchState(eHidden);
+		}break;
+	case eChangeFilter:
+		{
+			    HUD_SOUND::PlaySound(m_change_filter, Actor()->Position(), Actor(), true, false);	
+			    m_pHUD->animPlay(random_anim(m_anim_filtr), FALSE, this, GetState());
 		}break;
 	};
 }
@@ -169,12 +222,14 @@ void CHelmet::OnAnimationEnd		(u32 state)
 		{
 			RestoreLastActiveSlot();
 			HelmetDressing();
-			m_bPending = false;
 		}break;
 	case eHelmetUndressing:
 		{
             RestoreLastActiveSlot();
-			m_bPending = false;
+		}break;
+	case eChangeFilter:
+		{
+            filter_condition = 1.0f;
 		}break;
 	};
 }
@@ -182,6 +237,10 @@ void CHelmet::OnAnimationEnd		(u32 state)
 void CHelmet::RestoreLastActiveSlot()
 {
 	CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());
+
+	if (LastActiveSlot == 11 || LastActiveSlot == NO_ACTIVE_SLOT || !LastActiveSlot) 
+		LastActiveSlot = 5;
+
 	pActor->inventory().Activate(LastActiveSlot);
 	LastActiveSlot              = NO_ACTIVE_SLOT;
 }
@@ -225,7 +284,6 @@ void CHelmet::HelmetUndressing()
 {
    helmet_is_dressed = false;	
    Console->Execute("r2_visor 0, 0, 0"); //Kondr48: дикий костыль
-   Console->Execute("r2_rain_drops_intensity 0");
    HUD_SOUND::StopSound(m_breath_sound);
 }
 
@@ -237,17 +295,29 @@ void CHelmet::Hit(float hit_power, ALife::EHitType hit_type)
 
 float CHelmet::GetDefHitTypeProtection(ALife::EHitType hit_type)
 {
-	return 1.0f - m_HitTypeProtection[hit_type]*GetCondition();
+	if (!helmet_is_dressed) return 0.0f;
+	
+	float new_hit = 1.0f;
+	
+	if (filter_is_used && filter_condition <= 0 && (hit_type == ALife::eHitTypeRadiation || hit_type == ALife::eHitTypeChemicalBurn) )
+      new_hit = 0.2f;
+
+	return m_HitTypeProtection[hit_type] * GetCondition() * new_hit;
 }
 
 float CHelmet::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 {
 	float fBase = m_HitTypeProtection[hit_type]*GetCondition();
+	float new_hit = 1.0f;
+	
+	if (filter_is_used && filter_condition <= 0 && (hit_type == ALife::eHitTypeRadiation || hit_type == ALife::eHitTypeChemicalBurn) )
+      new_hit = 0.2f;
+
 #ifndef FIRE_WOUND_HIT_FIXED
 	float bone = m_boneProtection->getBoneProtection(element);
-	return 1.0f - fBase*bone;
+	return 1.0f - fBase * bone * new_hit;
 #else
-	return 1.0f - fBase;
+	return 1.0f - fBase * new_hit;
 #endif
 }
 

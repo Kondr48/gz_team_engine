@@ -11,6 +11,8 @@
 
 #include "../CustomOutfit.h"
 
+#include "../Helmet.h"
+
 #include "../weapon.h"
 
 #include "../script_process.h"
@@ -25,10 +27,10 @@ using namespace InventoryUtilities;
 #include "../InfoPortion.h"
 #include "../level.h"
 #include "../game_base_space.h"
-#include "../entitycondition.h"
 
 #include "../game_cl_base.h"
 #include "../ActorCondition.h"
+#include "../EntityCondition.h"
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
 #include "UI3tButton.h"
@@ -193,10 +195,6 @@ void CUIInventoryWnd::Init()
 	xml_init.InitStatic					(uiXml, "static_personal",0, &UIStaticPersonal);
 //	UIStaticPersonal.Init				(1, UIPersonalWnd.GetHeight() - 175, 260, 260);
 
-	AttachChild							(&UIOutfitInfo);
-	UIOutfitInfo.InitFromXml			(uiXml);
-//.	xml_init.InitStatic					(uiXml, "outfit_info_window",0, &UIOutfitInfo);
-
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
 
@@ -289,7 +287,20 @@ void CUIInventoryWnd::Init()
 	m_slots_array[NIGHTVISION_SLOT]			= m_pUINightvisionList;
 	m_slots_array[DETECTOR_TWO_SLOT] 	    = m_pUIDetectorTwoList;
 	m_slots_array[ITEMS_SLOT]				= NULL;
-	
+
+	UIActorProtectionInfo                   = UIHelper::CreateStatic(uiXml, "actor_potection_info_background", this);
+    UIActorProtectionInfo->Show(false);
+
+	UIProgressBarBurnImmunity	            = UIHelper::CreateProgressBar(uiXml, "progess_bar_burn_immunity",          UIActorProtectionInfo);
+	UIProgressBarStrikeImmunity    	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_strike_immunity",        UIActorProtectionInfo);
+	UIProgressBarShockImmunity	            = UIHelper::CreateProgressBar(uiXml, "progess_bar_shock_immunity",         UIActorProtectionInfo);
+    UIProgressBarWoundImmunity	            = UIHelper::CreateProgressBar(uiXml, "progess_bar_wound_immunity",         UIActorProtectionInfo);
+	UIProgressBarRadiationImmunity	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_radiation_immunity",     UIActorProtectionInfo);
+	UIProgressBarTelepaticImmunity	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_telepatic_immunity",     UIActorProtectionInfo);
+	UIProgressBarChemicalImmunity	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_chemical_burn_immunity", UIActorProtectionInfo);
+	UIProgressBarExplosionImmunity	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_explosion_immunity",     UIActorProtectionInfo);
+	UIProgressBarFireWoundImmunity	        = UIHelper::CreateProgressBar(uiXml, "progess_bar_fire_wound_immunity",    UIActorProtectionInfo);
+
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
 	UIPropertiesBox.Init				(0,0,300,300);
@@ -422,15 +433,14 @@ void CUIInventoryWnd::Update()
 		//red_virus
 		sprintf_s						(sMoney,"%d %s", _money, *CStringTable().translate("ui_st_money_regional"));
 		UIMoneyWnd.SetText				(sMoney);
-
-		// update outfit parameters
-		CCustomOutfit* outfit			= smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);		
-		UIOutfitInfo.Update				(outfit);		
+	
 	}
 
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
 
 	UpdateConditionProgressBars();
+
+	UpdateActorPotectionProgressBars();
 
 	UpdateOutfit();
 

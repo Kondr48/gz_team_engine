@@ -6195,9 +6195,6 @@
     <ClInclude Include="ui\UIWpnParams.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIOutfitInfo.h">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\OutfitInfo</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UITimeWnd.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\TimeWnd</Filter>
     </ClInclude>
@@ -9321,9 +9318,6 @@
     </ClCompile>
     <ClCompile Include="ui\UIItemInfo.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\ItemInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIOutfitInfo.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\OutfitInfo</Filter>
     </ClCompile>
     <ClCompile Include="ui\UITimeWnd.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\TimeWnd</Filter>

@@ -1,3 +1,11 @@
+////////////////////////////////////////////////////////////////////////////
+//	Module 		: Helmet.h
+//	Created 	: 15.03.2017
+//  Modified 	: 27.06.2017
+//	Author		: Kondr48
+//	Description : Шлемы
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 #include "HudItemBase.h"
@@ -37,6 +45,7 @@ protected:
 	CNightVisionDevice*				m_NightVisionDevice;
 	MotionSVec						m_anim_filtr;
 	HUD_SOUND				        m_breath_sound;
+	HUD_SOUND				        m_change_filter;
 	HitImmunity::HitTypeSVec		m_HitTypeProtection;
 
 #ifndef FIRE_WOUND_HIT_FIXED
@@ -44,11 +53,12 @@ protected:
 #endif
 
 public:
-	enum EHudItemBasestates {
+	enum EHudHelmetStates {
 		eHelmetDressing		= 0,
 		eHelmetUndressing,
 		eHiding,
 		eHidden,
+		eChangeFilter,
 	};
 	
 	bool					        bIsNightvisionAvaliable;
@@ -74,8 +84,14 @@ public:
 
 	shared_str                      glass_texture;
 	shared_str                      m_BonesProtectionSect;
+	shared_str                      filter_section;
 
 	bool                            helmet_is_dressed;
+	bool                            filter_is_used;
+
+	s32                             filter_life;
+	float                           filter_condition;
+
 	virtual void	                OnH_B_Independent	    (bool just_before_destroy);
 
 	virtual void                    HelmetDressing          ();

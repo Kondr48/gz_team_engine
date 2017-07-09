@@ -9,8 +9,6 @@ class CInventory;
 #include "UIPropertiesBox.h"
 #include "UIOutfitSlot.h"
 
-#include "UIOutfitInfo.h"
-
 #include "../inventory_space.h"
 
 class CArtefact;
@@ -39,18 +37,19 @@ public:
 	virtual bool			OnKeyboard					(int dik, EUIMessages keyboard_action);
 
 
-	IC CInventory*			GetInventory				()					{return m_pInv;}
+	IC CInventory*			GetInventory				     ()					{return m_pInv;}
 
-	virtual void			Update						();
-	void					UpdateConditionProgressBars	();
-	void                    UpdateOutfit();
-    void                    MoveArtefactsToBag();
-	virtual void			Draw						();
+	virtual void			Update						     ();
+	void					UpdateConditionProgressBars	     ();
+	void					UpdateActorPotectionProgressBars ();
+	void                    UpdateOutfit                     ();
+    void                    MoveArtefactsToBag               ();
+	virtual void			Draw					         ();
 
-	virtual void			Show						();
-	virtual void			Hide						();
+	virtual void			Show						     ();
+	virtual void			Hide						     ();
 
-	void					AddItemToBag				(PIItem pItem);
+	void					AddItemToBag				     (PIItem pItem);
 	
 protected:
 	enum eInventorySndAction{	eInvSndOpen	=0,
@@ -186,7 +185,17 @@ public:
 	CUIPropertiesBox			UIPropertiesBox;
 	
 	//информация о персонаже
-	CUIOutfitInfo				UIOutfitInfo;
+	CUIStatic*           		UIActorProtectionInfo;
+	CUIProgressBar*           	UIProgressBarBurnImmunity;
+	CUIProgressBar*           	UIProgressBarStrikeImmunity;
+	CUIProgressBar*           	UIProgressBarShockImmunity;
+	CUIProgressBar*           	UIProgressBarWoundImmunity;
+	CUIProgressBar*           	UIProgressBarRadiationImmunity;
+	CUIProgressBar*           	UIProgressBarTelepaticImmunity;
+	CUIProgressBar*           	UIProgressBarChemicalImmunity;
+	CUIProgressBar*           	UIProgressBarExplosionImmunity;
+	CUIProgressBar*           	UIProgressBarFireWoundImmunity;
+	
 	CUIItemInfo*                m_ItemInfo;
 
 	CInventory*					m_pInv;

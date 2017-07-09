@@ -51,7 +51,8 @@ protected:
 
 	void				TransferItems				(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
 
-	void				PerformTrade				();
+	void				PerformBuy				    ();
+	void				PerformSell				    ();
 	void				UpdatePrices				();
 	void				ColorizeItem				(CUICellItem* itm, bool b);
 
