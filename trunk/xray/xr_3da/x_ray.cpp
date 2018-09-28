@@ -61,6 +61,7 @@ namespace std {
 #endif // #ifdef NDEBUG*/
 
 void draw_multiline_text(CGameFont* F, float fTargetWidth, LPCSTR pszText);
+void draw_multiline_text2(CGameFont* F, float fTargetWidth, float _x, float _y, LPCSTR pszText);
 
 void compute_build_id	()
 {

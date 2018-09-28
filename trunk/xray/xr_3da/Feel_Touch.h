@@ -1,4 +1,5 @@
-#pragma once
+#ifndef feel_touchH
+#define feel_touchH
 
 #include "pure_relcase.h"
 
@@ -34,3 +35,4 @@ namespace Feel
 		virtual void			feel_touch_delete			(CObject* O)			{	};
 	};
 };
+#endif //feel_touchH
