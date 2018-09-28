@@ -132,7 +132,7 @@ public:
 	void			xform_calc				();
 	void			vis_prepare				();
 	void			vis_update				();
-	void			export 					(light_Package& dest);
+	void			Export 					(light_Package& dest);
 #endif
 
 	float			get_LOD					();

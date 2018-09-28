@@ -60,8 +60,12 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameEnvironmentTime)
-		GamePersistent().Environment().Invalidate();
+
+	// SkyLoader: хак на резкую смену погоды при скриптовой смене цикла
+	// По какой-то причине время не экспортируется или экпортируется криво
+	// После исправления экспорта времени раскомментить этот код 
+	//if (OldTime > GameEnvironmentTime)
+	//	GamePersistent().Environment().Invalidate();
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)

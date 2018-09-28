@@ -901,6 +901,7 @@ CApplication::CApplication()
 
 	// App Title
 	app_title[ 0 ] = '\0';
+	ls_title[0] = '\0';
 }
 
 CApplication::~CApplication()
@@ -1373,19 +1374,18 @@ void CApplication::load_draw_internal()
 		VERIFY						(pFontSystem);
 		pFontSystem->Clear			();
 		pFontSystem->SetColor		(color_rgba(35,71,74,255));
+		back_size.set				(float(_w)/2.f,585.0f*k.y);
+		pFontSystem->OutSet			(back_size.x, back_size.y);
 		pFontSystem->SetAligment	(CGameFont::alCenter);
-		pFontSystem->OutI			(0.f,0.524f,app_title);
-		pFontSystem->OnRender		();
+		pFontSystem->OutNext		(app_title);
+		pFontSystem->OutNext		("");
+		pFontSystem->OutNext		("");
 
 		// Kondr48: Советы, при загрузке игры.
-		VERIFY						    (pFontSystem);
-		pFontSystem->Clear		        ();
-		pFontSystem->SetColor		    (color_rgba(35,71,74,255));
-		pFontSystem->SetAligment	    (CGameFont::alCenter);
-		float fTargetWidth              = 600.0f * k.x * (b_ws ? 0.8f : 1.0f);
-		//draw_multiline_text             (pFontSystem, fTargetWidth, ls_title);
-		pFontSystem->OutI			    (0.f,0.625f,ls_title);
-		pFontSystem->OnRender		    ();
+		float fTargetWidth			= 600.0f * k.x * (b_ws ? 0.8f : 1.0f);
+		draw_multiline_text			(pFontSystem, fTargetWidth, ls_title);
+
+		pFontSystem->OnRender		();
 
         //draw level-specific screenshot
 		if(hLevelLogo){
