@@ -1591,8 +1591,9 @@ void CCC_RegisterCommands()
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_StartTimeSingle,	"start_time_single");
-	CMD4(CCC_TimeFactorSingle,	"time_factor_single", &g_fTimeFactor, 0.f,flt_max);
 #endif // MASTER_GOLD
+	CMD4(CCC_TimeFactorSingle,	"time_factor_single", &g_fTimeFactor, 0.f,flt_max);
+//#endif // MASTER_GOLD
 
 
 	g_uCommonFlags.zero();

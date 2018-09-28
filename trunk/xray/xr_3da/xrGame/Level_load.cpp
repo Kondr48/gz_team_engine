@@ -110,6 +110,7 @@ BOOL CLevel::Load_GameSpecific_After()
 	}
 		
 	BlockCheatLoad();
+
 	return TRUE;
 }
 

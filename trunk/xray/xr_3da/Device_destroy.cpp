@@ -50,7 +50,6 @@ void CRenderDevice::Destroy	(void) {
 
 #include "IGame_Level.h"
 #include "CustomHUD.h"
-extern BOOL bNeed_re_create_env;
 void CRenderDevice::Reset		(bool precache)
 {
 #ifdef DEBUG
@@ -77,7 +76,7 @@ void CRenderDevice::Reset		(bool precache)
 	if (g_pGamePersistent)
 	{
 //.		g_pGamePersistent->Environment().OnDeviceCreate();
-		bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
 	}
 	_SetupStates			();
 	if (precache)
