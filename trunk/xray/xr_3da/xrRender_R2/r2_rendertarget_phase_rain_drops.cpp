@@ -26,7 +26,7 @@ void	CRenderTarget::phase_rain_drops	()
 	p0.set						(.5f/_w, .5f/_h);
 	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );	
 	
-	CEnvDescriptorMixer& envdesc= g_pGamePersistent->Environment().CurrentEnv		;
+	CEnvDescriptorMixer* envdesc= g_pGamePersistent->Environment().CurrentEnv		;
 	
 	// Set RT's
 	u_setrt	(rt_Generic_0,0,0,HW.pBaseZB);
@@ -41,8 +41,8 @@ void	CRenderTarget::phase_rain_drops	()
 	pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->uv0.set(p1.x, p0.y);pv->uv1.set(p1.x-ddw,p0.y-ddh);pv->uv2.set(p1.x+ddw,p0.y+ddh);pv->uv3.set(p1.x+ddw,p0.y-ddh);pv->uv4.set(p1.x-ddw,p0.y+ddh);pv->uv5.set(p1.x-ddw,p0.y,p0.y,p1.x+ddw);pv->uv6.set(p1.x,p0.y-ddh,p0.y+ddh,p1.x);pv++;
 	RCache.Vertex.Unlock		(4,g_aa_AA->vb_stride);	
 	
-	if (envdesc.rain_density > 0)
-		rain_drops_intensity += 0.005f * envdesc.rain_density;
+	if (envdesc->rain_density > 0)
+		rain_drops_intensity += 0.005f * envdesc->rain_density;
 	else
 		rain_drops_intensity -= 0.0025f;
 

@@ -57,9 +57,8 @@ static class cl_water_intensity : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		//CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		CEnvDescriptor& 	E = g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fWaterIntensity;
+		CEnvDescriptor* 	E = g_pGamePersistent->Environment().CurrentEnv;
+		float fValue = E->m_fWaterIntensity;
 		RCache.set_c	(C, fValue, fValue, fValue, 0);
 	}
 }	binder_water_intensity;
@@ -67,9 +66,8 @@ static class cl_sun_shafts_intensity : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		//CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		CEnvDescriptor& 	E = g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fSunShaftsIntensity;
+		CEnvDescriptor* 	E = g_pGamePersistent->Environment().CurrentEnv;
+		float fValue = E->m_fSunShaftsIntensity;
 		RCache.set_c	(C, fValue, fValue, fValue, 0);
 	}
 }	binder_sun_shafts_intensity;
